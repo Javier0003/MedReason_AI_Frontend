@@ -1,75 +1,69 @@
-# React + TypeScript + Vite
+# MedReason_AI
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+MedReason_AI is the frontend application for the MedReason_AI final project. It is built with React, Vite, Tailwind CSS, and TanStack Router, and includes separate routes for admin and doctor workflows along with a login page.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React + TypeScript frontend
+- Vite-powered development experience
+- TanStack Router route-based navigation
+- Tailwind CSS styling
+- Placeholder routes for:
+  - `/auth/login`
+  - `/admin/configuracion`
+  - `/admin/medicos`
+  - `/admin/dashboard`
+  - `/doctor/configuracion`
+  - `/doctor/dashboard`
+  - `/doctor/logs`
+  - `/doctor/medicos`
+  - `/App` demo screen with a sample counter
 
-## React Compiler
+## Project structure
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+- `src/main.tsx` - app entry point
+- `src/routes/` - route definitions and page components
+- `src/App.tsx` - demo application screen
+- `src/store/` - example Zustand store
+- `src/assets/` - static images and assets
 
-Note: This will impact Vite dev & build performances.
+## Getting Started
 
-## Expanding the ESLint configuration
+### Install dependencies
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Run locally
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Open the local URL shown in the terminal to view the app.
+
+### Build for production
+
+```bash
+npm run build
+```
+
+### Preview production build
+
+```bash
+npm run preview
+```
+
+## Available scripts
+
+- `npm run dev` - start development server
+- `npm run build` - compile TypeScript and build production assets
+- `npm run lint` - run ESLint across the project
+- `npm run preview` - preview the production build locally
+
+## Notes
+
+This frontend currently contains a basic route structure and placeholder pages for the admin and doctor sections. Use the existing routes and components as a scaffold for building the full MedReason_AI user experience.
+
+
