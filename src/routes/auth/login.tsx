@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useRef, useState } from 'react';
 import IconArrowRight from '../../assets/svg/IconArrowRight';
 import IconEye from '../../assets/svg/IconEye';
@@ -68,12 +68,13 @@ function RouteComponent() {
           <section className="rounded-2xl border border-slate-200/80 bg-white/80 p-6 shadow-[0_8px_30px_rgba(15,23,42,0.10)] backdrop-blur-sm">
             <div className="space-y-5">
               <div>
-                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500" htmlFor="email">
                   Clinical Email
                 </label>
                 <div className="flex h-12 items-center gap-3 rounded-lg border border-slate-300 bg-[#fbfbfc] px-3 text-slate-500 focus-within:border-[#1565d8] focus-within:ring-2 focus-within:ring-[#1565d8]/10">
                   <IconMail />
                   <input
+                    aria-label="Email"
                     type="email"
                     placeholder="name@mediflow.clinical"
                     className="w-full bg-transparent text-[15px] text-slate-600 outline-none placeholder:text-slate-400"
@@ -88,7 +89,7 @@ function RouteComponent() {
 
               <div>
                 <div className="mb-2 flex items-center justify-between">
-                  <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500">
+                  <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500" htmlFor="password">
                     Password
                   </label>
                   <button
@@ -103,11 +104,13 @@ function RouteComponent() {
                   <IconLock />
                   <input
                     type={showPassword ? "text" : "password"}
+                    aria-label="Password"
                     placeholder="••••••••"
                     className="w-full bg-transparent text-[15px] text-slate-700 outline-none placeholder:text-slate-400"
                     ref={password}
                   />
                   <button
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     className="text-slate-400 hover:text-slate-600"
@@ -139,15 +142,15 @@ function RouteComponent() {
             </p>
 
             <div className="mt-4 flex items-center justify-center gap-6 text-[12px] text-slate-500">
-              <a href="#" className="hover:text-slate-700">
+              <Link to="/" className="hover:text-slate-700">
                 Privacy Policy
-              </a>
-              <a href="#" className="hover:text-slate-700">
+              </Link>
+              <Link to="/" className="hover:text-slate-700">
                 Terms of Service
-              </a>
-              <a href="#" className="hover:text-slate-700">
+              </Link>
+              <Link to='/'  className="hover:text-slate-700">
                 Support
-              </a>
+              </Link>
             </div>
           </div>
         </div>
