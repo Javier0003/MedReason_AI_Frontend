@@ -1,9 +1,25 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { Sidebar } from '../../components/sidebar.tsx'
 
 export const Route = createFileRoute('/doctor/medicos')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return <div>Hello "/(doctor)/medicos"!</div>
+  return <div>
+    
+    {/* ── Sidebar ── */}
+      <Sidebar role="DOCTOR" />
+    
+    
+    
+    
+    
+      </div>
+
+  
 }
+
+
+
+      

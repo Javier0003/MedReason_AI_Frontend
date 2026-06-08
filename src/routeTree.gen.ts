@@ -14,6 +14,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DoctorMedicosRouteImport } from './routes/doctor/medicos'
 import { Route as DoctorLogsRouteImport } from './routes/doctor/logs'
 import { Route as DoctorDashboardRouteImport } from './routes/doctor/dashboard'
+import { Route as DoctorConsultasRouteImport } from './routes/doctor/consultas'
 import { Route as DoctorConfiguracionRouteImport } from './routes/doctor/configuracion'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AdminMedicosRouteImport } from './routes/admin/medicos'
@@ -43,6 +44,11 @@ const DoctorLogsRoute = DoctorLogsRouteImport.update({
 const DoctorDashboardRoute = DoctorDashboardRouteImport.update({
   id: '/doctor/dashboard',
   path: '/doctor/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DoctorConsultasRoute = DoctorConsultasRouteImport.update({
+  id: '/doctor/consultas',
+  path: '/doctor/consultas',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DoctorConfiguracionRoute = DoctorConfiguracionRouteImport.update({
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/admin/medicos': typeof AdminMedicosRoute
   '/auth/login': typeof AuthLoginRoute
   '/doctor/configuracion': typeof DoctorConfiguracionRoute
+  '/doctor/consultas': typeof DoctorConsultasRoute
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/doctor/logs': typeof DoctorLogsRoute
   '/doctor/medicos': typeof DoctorMedicosRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/admin/medicos': typeof AdminMedicosRoute
   '/auth/login': typeof AuthLoginRoute
   '/doctor/configuracion': typeof DoctorConfiguracionRoute
+  '/doctor/consultas': typeof DoctorConsultasRoute
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/doctor/logs': typeof DoctorLogsRoute
   '/doctor/medicos': typeof DoctorMedicosRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/admin/medicos': typeof AdminMedicosRoute
   '/auth/login': typeof AuthLoginRoute
   '/doctor/configuracion': typeof DoctorConfiguracionRoute
+  '/doctor/consultas': typeof DoctorConsultasRoute
   '/doctor/dashboard': typeof DoctorDashboardRoute
   '/doctor/logs': typeof DoctorLogsRoute
   '/doctor/medicos': typeof DoctorMedicosRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/admin/medicos'
     | '/auth/login'
     | '/doctor/configuracion'
+    | '/doctor/consultas'
     | '/doctor/dashboard'
     | '/doctor/logs'
     | '/doctor/medicos'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/admin/medicos'
     | '/auth/login'
     | '/doctor/configuracion'
+    | '/doctor/consultas'
     | '/doctor/dashboard'
     | '/doctor/logs'
     | '/doctor/medicos'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/admin/medicos'
     | '/auth/login'
     | '/doctor/configuracion'
+    | '/doctor/consultas'
     | '/doctor/dashboard'
     | '/doctor/logs'
     | '/doctor/medicos'
@@ -155,6 +167,7 @@ export interface RootRouteChildren {
   AdminMedicosRoute: typeof AdminMedicosRoute
   AuthLoginRoute: typeof AuthLoginRoute
   DoctorConfiguracionRoute: typeof DoctorConfiguracionRoute
+  DoctorConsultasRoute: typeof DoctorConsultasRoute
   DoctorDashboardRoute: typeof DoctorDashboardRoute
   DoctorLogsRoute: typeof DoctorLogsRoute
   DoctorMedicosRoute: typeof DoctorMedicosRoute
@@ -195,6 +208,13 @@ declare module '@tanstack/react-router' {
       path: '/doctor/dashboard'
       fullPath: '/doctor/dashboard'
       preLoaderRoute: typeof DoctorDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/doctor/consultas': {
+      id: '/doctor/consultas'
+      path: '/doctor/consultas'
+      fullPath: '/doctor/consultas'
+      preLoaderRoute: typeof DoctorConsultasRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/doctor/configuracion': {
@@ -243,6 +263,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMedicosRoute: AdminMedicosRoute,
   AuthLoginRoute: AuthLoginRoute,
   DoctorConfiguracionRoute: DoctorConfiguracionRoute,
+  DoctorConsultasRoute: DoctorConsultasRoute,
   DoctorDashboardRoute: DoctorDashboardRoute,
   DoctorLogsRoute: DoctorLogsRoute,
   DoctorMedicosRoute: DoctorMedicosRoute,
