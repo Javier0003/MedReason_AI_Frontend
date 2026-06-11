@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Sidebar } from '../../components/sidebar.tsx'
  
@@ -148,7 +148,7 @@ function RouteComponent() {
               <h2 className="text-[14px] font-bold text-slate-800">Pacientes de Hoy</h2>
               <div className="flex gap-2">
                 <button className="text-[12px] font-semibold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">Exportar Lista</button>
-                <button className="text-[12px] font-semibold text-white bg-[#1565d8] px-3 py-1.5 rounded-lg hover:bg-[#0f56bd] transition-colors">+ Añadir Paciente</button>
+                <Link to='/doctor/consulta' className="text-[12px] font-semibold text-white bg-[#1565d8] px-3 py-1.5 rounded-lg hover:bg-[#0f56bd] transition-colors">+ Añadir Paciente</Link>
               </div>
             </div>
  

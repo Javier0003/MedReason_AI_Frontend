@@ -1,4 +1,5 @@
 import { Link, useRouterState } from '@tanstack/react-router'
+import { authenticationStore } from '../store/authentication-store'
  
 // ─── Tipos ─────────────────────────────────────────────────────────────────────
 interface NavItem {
@@ -75,13 +76,16 @@ export function Sidebar({ role }: SidebarProps) {
           <span className="text-[15px] w-5 text-center">💬</span>
           Support
         </button>
-        <Link 
-  to="/auth/login"
-  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors"
->
-  <span className="text-[15px] w-5 text-center">🚪</span>
-  Sign Out
-</Link>
+                <Link
+          to="/auth/login"
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors"
+          onClick={async () => {
+            await authenticationStore.getState().logout();
+          }}
+        >
+          <span className="text-[15px] w-5 text-center">🚪</span>
+          Sign Out
+        </Link>
         {role === 'DOCTOR' && (
           <Link
             to="/admin/dashboard"
