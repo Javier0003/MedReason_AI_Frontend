@@ -1,25 +1,30 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { useRef, useState } from 'react';
 import IconArrowRight from '../../assets/svg/IconArrowRight';
 import IconEye from '../../assets/svg/IconEye';
 import IconLock from '../../assets/svg/IconLock';
 import IconMail from '../../assets/svg/IconMail';
 import IconMedicalLogo from '../../assets/svg/IconMedicalLogo';
+import { authenticationStore } from '../../store/authentication-store';
+import isAuthenticated from '../../lib/is-authenticated';
 
 export const Route = createFileRoute('/auth/login')({
   component: RouteComponent,
+  beforeLoad: isAuthenticated,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
   const [errors, setErrors] = useState({
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const emailValue = email.current?.value;
     const passwordValue = password.current?.value;
 
@@ -31,14 +36,17 @@ function RouteComponent() {
     if (!passwordValue) nextErrors.password = "Por favor, ingrese su contraseña.";
 
     setErrors(nextErrors);
-
     const hasErrors = Object.values(nextErrors).some(Boolean);
     if (hasErrors) return;
 
-    alert(`Email: ${emailValue}\nPassword: ${passwordValue}`);
-  }
+    const is_authenticated = await authenticationStore.getState().authenticate(emailValue!, passwordValue!);
 
-  const [showPassword, setShowPassword] = useState(false);
+    if(is_authenticated){
+      navigate({ to: '/doctor/dashboard' })
+    } else {
+      alert("Error de autenticación. Por favor, revise sus credenciales e intente nuevamente.")
+    }
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#f3f4f7] text-slate-900">
@@ -148,7 +156,7 @@ function RouteComponent() {
               <Link to="/" className="hover:text-slate-700">
                 Términos de Servicio
               </Link>
-              <Link to='/'  className="hover:text-slate-700">
+              <Link to='/' className="hover:text-slate-700">
                 Soporte
               </Link>
             </div>
