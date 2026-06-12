@@ -7,9 +7,11 @@ interface NavItem {
   href: string
   icon: string
 }
+
+export type Role = 'DOCTOR' | 'ADMIN'
  
 interface SidebarProps {
-  role: 'DOCTOR' | 'ADMIN'
+  role: Role
 }
  
 // ─── Menús por rol ─────────────────────────────────────────────────────────────
