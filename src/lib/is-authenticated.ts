@@ -5,7 +5,7 @@ export default async function isAuthenticated() {
   const { isAuthenticated: authenticated } = authenticationStore.getState()
 
   if (authenticated) {
-    throw redirect({ to: '/doctor/dashboard' })
+    return true
   } else if (window.location.pathname !== '/auth/login') {
     throw redirect({ to: '/auth/login' })
   }

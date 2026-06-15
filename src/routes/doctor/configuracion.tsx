@@ -1,19 +1,19 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Sidebar } from '../../components/sidebar.tsx'
+import MainPanel from '../../components/main-panel.tsx'
+import isAuthenticated from '../../lib/is-authenticated.ts'
 
 export const Route = createFileRoute('/doctor/configuracion')({
   component: RouteComponent,
+    beforeLoad: isAuthenticated
 })
 
 function RouteComponent() {
   return (
-    <div className="flex">
-       {/* ── Sidebar ── */}
-      <Sidebar role="DOCTOR" />
+    <MainPanel sidebarRole="DOCTOR" userName='wdkbqw' userProfession='Médico'>
       <div className="p-4">
         <h1 className="text-2xl font-bold">Configuración</h1>
         <p>Esta es la página de configuración para el médico.</p>
       </div>
-    </div>
+    </MainPanel>
   )
 }

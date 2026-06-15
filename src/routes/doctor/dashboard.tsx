@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Sidebar } from '../../components/sidebar.tsx'
+import isAuthenticated from '../../lib/is-authenticated.ts'
+import MainPanel from '../..//components/main-panel.tsx'
  
 export const Route = createFileRoute('/doctor/dashboard')({
   component: RouteComponent,
@@ -109,6 +111,8 @@ function RouteComponent() {
   )
  
   return (
+    
+
     <div className="flex min-h-screen bg-[#f3f4f7]">
  
       {/* ── Sidebar ── */}
@@ -116,6 +120,8 @@ function RouteComponent() {
  
       {/* ── Contenido principal ── */}
       <main className="ml-[200px] flex-1 p-6 space-y-5">
+
+        
  
         {/* Tarjetas métricas */}
         <div className="grid grid-cols-2 gap-4">
