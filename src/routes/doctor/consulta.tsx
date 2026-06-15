@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { Sidebar } from '../../components/sidebar.tsx'
 import { useRef } from 'react'
 import IconArrowRight from '../../assets/svg/IconArrowRight'
 import MainPanel from '../../components/main-panel'

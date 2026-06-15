@@ -3,7 +3,7 @@ import { useState, useMemo } from 'react'
 import { Sidebar } from '../../components/sidebar'
 import isAuthenticated from '../../lib/is-authenticated'
 
-export const Route = createFileRoute('/doctor/consultas')({
+export const Route = createFileRoute('/doctor/historial')({
   component: RouteComponent,
   beforeLoad: isAuthenticated
 })

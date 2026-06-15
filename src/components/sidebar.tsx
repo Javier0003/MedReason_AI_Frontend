@@ -18,8 +18,8 @@ interface SidebarProps {
 const DOCTOR_NAV: NavItem[] = [
   { label: 'Dashboard',    href: '/doctor/dashboard', icon: '▣' },
   { label: 'Medicos',      href: '/doctor/medicos',   icon: '👤' },
-  { label: 'Consultas',    href: '/doctor/consultas',  icon: '📋' },
-  { label: 'Reports',      href: '/doctor/historial', icon: '📊' },
+  { label: 'Consultas',    href: '/doctor/consulta',  icon: '📋' },
+  { label: 'Historial',      href: '/doctor/historial', icon: '📊' },
   { label: 'Schedules',    href: '/doctor/logs',      icon: '📅' },
   { label: 'Settings',     href: '/doctor/configuracion', icon: '⚙️' },
 ]
