@@ -1,25 +1,29 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { useRef, useState } from 'react';
 import IconArrowRight from '../../assets/svg/IconArrowRight';
 import IconEye from '../../assets/svg/IconEye';
 import IconLock from '../../assets/svg/IconLock';
 import IconMail from '../../assets/svg/IconMail';
 import IconMedicalLogo from '../../assets/svg/IconMedicalLogo';
+import { authenticationStore } from '../../store/authentication-store';
+import isAuthenticated from '../../lib/is-authenticated';
 
 export const Route = createFileRoute('/auth/login')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
+  const navigate = useNavigate()
   const [errors, setErrors] = useState({
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
 
   const email = useRef<HTMLInputElement>(null);
   const password = useRef<HTMLInputElement>(null);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const emailValue = email.current?.value;
     const passwordValue = password.current?.value;
 
@@ -27,18 +31,21 @@ function RouteComponent() {
       email: "",
       password: "",
     };
-    if (!emailValue) nextErrors.email = "Please enter your email.";
-    if (!passwordValue) nextErrors.password = "Please enter your password.";
+    if (!emailValue) nextErrors.email = "Por favor, ingrese su correo electrónico.";
+    if (!passwordValue) nextErrors.password = "Por favor, ingrese su contraseña.";
 
     setErrors(nextErrors);
-
     const hasErrors = Object.values(nextErrors).some(Boolean);
     if (hasErrors) return;
 
-    alert(`Email: ${emailValue}\nPassword: ${passwordValue}`);
-  }
+    const is_authenticated = await authenticationStore.getState().authenticate(emailValue!, passwordValue!);
 
-  const [showPassword, setShowPassword] = useState(false);
+    if(is_authenticated){
+      navigate({ to: '/doctor/dashboard' })
+    } else {
+      alert("Error de autenticación. Por favor, revise sus credenciales e intente nuevamente.")
+    }
+  }
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#f3f4f7] text-slate-900">
@@ -59,24 +66,24 @@ function RouteComponent() {
                 <IconMedicalLogo className="h-7 w-7" />
               </div>
               <h1 className="text-[20px] font-bold tracking-[-0.02em] text-[#111827]">
-                MediFlow AI
+                MedReason AI
               </h1>
             </div>
-            <p className="text-[13px] text-slate-500">Clinical Systems Gateway</p>
+            <p className="text-[13px] text-slate-500">Portal de Sistemas Clínicos</p>
           </div>
 
           <section className="rounded-2xl border border-slate-200/80 bg-white/80 p-6 shadow-[0_8px_30px_rgba(15,23,42,0.10)] backdrop-blur-sm">
             <div className="space-y-5">
               <div>
                 <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500" htmlFor="email">
-                  Clinical Email
+                  Correo Clínico
                 </label>
                 <div className="flex h-12 items-center gap-3 rounded-lg border border-slate-300 bg-[#fbfbfc] px-3 text-slate-500 focus-within:border-[#1565d8] focus-within:ring-2 focus-within:ring-[#1565d8]/10">
                   <IconMail />
                   <input
-                    aria-label="Email"
+                    aria-label="Correo electrónico"
                     type="email"
-                    placeholder="name@mediflow.clinical"
+                    placeholder="nombre@mediflow.clinical"
                     className="w-full bg-transparent text-[15px] text-slate-600 outline-none placeholder:text-slate-400"
                     ref={email}
                   />
@@ -90,13 +97,13 @@ function RouteComponent() {
               <div>
                 <div className="mb-2 flex items-center justify-between">
                   <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500" htmlFor="password">
-                    Password
+                    Contraseña
                   </label>
                   <button
                     type="button"
                     className="text-[11px] font-semibold text-[#1565d8] hover:text-[#0f56bd]"
                   >
-                    Forgot Password?
+                    ¿Olvidó su contraseña?
                   </button>
                 </div>
 
@@ -104,13 +111,13 @@ function RouteComponent() {
                   <IconLock />
                   <input
                     type={showPassword ? "text" : "password"}
-                    aria-label="Password"
+                    aria-label="Contraseña"
                     placeholder="••••••••"
                     className="w-full bg-transparent text-[15px] text-slate-700 outline-none placeholder:text-slate-400"
                     ref={password}
                   />
                   <button
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                     type="button"
                     onClick={() => setShowPassword((v) => !v)}
                     className="text-slate-400 hover:text-slate-600"
@@ -130,7 +137,7 @@ function RouteComponent() {
                 onClick={handleLogin}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#1565d8] text-[15px] font-semibold text-white shadow-sm transition hover:bg-[#0f56bd] active:scale-[0.99]"
               >
-                Sign In to Clinical Dashboard
+                Iniciar Sesión en el Panel Clínico
                 <IconArrowRight />
               </button>
             </div>
@@ -138,18 +145,18 @@ function RouteComponent() {
 
           <div className="mt-6 text-center">
             <p className="mx-auto max-w-[290px] text-[13px] leading-5 text-slate-600">
-              Confidential Medical System. Unauthorized access is prohibited.
+              Sistema Médico Confidencial. El acceso no autorizado está prohibido.
             </p>
 
             <div className="mt-4 flex items-center justify-center gap-6 text-[12px] text-slate-500">
               <Link to="/" className="hover:text-slate-700">
-                Privacy Policy
+                Política de Privacidad
               </Link>
               <Link to="/" className="hover:text-slate-700">
-                Terms of Service
+                Términos de Servicio
               </Link>
-              <Link to='/'  className="hover:text-slate-700">
-                Support
+              <Link to='/' className="hover:text-slate-700">
+                Soporte
               </Link>
             </div>
           </div>
@@ -158,8 +165,3 @@ function RouteComponent() {
     </div>
   );
 }
-
-
-
-
-
