@@ -10,7 +10,6 @@ import isAuthenticated from '../../lib/is-authenticated';
 
 export const Route = createFileRoute('/auth/login')({
   component: RouteComponent,
-  beforeLoad: isAuthenticated,
 })
 
 function RouteComponent() {

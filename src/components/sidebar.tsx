@@ -74,10 +74,10 @@ export function Sidebar({ role }: SidebarProps) {
  
       {/* Footer */}
       <div className="px-3 py-4 border-t border-white/10 space-y-0.5">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors">
+                <Link to="/support" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors">
           <span className="text-[15px] w-5 text-center">💬</span>
           Support
-        </button>
+        </Link>
                 <Link
           to="/auth/login"
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors"
