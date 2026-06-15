@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupportRouteImport } from './routes/support'
-import { Route as AppRouteImport } from './routes/App'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DoctorMedicosRouteImport } from './routes/doctor/medicos'
 import { Route as DoctorLogsRouteImport } from './routes/doctor/logs'
@@ -26,11 +25,6 @@ import { Route as AdminConfiguracionRouteImport } from './routes/admin/configura
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/App',
-  path: '/App',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -91,7 +85,6 @@ const AdminConfiguracionRoute = AdminConfiguracionRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/App': typeof AppRoute
   '/support': typeof SupportRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -106,7 +99,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/App': typeof AppRoute
   '/support': typeof SupportRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -122,7 +114,6 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/App': typeof AppRoute
   '/support': typeof SupportRoute
   '/admin/configuracion': typeof AdminConfiguracionRoute
   '/admin/dashboard': typeof AdminDashboardRoute
@@ -139,7 +130,6 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/App'
     | '/support'
     | '/admin/configuracion'
     | '/admin/dashboard'
@@ -154,7 +144,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/App'
     | '/support'
     | '/admin/configuracion'
     | '/admin/dashboard'
@@ -169,7 +158,6 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/App'
     | '/support'
     | '/admin/configuracion'
     | '/admin/dashboard'
@@ -185,7 +173,6 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
   SupportRoute: typeof SupportRoute
   AdminConfiguracionRoute: typeof AdminConfiguracionRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
@@ -206,13 +193,6 @@ declare module '@tanstack/react-router' {
       path: '/support'
       fullPath: '/support'
       preLoaderRoute: typeof SupportRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/App': {
-      id: '/App'
-      path: '/App'
-      fullPath: '/App'
-      preLoaderRoute: typeof AppRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -297,7 +277,6 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
   SupportRoute: SupportRoute,
   AdminConfiguracionRoute: AdminConfiguracionRoute,
   AdminDashboardRoute: AdminDashboardRoute,

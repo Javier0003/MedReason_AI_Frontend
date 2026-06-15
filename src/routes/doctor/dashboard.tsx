@@ -2,12 +2,14 @@ import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Sidebar } from '../../components/sidebar.tsx'
 import isAuthenticated from '../../lib/is-authenticated.ts'
-import MainPanel from '../..//components/main-panel.tsx'
+import { DIAS, MESES } from '../../constants/constants.ts'
  
 export const Route = createFileRoute('/doctor/dashboard')({
   component: RouteComponent,
+  beforeLoad: isAuthenticated
 })
- 
+
+
 // ─── Tipos ─────────────────────────────────────────────────────────────────────
 interface PacienteHoy {
   id: string
@@ -45,9 +47,6 @@ const TAREAS_MOCK: Record<number, Tarea[]> = {
   12: [{ titulo: 'Reunión de personal — Sala de conferencias B', tiempo: '10:00 AM' }],
   18: [{ titulo: 'Revisar resultados de laboratorio — Paciente #882', tiempo: '2:00 PM' }],
 }
- 
-const MESES = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE']
-const DIAS  = ['D','L','M','M','J','V','S']
  
 // ─── Calendario ────────────────────────────────────────────────────────────────
 function Calendario({ onDiaClick }: { onDiaClick: (dia: number, tareas: Tarea[]) => void }) {

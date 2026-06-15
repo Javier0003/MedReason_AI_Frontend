@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Role } from "../components/sidebar";
+import type { User } from "../types";
 
 type AuthenticationState = {
   isAuthenticated: boolean;
@@ -10,14 +10,6 @@ type AuthenticationState = {
 type AuthenticationActions = {
   authenticate: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-}
-
-export type User = {
-  id: string;
-  name: string;
-  role: Role;
-  userImg: string;
-  profession: string;
 }
 
 export const authenticationStore = create<AuthenticationState & AuthenticationActions>((set) => ({

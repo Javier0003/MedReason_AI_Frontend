@@ -1,6 +1,7 @@
 import { Link, useRouterState } from '@tanstack/react-router'
 import { authenticationStore } from '../store/authentication-store'
- 
+import type { Role } from '../types'
+
 // ─── Tipos ─────────────────────────────────────────────────────────────────────
 interface NavItem {
   label: string
@@ -8,38 +9,32 @@ interface NavItem {
   icon: string
 }
 
-export type Role = 'DOCTOR' | 'ADMIN'
- 
-interface SidebarProps {
-  role: Role
-}
- 
 // ─── Menús por rol ─────────────────────────────────────────────────────────────
 const DOCTOR_NAV: NavItem[] = [
-  { label: 'Dashboard',    href: '/doctor/dashboard', icon: '▣' },
-  { label: 'Medicos',      href: '/doctor/medicos',   icon: '👤' },
-  { label: 'Consultas',    href: '/doctor/consulta',  icon: '📋' },
-  { label: 'Historial',      href: '/doctor/historial', icon: '📊' },
-  { label: 'Schedules',    href: '/doctor/logs',      icon: '📅' },
-  { label: 'Settings',     href: '/doctor/configuracion', icon: '⚙️' },
+  { label: 'Dashboard', href: '/doctor/dashboard', icon: '▣' },
+  { label: 'Medicos', href: '/doctor/medicos', icon: '👤' },
+  { label: 'Consultas', href: '/doctor/consulta', icon: '📋' },
+  { label: 'Historial', href: '/doctor/historial', icon: '📊' },
+  { label: 'Schedules', href: '/doctor/logs', icon: '📅' },
+  { label: 'Settings', href: '/doctor/configuracion', icon: '⚙️' },
 ]
- 
+
 const ADMIN_NAV: NavItem[] = [
-  { label: 'Dashboard',    href: '/admin/dashboard',      icon: '▣'  },
-  { label: 'Users',        href: '/admin/medicos',        icon: '👥' },
-  { label: 'Logs',         href: '/admin/logs',           icon: '📝' },
-  { label: 'Settings',     href: '/admin/configuracion',  icon: '⚙️' },
+  { label: 'Dashboard', href: '/admin/dashboard', icon: '▣' },
+  { label: 'Users', href: '/admin/medicos', icon: '👥' },
+  { label: 'Logs', href: '/admin/logs', icon: '📝' },
+  { label: 'Settings', href: '/admin/configuracion', icon: '⚙️' },
 ]
- 
+
 // ─── Componente ────────────────────────────────────────────────────────────────
-export function Sidebar({ role }: SidebarProps) {
+export function Sidebar({ role }: { role: Role }) {
   const routerState = useRouterState()
   const pathname = routerState.location.pathname
   const navItems = role === 'DOCTOR' ? DOCTOR_NAV : ADMIN_NAV
- 
+
   return (
-    <aside className="w-[200px] h-screen bg-[#0f1729] flex flex-col shrink-0 fixed left-0 top-0 z-30">
- 
+    <aside className="w-50 h-screen bg-[#0f1729] flex flex-col shrink-0 fixed left-0 top-0 z-30">
+
       {/* Logo */}
       <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-2">
@@ -50,7 +45,7 @@ export function Sidebar({ role }: SidebarProps) {
           </div>
         </div>
       </div>
- 
+
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
         {navItems.map((item) => {
@@ -71,14 +66,14 @@ export function Sidebar({ role }: SidebarProps) {
           )
         })}
       </nav>
- 
+
       {/* Footer */}
       <div className="px-3 py-4 border-t border-white/10 space-y-0.5">
-                <Link to="/support" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors">
+        <Link to="/support" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors">
           <span className="text-[15px] w-5 text-center">💬</span>
           Support
         </Link>
-                <Link
+        <Link
           to="/auth/login"
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors"
           onClick={async () => {
