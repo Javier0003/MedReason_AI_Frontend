@@ -1,24 +1,20 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { Sidebar } from '../../components/sidebar.tsx'
-import isAuthenticated from '../../lib/is-authenticated.ts'
-import MainPanel from '../..//components/main-panel.tsx'
+import isAuthenticated from '../../../lib/is-authenticated'
+import { MESES } from '../../../constants/constants'
+import MainPanel from '../../../components/main-panel'
+import Calendario from '../../../components/calendario'
+import type { Paciente } from '../../../types'
  
-export const Route = createFileRoute('/doctor/dashboard')({
+export const Route = createFileRoute('/doctor/dashboard/')({
   component: RouteComponent,
+  beforeLoad: isAuthenticated
 })
- 
+
+
 // ─── Tipos ─────────────────────────────────────────────────────────────────────
-interface PacienteHoy {
-  id: string
-  hora: string
-  nombre: string
-  iniciales: string
-  tipo: string
-  status: 'COMPLETED' | 'IN_PROGRESS' | 'WAITING' | 'SCHEDULED'
-}
- 
-interface Tarea {
+
+export interface Tarea {
   titulo: string
   tiempo: string
 }
@@ -30,14 +26,14 @@ const STATUS_CONFIG = {
   SCHEDULED:   { label: 'PROGRAMADO',   classes: 'bg-slate-100 text-slate-500' },
 }
  
-const PACIENTES_HOY: PacienteHoy[] = [
+const PACIENTES_HOY: Paciente[] = [
   { id: '1', hora: '09:00 AM', nombre: 'Arthur Wagner',  iniciales: 'AW', tipo: 'Seguimiento',       status: 'COMPLETED'   },
   { id: '2', hora: '10:30 AM', nombre: 'Maria Santos',   iniciales: 'MS', tipo: 'Consulta Inicial',  status: 'IN_PROGRESS' },
   { id: '3', hora: '11:15 AM', nombre: 'James Link',     iniciales: 'JL', tipo: 'Urgencia',          status: 'WAITING'     },
   { id: '4', hora: '01:45 PM', nombre: 'Emily Davis',    iniciales: 'ED', tipo: 'Revisión Radiológica', status: 'SCHEDULED'   },
 ]
  
-const TAREAS_MOCK: Record<number, Tarea[]> = {
+export const TAREAS_MOCK: Record<number, Tarea[]> = {
   5:  [
     { titulo: 'Aprobar resultados de patología para Sala 402', tiempo: 'Vence en 20 mins' },
     { titulo: 'Teleconsulta con el Dr. Aris', tiempo: 'Hoy, 4:30 PM' },
@@ -46,54 +42,6 @@ const TAREAS_MOCK: Record<number, Tarea[]> = {
   18: [{ titulo: 'Revisar resultados de laboratorio — Paciente #882', tiempo: '2:00 PM' }],
 }
  
-const MESES = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO','JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE']
-const DIAS  = ['D','L','M','M','J','V','S']
- 
-// ─── Calendario ────────────────────────────────────────────────────────────────
-function Calendario({ onDiaClick }: { onDiaClick: (dia: number, tareas: Tarea[]) => void }) {
-  const hoy = new Date()
-  const [mes,  setMes]  = useState(hoy.getMonth())
-  const [anio, setAnio] = useState(hoy.getFullYear())
- 
-  const primerDia = new Date(anio, mes, 1).getDay()
-  const diasEnMes = new Date(anio, mes + 1, 0).getDate()
-  const celdas    = Array.from({ length: primerDia + diasEnMes }, (_, i) =>
-    i < primerDia ? null : i - primerDia + 1
-  )
- 
-  const anterior  = () => mes === 0  ? (setMes(11), setAnio(a => a - 1)) : setMes(m => m - 1)
-  const siguiente = () => mes === 11 ? (setMes(0),  setAnio(a => a + 1)) : setMes(m => m + 1)
- 
-  return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <span className="text-[11px] font-bold tracking-[0.1em] text-slate-700">{MESES[mes]} {anio}</span>
-        <div className="flex gap-1">
-          <button onClick={anterior}  className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-slate-100 text-slate-400 text-xs transition">‹</button>
-          <button onClick={siguiente} className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-slate-100 text-slate-400 text-xs transition">›</button>
-        </div>
-      </div>
-      <div className="grid grid-cols-7 mb-2">
-        {DIAS.map((d, i) => <div key={i} className="text-center text-[10px] font-semibold text-slate-400 py-1">{d}</div>)}
-      </div>
-      <div className="grid grid-cols-7 gap-y-1">
-        {celdas.map((dia, i) => {
-          if (!dia) return <div key={i} />
-          const esHoy       = dia === hoy.getDate() && mes === hoy.getMonth() && anio === hoy.getFullYear()
-          const tieneTareas = !!TAREAS_MOCK[dia]
-          return (
-            <button key={i} onClick={() => onDiaClick(dia, TAREAS_MOCK[dia] ?? [])}
-              className={`relative w-8 h-8 mx-auto flex items-center justify-center rounded-full text-[13px] transition-colors
-                ${esHoy ? 'bg-[#1565d8] text-white font-bold shadow-sm' : 'text-slate-600 hover:bg-[#1565d8]/10 hover:text-[#1565d8]'}`}>
-              {dia}
-              {tieneTareas && !esHoy && <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#1565d8]" />}
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
  
 // ─── Componente principal ──────────────────────────────────────────────────────
 function RouteComponent() {
@@ -111,20 +59,9 @@ function RouteComponent() {
   )
  
   return (
-    
-
-    <div className="flex min-h-screen bg-[#f3f4f7]">
- 
-      {/* ── Sidebar ── */}
-      <Sidebar role="DOCTOR" />
- 
-      {/* ── Contenido principal ── */}
-      <main className="ml-[200px] flex-1 p-6 space-y-5">
-
-        
- 
+      <MainPanel>
         {/* Tarjetas métricas */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-4 pt-4">
           <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
             <div className="flex items-start justify-between">
               <div>
@@ -146,7 +83,7 @@ function RouteComponent() {
         </div>
  
         {/* Tabla + Calendario */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-4 pt-4">
  
           {/* Tabla */}
           <div className="col-span-2 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden">
@@ -216,7 +153,7 @@ function RouteComponent() {
           <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm p-5 flex flex-col">
             <Calendario onDiaClick={(dia, tareas) => setModalDia({ dia, tareas })} />
             <div className="mt-4 pt-4 border-t border-slate-100 flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">Tareas Prioritarias</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Tareas Prioritarias</span>
               {tareasHoy.length === 0 ? (
                 <p className="text-[12px] text-slate-400 mt-2">No hay tareas para hoy.</p>
               ) : (
@@ -274,8 +211,7 @@ function RouteComponent() {
           </div>
         )}
  
-      </main>
-    </div>
+      </MainPanel>
   )
 }
  

@@ -10,27 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupportRouteImport } from './routes/support'
-import { Route as AppRouteImport } from './routes/App'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DoctorMedicosRouteImport } from './routes/doctor/medicos'
-import { Route as DoctorLogsRouteImport } from './routes/doctor/logs'
-import { Route as DoctorHistorialRouteImport } from './routes/doctor/historial'
-import { Route as DoctorDashboardRouteImport } from './routes/doctor/dashboard'
-import { Route as DoctorConsultaRouteImport } from './routes/doctor/consulta'
-import { Route as DoctorConfiguracionRouteImport } from './routes/doctor/configuracion'
-import { Route as AuthLoginRouteImport } from './routes/auth/login'
-import { Route as AdminMedicosRouteImport } from './routes/admin/medicos'
-import { Route as AdminDashboardRouteImport } from './routes/admin/dashboard'
-import { Route as AdminConfiguracionRouteImport } from './routes/admin/configuracion'
+import { Route as DoctorMedicosIndexRouteImport } from './routes/doctor/medicos/index'
+import { Route as DoctorHistorialIndexRouteImport } from './routes/doctor/historial/index'
+import { Route as DoctorDashboardIndexRouteImport } from './routes/doctor/dashboard/index'
+import { Route as DoctorConsultaIndexRouteImport } from './routes/doctor/consulta/index'
+import { Route as DoctorConfiguracionIndexRouteImport } from './routes/doctor/configuracion/index'
+import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
+import { Route as AdminMedicosIndexRouteImport } from './routes/admin/medicos/index'
+import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
+import { Route as AdminConfiguracionIndexRouteImport } from './routes/admin/configuracion/index'
+import { Route as AdminLogsIndexRouteImport } from './routes/admin/Logs/index'
 
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
   path: '/support',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/App',
-  path: '/App',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -38,124 +32,121 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorMedicosRoute = DoctorMedicosRouteImport.update({
-  id: '/doctor/medicos',
-  path: '/doctor/medicos',
+const DoctorMedicosIndexRoute = DoctorMedicosIndexRouteImport.update({
+  id: '/doctor/medicos/',
+  path: '/doctor/medicos/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorLogsRoute = DoctorLogsRouteImport.update({
-  id: '/doctor/logs',
-  path: '/doctor/logs',
+const DoctorHistorialIndexRoute = DoctorHistorialIndexRouteImport.update({
+  id: '/doctor/historial/',
+  path: '/doctor/historial/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorHistorialRoute = DoctorHistorialRouteImport.update({
-  id: '/doctor/historial',
-  path: '/doctor/historial',
+const DoctorDashboardIndexRoute = DoctorDashboardIndexRouteImport.update({
+  id: '/doctor/dashboard/',
+  path: '/doctor/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorDashboardRoute = DoctorDashboardRouteImport.update({
-  id: '/doctor/dashboard',
-  path: '/doctor/dashboard',
+const DoctorConsultaIndexRoute = DoctorConsultaIndexRouteImport.update({
+  id: '/doctor/consulta/',
+  path: '/doctor/consulta/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorConsultaRoute = DoctorConsultaRouteImport.update({
-  id: '/doctor/consulta',
-  path: '/doctor/consulta',
+const DoctorConfiguracionIndexRoute =
+  DoctorConfiguracionIndexRouteImport.update({
+    id: '/doctor/configuracion/',
+    path: '/doctor/configuracion/',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
+  id: '/auth/login/',
+  path: '/auth/login/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorConfiguracionRoute = DoctorConfiguracionRouteImport.update({
-  id: '/doctor/configuracion',
-  path: '/doctor/configuracion',
+const AdminMedicosIndexRoute = AdminMedicosIndexRouteImport.update({
+  id: '/admin/medicos/',
+  path: '/admin/medicos/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
+const AdminDashboardIndexRoute = AdminDashboardIndexRouteImport.update({
+  id: '/admin/dashboard/',
+  path: '/admin/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminMedicosRoute = AdminMedicosRouteImport.update({
-  id: '/admin/medicos',
-  path: '/admin/medicos',
+const AdminConfiguracionIndexRoute = AdminConfiguracionIndexRouteImport.update({
+  id: '/admin/configuracion/',
+  path: '/admin/configuracion/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminDashboardRoute = AdminDashboardRouteImport.update({
-  id: '/admin/dashboard',
-  path: '/admin/dashboard',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminConfiguracionRoute = AdminConfiguracionRouteImport.update({
-  id: '/admin/configuracion',
-  path: '/admin/configuracion',
+const AdminLogsIndexRoute = AdminLogsIndexRouteImport.update({
+  id: '/admin/Logs/',
+  path: '/admin/Logs/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/App': typeof AppRoute
   '/support': typeof SupportRoute
-  '/admin/configuracion': typeof AdminConfiguracionRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/medicos': typeof AdminMedicosRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/doctor/configuracion': typeof DoctorConfiguracionRoute
-  '/doctor/consulta': typeof DoctorConsultaRoute
-  '/doctor/dashboard': typeof DoctorDashboardRoute
-  '/doctor/historial': typeof DoctorHistorialRoute
-  '/doctor/logs': typeof DoctorLogsRoute
-  '/doctor/medicos': typeof DoctorMedicosRoute
+  '/admin/Logs/': typeof AdminLogsIndexRoute
+  '/admin/configuracion/': typeof AdminConfiguracionIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/medicos/': typeof AdminMedicosIndexRoute
+  '/auth/login/': typeof AuthLoginIndexRoute
+  '/doctor/configuracion/': typeof DoctorConfiguracionIndexRoute
+  '/doctor/consulta/': typeof DoctorConsultaIndexRoute
+  '/doctor/dashboard/': typeof DoctorDashboardIndexRoute
+  '/doctor/historial/': typeof DoctorHistorialIndexRoute
+  '/doctor/medicos/': typeof DoctorMedicosIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/App': typeof AppRoute
   '/support': typeof SupportRoute
-  '/admin/configuracion': typeof AdminConfiguracionRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/medicos': typeof AdminMedicosRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/doctor/configuracion': typeof DoctorConfiguracionRoute
-  '/doctor/consulta': typeof DoctorConsultaRoute
-  '/doctor/dashboard': typeof DoctorDashboardRoute
-  '/doctor/historial': typeof DoctorHistorialRoute
-  '/doctor/logs': typeof DoctorLogsRoute
-  '/doctor/medicos': typeof DoctorMedicosRoute
+  '/admin/Logs': typeof AdminLogsIndexRoute
+  '/admin/configuracion': typeof AdminConfiguracionIndexRoute
+  '/admin/dashboard': typeof AdminDashboardIndexRoute
+  '/admin/medicos': typeof AdminMedicosIndexRoute
+  '/auth/login': typeof AuthLoginIndexRoute
+  '/doctor/configuracion': typeof DoctorConfiguracionIndexRoute
+  '/doctor/consulta': typeof DoctorConsultaIndexRoute
+  '/doctor/dashboard': typeof DoctorDashboardIndexRoute
+  '/doctor/historial': typeof DoctorHistorialIndexRoute
+  '/doctor/medicos': typeof DoctorMedicosIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/App': typeof AppRoute
   '/support': typeof SupportRoute
-  '/admin/configuracion': typeof AdminConfiguracionRoute
-  '/admin/dashboard': typeof AdminDashboardRoute
-  '/admin/medicos': typeof AdminMedicosRoute
-  '/auth/login': typeof AuthLoginRoute
-  '/doctor/configuracion': typeof DoctorConfiguracionRoute
-  '/doctor/consulta': typeof DoctorConsultaRoute
-  '/doctor/dashboard': typeof DoctorDashboardRoute
-  '/doctor/historial': typeof DoctorHistorialRoute
-  '/doctor/logs': typeof DoctorLogsRoute
-  '/doctor/medicos': typeof DoctorMedicosRoute
+  '/admin/Logs/': typeof AdminLogsIndexRoute
+  '/admin/configuracion/': typeof AdminConfiguracionIndexRoute
+  '/admin/dashboard/': typeof AdminDashboardIndexRoute
+  '/admin/medicos/': typeof AdminMedicosIndexRoute
+  '/auth/login/': typeof AuthLoginIndexRoute
+  '/doctor/configuracion/': typeof DoctorConfiguracionIndexRoute
+  '/doctor/consulta/': typeof DoctorConsultaIndexRoute
+  '/doctor/dashboard/': typeof DoctorDashboardIndexRoute
+  '/doctor/historial/': typeof DoctorHistorialIndexRoute
+  '/doctor/medicos/': typeof DoctorMedicosIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/App'
     | '/support'
-    | '/admin/configuracion'
-    | '/admin/dashboard'
-    | '/admin/medicos'
-    | '/auth/login'
-    | '/doctor/configuracion'
-    | '/doctor/consulta'
-    | '/doctor/dashboard'
-    | '/doctor/historial'
-    | '/doctor/logs'
-    | '/doctor/medicos'
+    | '/admin/Logs/'
+    | '/admin/configuracion/'
+    | '/admin/dashboard/'
+    | '/admin/medicos/'
+    | '/auth/login/'
+    | '/doctor/configuracion/'
+    | '/doctor/consulta/'
+    | '/doctor/dashboard/'
+    | '/doctor/historial/'
+    | '/doctor/medicos/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/App'
     | '/support'
+    | '/admin/Logs'
     | '/admin/configuracion'
     | '/admin/dashboard'
     | '/admin/medicos'
@@ -164,39 +155,36 @@ export interface FileRouteTypes {
     | '/doctor/consulta'
     | '/doctor/dashboard'
     | '/doctor/historial'
-    | '/doctor/logs'
     | '/doctor/medicos'
   id:
     | '__root__'
     | '/'
-    | '/App'
     | '/support'
-    | '/admin/configuracion'
-    | '/admin/dashboard'
-    | '/admin/medicos'
-    | '/auth/login'
-    | '/doctor/configuracion'
-    | '/doctor/consulta'
-    | '/doctor/dashboard'
-    | '/doctor/historial'
-    | '/doctor/logs'
-    | '/doctor/medicos'
+    | '/admin/Logs/'
+    | '/admin/configuracion/'
+    | '/admin/dashboard/'
+    | '/admin/medicos/'
+    | '/auth/login/'
+    | '/doctor/configuracion/'
+    | '/doctor/consulta/'
+    | '/doctor/dashboard/'
+    | '/doctor/historial/'
+    | '/doctor/medicos/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRoute
   SupportRoute: typeof SupportRoute
-  AdminConfiguracionRoute: typeof AdminConfiguracionRoute
-  AdminDashboardRoute: typeof AdminDashboardRoute
-  AdminMedicosRoute: typeof AdminMedicosRoute
-  AuthLoginRoute: typeof AuthLoginRoute
-  DoctorConfiguracionRoute: typeof DoctorConfiguracionRoute
-  DoctorConsultaRoute: typeof DoctorConsultaRoute
-  DoctorDashboardRoute: typeof DoctorDashboardRoute
-  DoctorHistorialRoute: typeof DoctorHistorialRoute
-  DoctorLogsRoute: typeof DoctorLogsRoute
-  DoctorMedicosRoute: typeof DoctorMedicosRoute
+  AdminLogsIndexRoute: typeof AdminLogsIndexRoute
+  AdminConfiguracionIndexRoute: typeof AdminConfiguracionIndexRoute
+  AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
+  AdminMedicosIndexRoute: typeof AdminMedicosIndexRoute
+  AuthLoginIndexRoute: typeof AuthLoginIndexRoute
+  DoctorConfiguracionIndexRoute: typeof DoctorConfiguracionIndexRoute
+  DoctorConsultaIndexRoute: typeof DoctorConsultaIndexRoute
+  DoctorDashboardIndexRoute: typeof DoctorDashboardIndexRoute
+  DoctorHistorialIndexRoute: typeof DoctorHistorialIndexRoute
+  DoctorMedicosIndexRoute: typeof DoctorMedicosIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -208,13 +196,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/App': {
-      id: '/App'
-      path: '/App'
-      fullPath: '/App'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -222,74 +203,74 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/doctor/medicos': {
-      id: '/doctor/medicos'
+    '/doctor/medicos/': {
+      id: '/doctor/medicos/'
       path: '/doctor/medicos'
-      fullPath: '/doctor/medicos'
-      preLoaderRoute: typeof DoctorMedicosRouteImport
+      fullPath: '/doctor/medicos/'
+      preLoaderRoute: typeof DoctorMedicosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/doctor/logs': {
-      id: '/doctor/logs'
-      path: '/doctor/logs'
-      fullPath: '/doctor/logs'
-      preLoaderRoute: typeof DoctorLogsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/doctor/historial': {
-      id: '/doctor/historial'
+    '/doctor/historial/': {
+      id: '/doctor/historial/'
       path: '/doctor/historial'
-      fullPath: '/doctor/historial'
-      preLoaderRoute: typeof DoctorHistorialRouteImport
+      fullPath: '/doctor/historial/'
+      preLoaderRoute: typeof DoctorHistorialIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/doctor/dashboard': {
-      id: '/doctor/dashboard'
+    '/doctor/dashboard/': {
+      id: '/doctor/dashboard/'
       path: '/doctor/dashboard'
-      fullPath: '/doctor/dashboard'
-      preLoaderRoute: typeof DoctorDashboardRouteImport
+      fullPath: '/doctor/dashboard/'
+      preLoaderRoute: typeof DoctorDashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/doctor/consulta': {
-      id: '/doctor/consulta'
+    '/doctor/consulta/': {
+      id: '/doctor/consulta/'
       path: '/doctor/consulta'
-      fullPath: '/doctor/consulta'
-      preLoaderRoute: typeof DoctorConsultaRouteImport
+      fullPath: '/doctor/consulta/'
+      preLoaderRoute: typeof DoctorConsultaIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/doctor/configuracion': {
-      id: '/doctor/configuracion'
+    '/doctor/configuracion/': {
+      id: '/doctor/configuracion/'
       path: '/doctor/configuracion'
-      fullPath: '/doctor/configuracion'
-      preLoaderRoute: typeof DoctorConfiguracionRouteImport
+      fullPath: '/doctor/configuracion/'
+      preLoaderRoute: typeof DoctorConfiguracionIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/auth/login': {
-      id: '/auth/login'
+    '/auth/login/': {
+      id: '/auth/login/'
       path: '/auth/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
+      fullPath: '/auth/login/'
+      preLoaderRoute: typeof AuthLoginIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/medicos': {
-      id: '/admin/medicos'
+    '/admin/medicos/': {
+      id: '/admin/medicos/'
       path: '/admin/medicos'
-      fullPath: '/admin/medicos'
-      preLoaderRoute: typeof AdminMedicosRouteImport
+      fullPath: '/admin/medicos/'
+      preLoaderRoute: typeof AdminMedicosIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/dashboard': {
-      id: '/admin/dashboard'
+    '/admin/dashboard/': {
+      id: '/admin/dashboard/'
       path: '/admin/dashboard'
-      fullPath: '/admin/dashboard'
-      preLoaderRoute: typeof AdminDashboardRouteImport
+      fullPath: '/admin/dashboard/'
+      preLoaderRoute: typeof AdminDashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/configuracion': {
-      id: '/admin/configuracion'
+    '/admin/configuracion/': {
+      id: '/admin/configuracion/'
       path: '/admin/configuracion'
-      fullPath: '/admin/configuracion'
-      preLoaderRoute: typeof AdminConfiguracionRouteImport
+      fullPath: '/admin/configuracion/'
+      preLoaderRoute: typeof AdminConfiguracionIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/Logs/': {
+      id: '/admin/Logs/'
+      path: '/admin/Logs'
+      fullPath: '/admin/Logs/'
+      preLoaderRoute: typeof AdminLogsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -297,18 +278,17 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRoute,
   SupportRoute: SupportRoute,
-  AdminConfiguracionRoute: AdminConfiguracionRoute,
-  AdminDashboardRoute: AdminDashboardRoute,
-  AdminMedicosRoute: AdminMedicosRoute,
-  AuthLoginRoute: AuthLoginRoute,
-  DoctorConfiguracionRoute: DoctorConfiguracionRoute,
-  DoctorConsultaRoute: DoctorConsultaRoute,
-  DoctorDashboardRoute: DoctorDashboardRoute,
-  DoctorHistorialRoute: DoctorHistorialRoute,
-  DoctorLogsRoute: DoctorLogsRoute,
-  DoctorMedicosRoute: DoctorMedicosRoute,
+  AdminLogsIndexRoute: AdminLogsIndexRoute,
+  AdminConfiguracionIndexRoute: AdminConfiguracionIndexRoute,
+  AdminDashboardIndexRoute: AdminDashboardIndexRoute,
+  AdminMedicosIndexRoute: AdminMedicosIndexRoute,
+  AuthLoginIndexRoute: AuthLoginIndexRoute,
+  DoctorConfiguracionIndexRoute: DoctorConfiguracionIndexRoute,
+  DoctorConsultaIndexRoute: DoctorConsultaIndexRoute,
+  DoctorDashboardIndexRoute: DoctorDashboardIndexRoute,
+  DoctorHistorialIndexRoute: DoctorHistorialIndexRoute,
+  DoctorMedicosIndexRoute: DoctorMedicosIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

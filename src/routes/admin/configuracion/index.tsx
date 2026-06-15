@@ -1,78 +1,84 @@
 import { useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
-import MainPanel from '../../components/main-panel'
-import isAuthenticated from '../../lib/is-authenticated'
+import isAuthenticated from '../../../lib/is-authenticated'
+import MainPanel from '../../../components/main-panel'
+import type { Role, User, UserStatus } from '../../../types'
+import { useQuery } from '@tanstack/react-query'
 
-export const Route = createFileRoute('/admin/configuracion')({
+export const Route = createFileRoute('/admin/configuracion/')({
   component: RouteComponent,
-    beforeLoad: isAuthenticated
+  beforeLoad: isAuthenticated
 })
 
-type UserRole = 'Administrador' | 'Doctor' | 'Soporte'
-type UserStatus = 'Activo' | 'Pendiente' | 'Inactivo'
-
-type SystemUser = {
-  id: number
-  name: string
-  email: string
-  role: UserRole
-  status: UserStatus
-  lastAccess: string
-}
-
-const initialUsers: SystemUser[] = [
+const initialUsers: User[] = [
   {
-    id: 1,
+    id: "1",
     name: 'Dra. Laura Méndez',
     email: 'laura.mendez@medreason.ai',
-    role: 'Doctor',
+    role: 'DOCTOR',
     status: 'Activo',
     lastAccess: 'Hoy, 9:35 AM',
+    profession: "qwe",
+    userImg: "qwe"
   },
   {
-    id: 2,
+    id: "2",
     name: 'Carlos Ramírez',
     email: 'carlos.ramirez@medreason.ai',
-    role: 'Administrador',
+    role: 'ADMIN',
     status: 'Activo',
     lastAccess: 'Ayer, 6:10 PM',
+    profession: "qwe",
+    userImg: "qwe"
   },
   {
-    id: 3,
+    id: "3",
     name: 'Dra. Ana Castillo',
     email: 'ana.castillo@medreason.ai',
-    role: 'Doctor',
+    role: 'DOCTOR',
     status: 'Pendiente',
     lastAccess: 'Sin acceso reciente',
+    profession: "qwe",
+    userImg: "qwe"
   },
   {
-    id: 4,
+    id: "4",
     name: 'Miguel Torres',
     email: 'miguel.torres@medreason.ai',
-    role: 'Soporte',
+    role: 'DOCTOR',
     status: 'Inactivo',
     lastAccess: 'Hace 8 días',
+    profession: "qwe",
+    userImg: "qwe"
   },
 ]
 
 function RouteComponent() {
-  const [users, setUsers] = useState<SystemUser[]>(initialUsers)
+  // const { isPending, data, error } = useQuery({
+  //   queryKey: ['userData'],
+  //   queryFn: () => {
+  //     return initialUsers
+  //   }
+  // })
+
+  const [users, setUsers] = useState<User[]>(initialUsers)
   const [searchTerm, setSearchTerm] = useState('')
-  const [roleFilter, setRoleFilter] = useState<'Todos' | UserRole>('Todos')
+  const [roleFilter, setRoleFilter] = useState<'Todos' | Role>('Todos')
   const [statusFilter, setStatusFilter] = useState<'Todos' | UserStatus>('Todos')
   const [showModal, setShowModal] = useState(false)
   const [newUser, setNewUser] = useState<{
     name: string
     email: string
-    role: UserRole
+    role: Role
     status: UserStatus
   }>({
     name: '',
     email: '',
-    role: 'Doctor',
+    role: 'DOCTOR',
     status: 'Activo',
   })
 
+  // se pedira al backend
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
       const matchesSearch =
@@ -80,11 +86,12 @@ function RouteComponent() {
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
 
       const matchesRole = roleFilter === 'Todos' || user.role === roleFilter
-      const matchesStatus = statusFilter === 'Todos' || user.status === statusFilter
+      const matchesStatus = statusFilter === 'Todos' || user.status === statusFilter as unknown
 
       return matchesSearch && matchesRole && matchesStatus
     })
   }, [users, searchTerm, roleFilter, statusFilter])
+
 
   const totalUsers = users.length
   const activeUsers = users.filter((user) => user.status === 'Activo').length
@@ -94,26 +101,28 @@ function RouteComponent() {
   const handleAddUser = () => {
     if (!newUser.name.trim() || !newUser.email.trim()) return
 
-    const user: SystemUser = {
-      id: Date.now(),
+    const user: User = {
+      id: `${Date.now()}`,
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
       status: newUser.status,
       lastAccess: 'Nuevo usuario',
+      profession: "smth",
+      userImg: "qaweb"
     }
 
     setUsers((currentUsers) => [user, ...currentUsers])
     setNewUser({
       name: '',
       email: '',
-      role: 'Doctor',
+      role: 'DOCTOR',
       status: 'Activo',
     })
     setShowModal(false)
   }
 
-  const changeStatus = (id: number, status: UserStatus) => {
+  const changeStatus = (id: string, status: UserStatus) => {
     setUsers((currentUsers) =>
       currentUsers.map((user) =>
         user.id === id ? { ...user, status } : user,
@@ -121,9 +130,11 @@ function RouteComponent() {
     )
   }
 
-  const deleteUser = (id: number) => {
+  const deleteUser = (id: string) => {
     setUsers((currentUsers) => currentUsers.filter((user) => user.id !== id))
   }
+
+  // se pedira al backend
 
   const getStatusStyle = (status: UserStatus) => {
     if (status === 'Activo') return 'bg-emerald-50 text-emerald-700 border-emerald-200'
@@ -131,18 +142,14 @@ function RouteComponent() {
     return 'bg-slate-100 text-slate-600 border-slate-200'
   }
 
-  const getRoleStyle = (role: UserRole) => {
-    if (role === 'Administrador') return 'bg-blue-50 text-blue-700'
-    if (role === 'Doctor') return 'bg-cyan-50 text-cyan-700'
+  const getRoleStyle = (role: Role) => {
+    if (role === 'ADMIN') return 'bg-blue-50 text-blue-700'
+    if (role === 'DOCTOR') return 'bg-cyan-50 text-cyan-700'
     return 'bg-violet-50 text-violet-700'
   }
 
   return (
-    <MainPanel
-      sidebarRole="ADMIN"
-      userName="Admin User"
-      userProfession="System Administrator"
-    >
+    <MainPanel>
       <section className="h-full overflow-y-auto px-6 py-6">
         <div className="mx-auto max-w-7xl space-y-6">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -209,7 +216,7 @@ function RouteComponent() {
 
                 <select
                   value={roleFilter}
-                  onChange={(event) => setRoleFilter(event.target.value as 'Todos' | UserRole)}
+                  onChange={(event) => setRoleFilter(event.target.value as 'Todos' | Role)}
                   className="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm outline-none transition focus:border-[#1565d8] focus:ring-4 focus:ring-blue-100"
                 >
                   <option value="Todos">Todos los roles</option>
@@ -372,7 +379,7 @@ function RouteComponent() {
                       onChange={(event) =>
                         setNewUser((current) => ({
                           ...current,
-                          role: event.target.value as UserRole,
+                          role: event.target.value as Role,
                         }))
                       }
                       className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm outline-none transition focus:border-[#1565d8] focus:ring-4 focus:ring-blue-100"

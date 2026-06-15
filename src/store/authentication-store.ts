@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { Role } from "../components/sidebar";
+import type { User } from "../types";
 
 type AuthenticationState = {
   isAuthenticated: boolean;
@@ -10,14 +10,7 @@ type AuthenticationState = {
 type AuthenticationActions = {
   authenticate: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-}
-
-export type User = {
-  id: string;
-  name: string;
-  role: Role;
-  userImg: string;
-  profession: string;
+  changeRole: () => void
 }
 
 export const authenticationStore = create<AuthenticationState & AuthenticationActions>((set) => ({
@@ -33,17 +26,30 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
       user: {
         id: "1",
         name: "John Doe",
-        role: "DOCTOR",
+        role: "ADMIN",
         userImg: "https://example.com/user.jpg",
-        profession: "Cardiologist"
+        profession: "Cardiologist",
+        email: "qwbe",
+        lastAccess: "qwbeqwe",
+        status: 'Activo'
       }
     });
     return true;
   },
 
+  changeRole: () =>
+    set((state) => ({
+      user: state.user
+        ? {
+          ...state.user,
+          role: state.user.role === "DOCTOR" ? "ADMIN" : "DOCTOR",
+        }
+        : null,
+    })),
+
   logout: async () => {
     // enviar solicitud de logout al backend si es necesario
 
-    set({ isAuthenticated: false, authenticationToken: null })
+    set({ isAuthenticated: false, authenticationToken: null, user: null })
   }
 }))

@@ -9,8 +9,8 @@ export const Route = createFileRoute('/support')({
 
 function RouteComponent() {
   return (
-    <MainPanel sidebarRole="DOCTOR" userName="Support Team" userProfession="We're here to help!">
-      <div className="p-5">
+    <MainPanel>
+      <div>
         <h2 className="text-xl font-bold mb-4">Support</h2>
         <p className="text-gray-700 mb-4">If you have any questions or need assistance, please contact our support team:</p>
       </div>

@@ -1,15 +1,16 @@
-import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useRef, useState } from 'react';
-import IconArrowRight from '../../assets/svg/IconArrowRight';
-import IconEye from '../../assets/svg/IconEye';
-import IconLock from '../../assets/svg/IconLock';
-import IconMail from '../../assets/svg/IconMail';
-import IconMedicalLogo from '../../assets/svg/IconMedicalLogo';
-import { authenticationStore } from '../../store/authentication-store';
-import isAuthenticated from '../../lib/is-authenticated';
+import IconArrowRight from '../../../assets/svg/IconArrowRight';
+import IconEye from '../../../assets/svg/IconEye';
+import IconLock from '../../../assets/svg/IconLock';
+import IconMail from '../../../assets/svg/IconMail';
+import IconMedicalLogo from '../../../assets/svg/IconMedicalLogo';
+import { authenticationStore } from '../../../store/authentication-store';
+import isAuthenticated from '../../../lib/is-authenticated';
 
-export const Route = createFileRoute('/auth/login')({
+export const Route = createFileRoute('/auth/login/')({
   component: RouteComponent,
+  beforeLoad: isAuthenticated
 })
 
 function RouteComponent() {
@@ -50,16 +51,16 @@ function RouteComponent() {
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#f3f4f7] text-slate-900">
       <div className="absolute inset-0">
-        <div className="absolute inset-y-0 left-1/2 w-[420px] -translate-x-1/2 bg-white/35 blur-2xl" />
+        <div className="absolute inset-y-0 left-1/2 w-105 -translate-x-1/2 bg-white/35 blur-2xl" />
         <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-white/30 blur-3xl" />
-        <div className="absolute right-[-80px] top-24 h-[520px] w-[320px] rounded-[40px] border border-white/20 bg-white/10 blur-sm" />
+        <div className="absolute right-20 top-24 h-130 w-[320px] rounded-[40px] border border-white/20 bg-white/10 blur-sm" />
         <div className="absolute right-12 top-32 h-16 w-48 rounded-xl bg-white/12 blur-md" />
-        <div className="absolute right-14 top-60 h-[280px] w-[220px] rounded-[28px] border border-white/20 bg-white/10" />
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white/20 to-transparent" />
+        <div className="absolute right-14 top-60 h-70 w-55 rounded-[28px] border border-white/20 bg-white/10" />
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-t from-white/20 to-transparent" />
       </div>
 
       <main className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10">
-        <div className="w-full max-w-[380px]">
+        <div className="w-full max-w-95">
           <div className="mb-7 flex flex-col items-center text-center">
             <div className="mb-2 flex items-center gap-2">
               <div className="text-[#1565d8]">
@@ -144,7 +145,7 @@ function RouteComponent() {
           </section>
 
           <div className="mt-6 text-center">
-            <p className="mx-auto max-w-[290px] text-[13px] leading-5 text-slate-600">
+            <p className="mx-auto max-w-72.5 text-[13px] leading-5 text-slate-600">
               Sistema Médico Confidencial. El acceso no autorizado está prohibido.
             </p>
 

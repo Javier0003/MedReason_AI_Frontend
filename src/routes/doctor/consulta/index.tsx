@@ -1,11 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Sidebar } from '../../components/sidebar.tsx'
 import { useRef } from 'react'
-import IconArrowRight from '../../assets/svg/IconArrowRight'
-import MainPanel from '../../components/main-panel'
-import isAuthenticated from '../../lib/is-authenticated'
+import isAuthenticated from '../../../lib/is-authenticated'
+import MainPanel from '../../../components/main-panel'
+import IconArrowRight from '../../../assets/svg/IconArrowRight'
 
-export const Route = createFileRoute('/doctor/consulta')({
+export const Route = createFileRoute('/doctor/consulta/')({
   component: RouteComponent,
     beforeLoad: isAuthenticated
 })
@@ -68,8 +67,8 @@ function RouteComponent() {
 
 
   return (
-    <MainPanel sidebarRole="DOCTOR" userName="Dr. Smith" userProfession="Cardiologist">
-      <div className="p-5 flex flex-row justify-between gap-3.5 h-10/12">
+    <MainPanel>
+      <div className="flex flex-row justify-between gap-3.5 h-10/12">
         <section className="w-full h-100">
           <div className="bg-white p-4 rounded-lg shadow flex flex-row gap-4 mb-5">
             <img src="/favicon.svg" alt="Favicon" className="w-16 h-16" />
