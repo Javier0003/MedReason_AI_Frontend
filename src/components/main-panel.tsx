@@ -1,13 +1,13 @@
 import { authenticationStore } from "../store/authentication-store";
-import type { Role } from "../types";
 import { Sidebar } from "./sidebar";
 import UserLogo from "./user-logo";
 
-export default function MainPanel({ children, sidebarRole, userName, userProfession }: { children: React.ReactNode, sidebarRole?: Role, userName?: string, userProfession?: string }) {
-  const { user } = authenticationStore(state => state);
+export default function MainPanel({ children }: { children: React.ReactNode }) {
+  const user = authenticationStore(state => state.user);
+
   return (
     <div className="flex min-h-screen bg-[#f3f4f7]">
-      <Sidebar role={user?.role ?? "DOCTOR"} />
+      <Sidebar />
       <main className="ml-50 flex-1 space-y-5 max-h-[calc(100vh-64px)] overflow-hidden">
         <header className="flex justify-between p-5 border-b border-gray-300">
           <h1 className="text-2xl font-bold">{"MediFlow Clinical"}</h1>

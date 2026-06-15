@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import MainPanel from '../../components/main-panel'
-import isAuthenticated from '../../lib/is-authenticated'
+import MainPanel from '../../../components/main-panel'
+import isAuthenticated from '../../../lib/is-authenticated'
 
-export const Route = createFileRoute('/admin/dashboard')({
+export const Route = createFileRoute('/admin/dashboard/')({
   component: RouteComponent,
     beforeLoad: isAuthenticated
 })

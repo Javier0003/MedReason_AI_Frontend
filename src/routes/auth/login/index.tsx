@@ -1,14 +1,14 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useRef, useState } from 'react';
-import IconArrowRight from '../../assets/svg/IconArrowRight';
-import IconEye from '../../assets/svg/IconEye';
-import IconLock from '../../assets/svg/IconLock';
-import IconMail from '../../assets/svg/IconMail';
-import IconMedicalLogo from '../../assets/svg/IconMedicalLogo';
-import { authenticationStore } from '../../store/authentication-store';
-import isAuthenticated from '../../lib/is-authenticated';
+import IconArrowRight from '../../../assets/svg/IconArrowRight';
+import IconEye from '../../../assets/svg/IconEye';
+import IconLock from '../../../assets/svg/IconLock';
+import IconMail from '../../../assets/svg/IconMail';
+import IconMedicalLogo from '../../../assets/svg/IconMedicalLogo';
+import { authenticationStore } from '../../../store/authentication-store';
+import isAuthenticated from '../../../lib/is-authenticated';
 
-export const Route = createFileRoute('/auth/login')({
+export const Route = createFileRoute('/auth/login/')({
   component: RouteComponent,
   beforeLoad: isAuthenticated
 })

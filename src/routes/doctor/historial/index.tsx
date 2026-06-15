@@ -1,11 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
-import { Sidebar } from '../../components/sidebar'
-import isAuthenticated from '../../lib/is-authenticated'
-import type { Consulta, DiagnosticType, RangoFecha } from '../../types'
-import { DATE_RANGE, DIAGNOSTIC_TYPE, DIAS, MESES } from '../../constants/constants'
+import { Sidebar } from '../../../components/sidebar'
+import isAuthenticated from '../../../lib/is-authenticated'
+import type { Consulta, DiagnosticType, RangoFecha } from '../../../types'
+import { DATE_RANGE, DIAGNOSTIC_TYPE, DIAS, MESES } from '../../../constants/constants'
+import MainPanel from '../../../components/main-panel'
 
-export const Route = createFileRoute('/doctor/historial')({
+export const Route = createFileRoute('/doctor/historial/')({
   component: RouteComponent,
   beforeLoad: isAuthenticated
 })
@@ -115,190 +116,185 @@ function RouteComponent() {
   }
 
   return (
-    <div className="flex min-h-screen bg-[#f3f4f7]">
-      <Sidebar role="DOCTOR" />
+    <MainPanel>
+      {/* Header */}
+      <div>
+        <h1 className="text-[22px] font-bold text-slate-900">Historial de Pacientes</h1>
+        <p className="text-[13px] text-slate-400 mt-0.5">Acceda y gestione registros clínicos completos e historiales de consultas previas.</p>
+      </div>
 
-      <main className="ml-[200px] flex-1 p-6 space-y-5">
-
-        {/* Header */}
-        <div>
-          <h1 className="text-[22px] font-bold text-slate-900">Historial de Pacientes</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">Acceda y gestione registros clínicos completos e historiales de consultas previas.</p>
-        </div>
-
-        {/* Métricas */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Registros</p>
-                <p className="text-[32px] font-bold text-slate-900 leading-none">1,284</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-[#1565d8]/10 flex items-center justify-center text-[18px]">🗂️</div>
+      {/* Métricas */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Registros</p>
+              <p className="text-[32px] font-bold text-slate-900 leading-none">1,284</p>
             </div>
-          </div>
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Derivaciones Urgentes</p>
-                <p className="text-[32px] font-bold text-slate-900 leading-none">24</p>
-              </div>
-              <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-[18px]">⚠️</div>
-            </div>
+            <div className="w-10 h-10 rounded-xl bg-[#1565d8]/10 flex items-center justify-center text-[18px]">🗂️</div>
           </div>
         </div>
-
-        {/* Filtros */}
-        <div className="flex items-center gap-3">
-          <select
-            value={rango}
-            onChange={e => setRango(e.target.value as RangoFecha)}
-            className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
-          >
-            {DATE_RANGE.map(r => <option key={r} value={r}>{r}</option>)}
-          </select>
-
-          <select
-            value={tipoDx}
-            onChange={e => setTipoDx(e.target.value as DiagnosticType)}
-            className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
-          >
-            {DIAGNOSTIC_TYPE.map(t => <option key={t} value={t}>{DX_LABELS_ES[t]}</option>)}
-          </select>
-
-          <button
-            onClick={handleApplyFilters}
-            className="h-9 px-4 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
-          >
-            ✦ Aplicar Filtros
-          </button>
-
-          {rango === 'Rango personalizado' && (
-            <span className="text-[12px] text-slate-400 font-medium">
-              {fechaDesde.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })} — {fechaHasta.toLocaleDateString('es-ES', { month: 'short', day: 'numeric', year: 'numeric' })}
-              <button onClick={() => setModalRango(true)} className="ml-2 text-[#1565d8] hover:underline">Editar</button>
-            </span>
-          )}
-        </div>
-
-        {/* Tabla + Stats */}
-        <div className="grid grid-cols-3 gap-4">
-
-          {/* Tabla */}
-          <div className="col-span-2 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-              <h2 className="text-[14px] font-bold text-slate-800">Historial de Consultas Médicas</h2>
-              <div className="flex gap-2">
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">⬇</button>
-                <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">🖨</button>
-              </div>
+        <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
+          <div className="flex items-start justify-between">
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Derivaciones Urgentes</p>
+              <p className="text-[32px] font-bold text-slate-900 leading-none">24</p>
             </div>
+            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-[18px]">⚠️</div>
+          </div>
+        </div>
+      </div>
 
-            <table className="w-full">
-              <thead className="bg-slate-50/80">
-                <tr>
-                  {['Fecha', 'Paciente', 'Diagnóstico', 'Médico Tratante', 'Estado', 'Acción'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {consultas.map(c => {
-                  const s = STATUS_CONFIG[c.status]
-                  return (
-                    <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-3.5">
-                        <p className="text-[12px] font-semibold text-slate-700">{c.fecha}</p>
-                        <p className="text-[11px] text-slate-400">{c.hora}</p>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[10px] font-bold shrink-0">{c.iniciales}</div>
-                          <span className="text-[13px] font-semibold text-slate-700">{c.paciente}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100">{c.diagnostico}</span>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-1.5">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ${c.medicoColor}`}>
-                            {c.medico.split(' ').slice(-1)[0].charAt(0)}
-                          </div>
-                          <span className="text-[12px] text-slate-600">{c.medico}</span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${s.classes}`}>{s.label}</span>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <button
-                          onClick={() => setModalDetalle(c)}
-                          className="text-[11px] font-semibold text-slate-500 border border-slate-200 px-2.5 py-1 rounded-lg hover:bg-slate-50 hover:text-[#1565d8] hover:border-[#1565d8]/30 transition-colors"
-                        >
-                          Ver Detalles
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+      {/* Filtros */}
+      <div className="flex items-center gap-3">
+        <select
+          value={rango}
+          onChange={e => setRango(e.target.value as RangoFecha)}
+          className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
+        >
+          {DATE_RANGE.map(r => <option key={r} value={r}>{r}</option>)}
+        </select>
 
-            {/* Paginación */}
-            <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100">
-              <p className="text-[11px] text-slate-400">Mostrando 1–{consultas.length} de 1,284 registros</p>
-              <div className="flex items-center gap-1">
-                <button className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">‹</button>
-                {[1, 2, 3, '...', 129].map((p, i) => (
-                  <button key={i} className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors
-                    ${p === 1 ? 'bg-[#1565d8] text-white' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
-                    {p}
-                  </button>
+        <select
+          value={tipoDx}
+          onChange={e => setTipoDx(e.target.value as DiagnosticType)}
+          className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
+        >
+          {DIAGNOSTIC_TYPE.map(t => <option key={t} value={t}>{DX_LABELS_ES[t]}</option>)}
+        </select>
+
+        <button
+          onClick={handleApplyFilters}
+          className="h-9 px-4 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
+        >
+          ✦ Aplicar Filtros
+        </button>
+
+        {rango === 'Rango personalizado' && (
+          <span className="text-[12px] text-slate-400 font-medium">
+            {fechaDesde.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })} — {fechaHasta.toLocaleDateString('es-ES', { month: 'short', day: 'numeric', year: 'numeric' })}
+            <button onClick={() => setModalRango(true)} className="ml-2 text-[#1565d8] hover:underline">Editar</button>
+          </span>
+        )}
+      </div>
+
+      {/* Tabla + Stats */}
+      <div className="grid grid-cols-3 gap-4">
+
+        {/* Tabla */}
+        <div className="col-span-2 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+            <h2 className="text-[14px] font-bold text-slate-800">Historial de Consultas Médicas</h2>
+            <div className="flex gap-2">
+              <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">⬇</button>
+              <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">🖨</button>
+            </div>
+          </div>
+
+          <table className="w-full">
+            <thead className="bg-slate-50/80">
+              <tr>
+                {['Fecha', 'Paciente', 'Diagnóstico', 'Médico Tratante', 'Estado', 'Acción'].map(h => (
+                  <th key={h} className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
                 ))}
-                <button className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">›</button>
-              </div>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {consultas.map(c => {
+                const s = STATUS_CONFIG[c.status]
+                return (
+                  <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="px-4 py-3.5">
+                      <p className="text-[12px] font-semibold text-slate-700">{c.fecha}</p>
+                      <p className="text-[11px] text-slate-400">{c.hora}</p>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[10px] font-bold shrink-0">{c.iniciales}</div>
+                        <span className="text-[13px] font-semibold text-slate-700">{c.paciente}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100">{c.diagnostico}</span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="flex items-center gap-1.5">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ${c.medicoColor}`}>
+                          {c.medico.split(' ').slice(-1)[0].charAt(0)}
+                        </div>
+                        <span className="text-[12px] text-slate-600">{c.medico}</span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${s.classes}`}>{s.label}</span>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <button
+                        onClick={() => setModalDetalle(c)}
+                        className="text-[11px] font-semibold text-slate-500 border border-slate-200 px-2.5 py-1 rounded-lg hover:bg-slate-50 hover:text-[#1565d8] hover:border-[#1565d8]/30 transition-colors"
+                      >
+                        Ver Detalles
+                      </button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+
+          {/* Paginación */}
+          <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100">
+            <p className="text-[11px] text-slate-400">Mostrando 1–{consultas.length} de 1,284 registros</p>
+            <div className="flex items-center gap-1">
+              <button className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">‹</button>
+              {[1, 2, 3, '...', 129].map((p, i) => (
+                <button key={i} className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors
+                    ${p === 1 ? 'bg-[#1565d8] text-white' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
+                  {p}
+                </button>
+              ))}
+              <button className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">›</button>
             </div>
           </div>
+        </div>
 
-          {/* Estadísticas de diagnósticos */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm p-5">
-            <h3 className="text-[13px] font-bold text-slate-800 mb-4">Estadísticas de Diagnósticos</h3>
-            <div className="space-y-4">
-              {DX_STATS.map((dx, i) => (
-                <div key={i}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-[12px] font-semibold text-slate-600">{dx.label}</span>
-                    <span className="text-[11px] font-bold text-slate-400">{dx.count} casos</span>
+        {/* Estadísticas de diagnósticos */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm p-5">
+          <h3 className="text-[13px] font-bold text-slate-800 mb-4">Estadísticas de Diagnósticos</h3>
+          <div className="space-y-4">
+            {DX_STATS.map((dx, i) => (
+              <div key={i}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[12px] font-semibold text-slate-600">{dx.label}</span>
+                  <span className="text-[11px] font-bold text-slate-400">{dx.count} casos</span>
+                </div>
+                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <div className={`h-full ${dx.color} rounded-full transition-all`} style={{ width: `${dx.pct}%` }} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-6 pt-4 border-t border-slate-100">
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-3">Resumen de Estados</p>
+            <div className="space-y-2">
+              {[
+                { label: 'Completado', count: 4, color: 'bg-emerald-500' },
+                { label: 'Pendiente', count: 1, color: 'bg-amber-500' },
+                { label: 'Urgente', count: 1, color: 'bg-red-500' },
+              ].map((s, i) => (
+                <div key={i} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`w-2 h-2 rounded-full ${s.color}`} />
+                    <span className="text-[12px] text-slate-600">{s.label}</span>
                   </div>
-                  <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                    <div className={`h-full ${dx.color} rounded-full transition-all`} style={{ width: `${dx.pct}%` }} />
-                  </div>
+                  <span className="text-[12px] font-bold text-slate-700">{s.count}</span>
                 </div>
               ))}
             </div>
-
-            <div className="mt-6 pt-4 border-t border-slate-100">
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-3">Resumen de Estados</p>
-              <div className="space-y-2">
-                {[
-                  { label: 'Completado', count: 4, color: 'bg-emerald-500' },
-                  { label: 'Pendiente', count: 1, color: 'bg-amber-500' },
-                  { label: 'Urgente', count: 1, color: 'bg-red-500' },
-                ].map((s, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className={`w-2 h-2 rounded-full ${s.color}`} />
-                      <span className="text-[12px] text-slate-600">{s.label}</span>
-                    </div>
-                    <span className="text-[12px] font-bold text-slate-700">{s.count}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
         </div>
-      </main>
+      </div>
 
       {/* ── Modal Custom Range ── */}
       {modalRango && (
@@ -354,6 +350,6 @@ function RouteComponent() {
           </div>
         </div>
       )}
-    </div>
+    </MainPanel>
   )
 }

@@ -5,10 +5,25 @@ export type Role = 'DOCTOR' | 'ADMIN'
 export type User = {
   id: string;
   name: string;
+  email: string
   role: Role;
   userImg: string;
   profession: string;
+  status: UserStatus
+  lastAccess: string
 }
+
+export interface Paciente {
+  id: string
+  hora: string
+  nombre: string
+  iniciales: string
+  tipo: string
+  status: 'COMPLETED' | 'IN_PROGRESS' | 'WAITING' | 'SCHEDULED'
+}
+ 
+
+export type UserStatus = 'Activo' | 'Pendiente' | 'Inactivo'
 
 export interface Consulta {
   id: string
