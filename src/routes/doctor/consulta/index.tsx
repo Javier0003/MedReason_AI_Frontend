@@ -68,7 +68,7 @@ function RouteComponent() {
 
   return (
     <MainPanel>
-      <div className="p-5 flex flex-row justify-between gap-3.5 h-10/12">
+      <div className="flex flex-row justify-between gap-3.5 h-10/12">
         <section className="w-full h-100">
           <div className="bg-white p-4 rounded-lg shadow flex flex-row gap-4 mb-5">
             <img src="/favicon.svg" alt="Favicon" className="w-16 h-16" />

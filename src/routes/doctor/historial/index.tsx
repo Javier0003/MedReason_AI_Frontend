@@ -124,7 +124,7 @@ function RouteComponent() {
       </div>
 
       {/* Métricas */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-4 pt-4">
         <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
           <div className="flex items-start justify-between">
             <div>
@@ -146,7 +146,7 @@ function RouteComponent() {
       </div>
 
       {/* Filtros */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 pt-4">
         <select
           value={rango}
           onChange={e => setRango(e.target.value as RangoFecha)}
@@ -179,7 +179,7 @@ function RouteComponent() {
       </div>
 
       {/* Tabla + Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 pt-4">
 
         {/* Tabla */}
         <div className="col-span-2 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden">
@@ -199,7 +199,7 @@ function RouteComponent() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 overflow-y-auto">
               {consultas.map(c => {
                 const s = STATUS_CONFIG[c.status]
                 return (
