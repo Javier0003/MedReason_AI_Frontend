@@ -1,8 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
 import MainPanel from '../../components/main-panel.tsx'
+import isAuthenticated from '../../lib/is-authenticated.ts'
 
 export const Route = createFileRoute('/doctor/logs')({
   component: RouteComponent,
+  beforeLoad: isAuthenticated
 })
 
 function RouteComponent() {

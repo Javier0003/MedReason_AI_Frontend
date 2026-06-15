@@ -1,12 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Sidebar } from '../../components/sidebar'
 import { useRef } from 'react'
 import IconArrowRight from '../../assets/svg/IconArrowRight'
-import UserLogo from '../../components/user-logo'
 import MainPanel from '../../components/main-panel'
+import isAuthenticated from '../../lib/is-authenticated'
 
 export const Route = createFileRoute('/doctor/consulta')({
   component: RouteComponent,
+    beforeLoad: isAuthenticated
 })
 
 function RouteComponent() {

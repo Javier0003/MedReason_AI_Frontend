@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import { Sidebar } from '../../components/sidebar.tsx'
+import isAuthenticated from '../../lib/is-authenticated.ts'
  
 export const Route = createFileRoute('/doctor/dashboard')({
   component: RouteComponent,
