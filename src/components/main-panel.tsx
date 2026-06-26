@@ -11,7 +11,7 @@ export default function MainPanel({ children }: { children: React.ReactNode }) {
 
       <main className="ml-50 flex flex-1 flex-col overflow-hidden">
         <header className="flex shrink-0 justify-between border-b border-gray-300 p-5">
-          <h1 className="text-2xl font-bold">MediFlow Clinical</h1>
+          <h1 className="text-2xl font-bold">MedReason AI</h1>
 
           <UserLogo
             name={user?.name ?? "User"}

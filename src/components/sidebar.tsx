@@ -12,7 +12,7 @@ interface NavItem {
 // ─── Menús por rol ─────────────────────────────────────────────────────────────
 const DOCTOR_NAV: NavItem[] = [
   { label: 'Dashboard', href: '/doctor/dashboard', icon: '▣' },
-  { label: 'Medicos', href: '/doctor/medicos', icon: '👤' },
+  { label: 'Pacientes', href: '/doctor/medicos', icon: '👤' },
   { label: 'Consultas', href: '/doctor/consulta', icon: '📋' },
   { label: 'Historial', href: '/doctor/historial', icon: '📊' },
   { label: 'Settings', href: '/doctor/configuracion', icon: '⚙️' },
