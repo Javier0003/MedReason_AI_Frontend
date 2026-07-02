@@ -66,7 +66,7 @@ function RouteComponent() {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Pacientes</p>
-                <p className="text-[32px] font-bold text-slate-900 leading-none">1,284</p>
+                <p className="text-[32px] font-bold text-slate-900 leading-none">50</p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-[#1565d8]/10 flex items-center justify-center text-[18px]">👥</div>
             </div>

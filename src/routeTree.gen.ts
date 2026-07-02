@@ -11,7 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SupportRouteImport } from './routes/support'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as DoctorMedicosIndexRouteImport } from './routes/doctor/medicos/index'
+import { Route as DoctorPacientesIndexRouteImport } from './routes/doctor/pacientes/index'
 import { Route as DoctorHistorialIndexRouteImport } from './routes/doctor/historial/index'
 import { Route as DoctorDashboardIndexRouteImport } from './routes/doctor/dashboard/index'
 import { Route as DoctorConsultaIndexRouteImport } from './routes/doctor/consulta/index'
@@ -32,9 +32,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorMedicosIndexRoute = DoctorMedicosIndexRouteImport.update({
-  id: '/doctor/medicos/',
-  path: '/doctor/medicos/',
+const DoctorPacientesIndexRoute = DoctorPacientesIndexRouteImport.update({
+  id: '/doctor/pacientes/',
+  path: '/doctor/pacientes/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DoctorHistorialIndexRoute = DoctorHistorialIndexRouteImport.update({
@@ -96,7 +96,7 @@ export interface FileRoutesByFullPath {
   '/doctor/consulta/': typeof DoctorConsultaIndexRoute
   '/doctor/dashboard/': typeof DoctorDashboardIndexRoute
   '/doctor/historial/': typeof DoctorHistorialIndexRoute
-  '/doctor/medicos/': typeof DoctorMedicosIndexRoute
+  '/doctor/pacientes/': typeof DoctorPacientesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -110,7 +110,7 @@ export interface FileRoutesByTo {
   '/doctor/consulta': typeof DoctorConsultaIndexRoute
   '/doctor/dashboard': typeof DoctorDashboardIndexRoute
   '/doctor/historial': typeof DoctorHistorialIndexRoute
-  '/doctor/medicos': typeof DoctorMedicosIndexRoute
+  '/doctor/pacientes': typeof DoctorPacientesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -125,7 +125,7 @@ export interface FileRoutesById {
   '/doctor/consulta/': typeof DoctorConsultaIndexRoute
   '/doctor/dashboard/': typeof DoctorDashboardIndexRoute
   '/doctor/historial/': typeof DoctorHistorialIndexRoute
-  '/doctor/medicos/': typeof DoctorMedicosIndexRoute
+  '/doctor/pacientes/': typeof DoctorPacientesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -141,7 +141,7 @@ export interface FileRouteTypes {
     | '/doctor/consulta/'
     | '/doctor/dashboard/'
     | '/doctor/historial/'
-    | '/doctor/medicos/'
+    | '/doctor/pacientes/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -155,7 +155,7 @@ export interface FileRouteTypes {
     | '/doctor/consulta'
     | '/doctor/dashboard'
     | '/doctor/historial'
-    | '/doctor/medicos'
+    | '/doctor/pacientes'
   id:
     | '__root__'
     | '/'
@@ -169,7 +169,7 @@ export interface FileRouteTypes {
     | '/doctor/consulta/'
     | '/doctor/dashboard/'
     | '/doctor/historial/'
-    | '/doctor/medicos/'
+    | '/doctor/pacientes/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,7 +184,7 @@ export interface RootRouteChildren {
   DoctorConsultaIndexRoute: typeof DoctorConsultaIndexRoute
   DoctorDashboardIndexRoute: typeof DoctorDashboardIndexRoute
   DoctorHistorialIndexRoute: typeof DoctorHistorialIndexRoute
-  DoctorMedicosIndexRoute: typeof DoctorMedicosIndexRoute
+  DoctorPacientesIndexRoute: typeof DoctorPacientesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -203,11 +203,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/doctor/medicos/': {
-      id: '/doctor/medicos/'
-      path: '/doctor/medicos'
-      fullPath: '/doctor/medicos/'
-      preLoaderRoute: typeof DoctorMedicosIndexRouteImport
+    '/doctor/pacientes/': {
+      id: '/doctor/pacientes/'
+      path: '/doctor/pacientes'
+      fullPath: '/doctor/pacientes/'
+      preLoaderRoute: typeof DoctorPacientesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/doctor/historial/': {
@@ -288,7 +288,7 @@ const rootRouteChildren: RootRouteChildren = {
   DoctorConsultaIndexRoute: DoctorConsultaIndexRoute,
   DoctorDashboardIndexRoute: DoctorDashboardIndexRoute,
   DoctorHistorialIndexRoute: DoctorHistorialIndexRoute,
-  DoctorMedicosIndexRoute: DoctorMedicosIndexRoute,
+  DoctorPacientesIndexRoute: DoctorPacientesIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -114,7 +114,7 @@ function RouteComponent() {
   return (
     <MainPanel>
       <section className="h-full overflow-y-auto px-6 py-6">
-        <div className="mx-auto max-w-7xl space-y-6">
+        <div className="space-y-6">
  
           {/* Header */}
           <div className="flex flex-col gap-2">

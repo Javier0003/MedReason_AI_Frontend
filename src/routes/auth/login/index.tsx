@@ -77,7 +77,7 @@ function RouteComponent() {
             <div className="space-y-5">
               <div>
                 <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500" htmlFor="email">
-                  Correo Clínico
+                  Correo
                 </label>
                 <div className="flex h-12 items-center gap-3 rounded-lg border border-slate-300 bg-[#fbfbfc] px-3 text-slate-500 focus-within:border-[#1565d8] focus-within:ring-2 focus-within:ring-[#1565d8]/10">
                   <IconMail />

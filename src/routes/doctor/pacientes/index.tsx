@@ -6,7 +6,7 @@ import Calendario from '../../../components/calendario'
 import { MESES } from '../../../constants/constants'
 import type { Paciente } from '../../../types'
  
-export const Route = createFileRoute('/doctor/medicos/')({
+export const Route = createFileRoute('/doctor/pacientes/')({
   component: RouteComponent,
   beforeLoad: isAuthenticated
 })
@@ -53,7 +53,20 @@ function RouteComponent() {
       p.hora.toLowerCase().includes(search.toLowerCase())
     ), [search]
   )
+
+  const [mostrarFormulario, setMostrarFormulario] = useState(false)
+
+const [nuevoPaciente, setNuevoPaciente] = useState({
+  nombre: "",
+  edad: "",
+  telefono: "",
+  tipo: "",
+  estado: "Pendiente",
+})
  
+
+
+
   return (
     <MainPanel>
       <section className="space-y-6 p-6">
@@ -75,9 +88,12 @@ function RouteComponent() {
                 <button className="text-[12px] font-semibold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                   Exportar
                 </button>
-                <button className="text-[12px] font-semibold text-white bg-[#1565d8] px-3 py-1.5 rounded-lg hover:bg-[#0f56bd] transition-colors">
-                  + Nuevo Paciente
-                </button>
+                <button
+  onClick={() => setMostrarFormulario(true)}
+  className="text-[12px] font-semibold text-white bg-[#1565d8] px-3 py-1.5 rounded-lg hover:bg-[#0f56bd] transition-colors"
+>
+  + Nuevo Paciente
+</button>
               </div>
             </div>
  
@@ -176,6 +192,162 @@ function RouteComponent() {
             </div>
           </div>
         </div>
+
+        {/* Modal Nuevo Paciente */}
+{mostrarFormulario && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+
+    <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+
+      {/* Header */}
+      <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-800">
+            Nuevo Paciente
+          </h2>
+
+          <p className="text-sm text-slate-500">
+            Complete la información del paciente.
+          </p>
+        </div>
+
+        <button
+          onClick={() => setMostrarFormulario(false)}
+          className="text-2xl text-slate-400 hover:text-slate-700"
+        >
+          ×
+        </button>
+      </div>
+
+      {/* Body */}
+      <div className="grid grid-cols-2 gap-5 p-6">
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Nombre Completo
+          </label>
+
+          <input
+            type="text"
+            value={nuevoPaciente.nombre}
+            onChange={(e) =>
+              setNuevoPaciente({
+                ...nuevoPaciente,
+                nombre: e.target.value,
+              })
+            }
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Edad
+          </label>
+
+          <input
+            type="number"
+            value={nuevoPaciente.edad}
+            onChange={(e) =>
+              setNuevoPaciente({
+                ...nuevoPaciente,
+                edad: e.target.value,
+              })
+            }
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Teléfono
+          </label>
+
+          <input
+            type="text"
+            value={nuevoPaciente.telefono}
+            onChange={(e) =>
+              setNuevoPaciente({
+                ...nuevoPaciente,
+                telefono: e.target.value,
+              })
+            }
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+          />
+        </div>
+
+        <div>
+          <label className="mb-2 block text-sm font-semibold">
+            Tipo de Consulta
+          </label>
+
+          <select
+            value={nuevoPaciente.tipo}
+            onChange={(e) =>
+              setNuevoPaciente({
+                ...nuevoPaciente,
+                tipo: e.target.value,
+              })
+            }
+            className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+          >
+            <option value="">Seleccione...</option>
+            <option>Consulta Inicial</option>
+            <option>Seguimiento</option>
+            <option>Urgencia</option>
+            <option>Revisión</option>
+          </select>
+        </div>
+
+        <div className="col-span-2">
+          <label className="mb-2 block text-sm font-semibold">
+            Observaciones
+          </label>
+
+          <textarea
+            rows={4}
+            className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+            placeholder="Escriba alguna observación..."
+          />
+        </div>
+
+      </div>
+
+      {/* Footer */}
+      <div className="flex justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
+
+        <button
+          onClick={() => setMostrarFormulario(false)}
+          className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium hover:bg-slate-100"
+        >
+          Cancelar
+        </button>
+
+        <button
+          onClick={() => {
+            console.log(nuevoPaciente)
+
+            setNuevoPaciente({
+              nombre: "",
+              edad: "",
+              telefono: "",
+              tipo: "",
+              estado: "Pendiente",
+            })
+
+            setMostrarFormulario(false)
+          }}
+          className="rounded-lg bg-[#1565d8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f56bd]"
+        >
+          Guardar Paciente
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+)}
  
         {/* Modal Tareas del Día */}
         {modalDia && (
