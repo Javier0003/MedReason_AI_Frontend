@@ -11,7 +11,7 @@ export const Route = createFileRoute('/admin/dashboard/')({
  
 const initialUsers: User[] = [
   {
-    id: "1",
+    id: 1,
     name: 'Dra. Laura Méndez',
     email: 'laura.mendez@medreason.ai',
     role: 'DOCTOR',
@@ -20,7 +20,7 @@ const initialUsers: User[] = [
     userImg: "LM"
   },
   {
-    id: "2",
+    id: 2,
     name: 'Carlos Ramírez',
     email: 'carlos.ramirez@medreason.ai',
     role: 'ADMIN',
@@ -29,7 +29,7 @@ const initialUsers: User[] = [
     userImg: "CR"
   },
   {
-    id: "3",
+    id: 3,
     name: 'Dra. Ana Castillo',
     email: 'ana.castillo@medreason.ai',
     role: 'DOCTOR',
@@ -38,7 +38,7 @@ const initialUsers: User[] = [
     userImg: "AC"
   },
   {
-    id: "4",
+    id: 4,
     name: 'Miguel Torres',
     email: 'miguel.torres@medreason.ai',
     role: 'DOCTOR',
@@ -47,7 +47,7 @@ const initialUsers: User[] = [
     userImg: "MT"
   },
   {
-    id: "5",
+    id: 5,
     name: 'Dra. Patricia Sáenz',
     email: 'patricia.saenz@medreason.ai',
     role: 'DOCTOR',

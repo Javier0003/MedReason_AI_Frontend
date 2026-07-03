@@ -27,10 +27,10 @@ const STATUS_CONFIG = {
 }
  
 const PACIENTES_HOY: Paciente[] = [
-  { id: '1', hora: '09:00 AM', nombre: 'Arthur Wagner',  iniciales: 'AW', tipo: 'Seguimiento',       status: 'COMPLETED'   },
-  { id: '2', hora: '10:30 AM', nombre: 'Maria Santos',   iniciales: 'MS', tipo: 'Consulta Inicial',  status: 'IN_PROGRESS' },
-  { id: '3', hora: '11:15 AM', nombre: 'James Link',     iniciales: 'JL', tipo: 'Urgencia',          status: 'WAITING'     },
-  { id: '4', hora: '01:45 PM', nombre: 'Emily Davis',    iniciales: 'ED', tipo: 'Revisión Radiológica', status: 'SCHEDULED'   },
+  { id: 1, hora: '09:00 AM', nombre: 'Arthur Wagner',  iniciales: 'AW', tipo: 'Seguimiento',       status: 'COMPLETED'   },
+  { id: 2, hora: '10:30 AM', nombre: 'Maria Santos',   iniciales: 'MS', tipo: 'Consulta Inicial',  status: 'IN_PROGRESS' },
+  { id: 3, hora: '11:15 AM', nombre: 'James Link',     iniciales: 'JL', tipo: 'Urgencia',          status: 'WAITING'     },
+  { id: 4, hora: '01:45 PM', nombre: 'Emily Davis',    iniciales: 'ED', tipo: 'Revisión Radiológica', status: 'SCHEDULED'   },
 ]
  
 export const TAREAS_MOCK: Record<number, Tarea[]> = {

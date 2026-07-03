@@ -11,7 +11,7 @@ export const Route = createFileRoute('/admin/configuracion/')({
 
 const initialUsers: User[] = [
   {
-    id: "1",
+    id: 1,
     name: 'Dra. Laura Méndez',
     email: 'laura.mendez@medreason.ai',
     role: 'DOCTOR',
@@ -20,7 +20,7 @@ const initialUsers: User[] = [
     userImg: "qwe"
   },
   {
-    id: "2",
+    id: 2,
     name: 'Carlos Ramírez',
     email: 'carlos.ramirez@medreason.ai',
     role: 'ADMIN',
@@ -29,7 +29,7 @@ const initialUsers: User[] = [
     userImg: "qwe"
   },
   {
-    id: "3",
+    id: 3,
     name: 'Dra. Ana Castillo',
     email: 'ana.castillo@medreason.ai',
     role: 'DOCTOR',
@@ -38,7 +38,7 @@ const initialUsers: User[] = [
     userImg: "qwe"
   },
   {
-    id: "4",
+    id: 4,
     name: 'Miguel Torres',
     email: 'miguel.torres@medreason.ai',
     role: 'DOCTOR',
@@ -97,7 +97,7 @@ function RouteComponent() {
     if (!newUser.name.trim() || !newUser.email.trim()) return
 
     const user: User = {
-      id: `${Date.now()}`,
+      id: Date.now(),
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
@@ -116,7 +116,7 @@ function RouteComponent() {
     setShowModal(false)
   }
 
-  const changeStatus = (id: string, status: UserStatus) => {
+  const changeStatus = (id: number, status: UserStatus) => {
     setUsers((currentUsers) =>
       currentUsers.map((user) =>
         user.id === id ? { ...user, status } : user,
@@ -124,7 +124,7 @@ function RouteComponent() {
     )
   }
 
-  const deleteUser = (id: string) => {
+  const deleteUser = (id: number) => {
     setUsers((currentUsers) => currentUsers.filter((user) => user.id !== id))
   }
 

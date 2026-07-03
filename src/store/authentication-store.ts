@@ -11,12 +11,12 @@ type AuthenticationState = {
 type AuthenticationActions = {
   authenticate: (email: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-  changeRole: () => void
 }
 
 type LoginReturnType = {
   message: string
   token: string
+  id: number
 }
 
 export const authenticationStore = create<AuthenticationState & AuthenticationActions>((set) => ({
@@ -41,32 +41,37 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
 
     const data = await res.json() as LoginReturnType
 
+    const userRes = await fetch(`http://localhost:3000/api/usuarios/${data.id}`, {
+      headers: {
+        'content-type': 'application/json',
+        'Authorization': `Bearer ${data.token}`
+      },
+      method: 'GET'
+    })
+
+    if(!userRes.ok) {
+      return false
+    }
+
+    const userData = (await userRes.json() as {user: User}).user
+
     Cookies.set('authenticationToken', data.token, { expires: 7, path: '/' });
+    Cookies.set('userData', JSON.stringify(userData), { expires: 7, path: '/' });
     set({
       isAuthenticated: true,
       authenticationToken: data.token,
       user: {
-        id: "1",
-        name: "John Doe",
-        role: "ADMIN",
+        id: userData.id,
+        name: userData.name,
+        role: userData.role,
         userImg: "https://example.com/user.jpg",
         profession: "Cardiologist",
-        email: "qwbe",
+        email: userData.email,
         status: 'Activo'
       }
     });
     return true;
   },
-
-  changeRole: () =>
-    set((state) => ({
-      user: state.user
-        ? {
-          ...state.user,
-          role: state.user.role === "DOCTOR" ? "ADMIN" : "DOCTOR",
-        }
-        : null,
-    })),
 
   logout: async () => {
     // enviar solicitud de logout al backend si es necesario
