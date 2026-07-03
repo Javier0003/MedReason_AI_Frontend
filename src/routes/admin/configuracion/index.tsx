@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
 import type { Role, User, UserStatus } from '../../../types'
-import { useQuery } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/admin/configuracion/')({
   component: RouteComponent,
@@ -17,7 +16,6 @@ const initialUsers: User[] = [
     email: 'laura.mendez@medreason.ai',
     role: 'DOCTOR',
     status: 'Activo',
-    lastAccess: 'Hoy, 9:35 AM',
     profession: "qwe",
     userImg: "qwe"
   },
@@ -27,7 +25,6 @@ const initialUsers: User[] = [
     email: 'carlos.ramirez@medreason.ai',
     role: 'ADMIN',
     status: 'Activo',
-    lastAccess: 'Ayer, 6:10 PM',
     profession: "qwe",
     userImg: "qwe"
   },
@@ -37,7 +34,6 @@ const initialUsers: User[] = [
     email: 'ana.castillo@medreason.ai',
     role: 'DOCTOR',
     status: 'Pendiente',
-    lastAccess: 'Sin acceso reciente',
     profession: "qwe",
     userImg: "qwe"
   },
@@ -47,7 +43,6 @@ const initialUsers: User[] = [
     email: 'miguel.torres@medreason.ai',
     role: 'DOCTOR',
     status: 'Inactivo',
-    lastAccess: 'Hace 8 días',
     profession: "qwe",
     userImg: "qwe"
   },
@@ -107,7 +102,6 @@ function RouteComponent() {
       email: newUser.email,
       role: newUser.role,
       status: newUser.status,
-      lastAccess: 'Nuevo usuario',
       profession: "smth",
       userImg: "qaweb"
     }
@@ -280,8 +274,6 @@ function RouteComponent() {
                           {user.status}
                         </span>
                       </td>
-
-                      <td className="px-5 py-4 text-slate-500">{user.lastAccess}</td>
 
                       <td className="px-5 py-4">
                         <div className="flex justify-end gap-2">

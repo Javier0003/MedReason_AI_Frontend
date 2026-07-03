@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { User } from "../types";
+import Cookies from 'js-cookie'
 
 type AuthenticationState = {
   isAuthenticated: boolean;
@@ -13,16 +14,37 @@ type AuthenticationActions = {
   changeRole: () => void
 }
 
+type LoginReturnType = {
+  message: string
+  token: string
+}
+
 export const authenticationStore = create<AuthenticationState & AuthenticationActions>((set) => ({
   isAuthenticated: false,
   authenticationToken: null,
   user: null,
   authenticate: async (email: string, password: string) => {
-    // Aquí iría la lógica para enviar la solicitud de autenticación al backend
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        email,
+        password
+      })
+    })
 
+    if(!res.ok) {
+      return false
+    }
+
+    const data = await res.json() as LoginReturnType
+
+    Cookies.set('authenticationToken', data.token, { expires: 7, path: '/' });
     set({
       isAuthenticated: true,
-      authenticationToken: "token",
+      authenticationToken: data.token,
       user: {
         id: "1",
         name: "John Doe",
@@ -30,7 +52,6 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
         userImg: "https://example.com/user.jpg",
         profession: "Cardiologist",
         email: "qwbe",
-        lastAccess: "qwbeqwe",
         status: 'Activo'
       }
     });

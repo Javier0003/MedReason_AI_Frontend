@@ -16,7 +16,6 @@ const initialUsers: User[] = [
     email: 'laura.mendez@medreason.ai',
     role: 'DOCTOR',
     status: 'Activo',
-    lastAccess: 'Hoy, 9:35 AM',
     profession: "Cardiología",
     userImg: "LM"
   },
@@ -26,7 +25,6 @@ const initialUsers: User[] = [
     email: 'carlos.ramirez@medreason.ai',
     role: 'ADMIN',
     status: 'Activo',
-    lastAccess: 'Hoy, 6:10 PM',
     profession: "Administrador",
     userImg: "CR"
   },
@@ -36,7 +34,6 @@ const initialUsers: User[] = [
     email: 'ana.castillo@medreason.ai',
     role: 'DOCTOR',
     status: 'Pendiente',
-    lastAccess: 'Sin acceso reciente',
     profession: "Neurocirugía",
     userImg: "AC"
   },
@@ -46,7 +43,6 @@ const initialUsers: User[] = [
     email: 'miguel.torres@medreason.ai',
     role: 'DOCTOR',
     status: 'Inactivo',
-    lastAccess: 'Hace 8 días',
     profession: "Neumología",
     userImg: "MT"
   },
@@ -56,7 +52,6 @@ const initialUsers: User[] = [
     email: 'patricia.saenz@medreason.ai',
     role: 'DOCTOR',
     status: 'Activo',
-    lastAccess: 'Hoy, 2:15 PM',
     profession: "Oncología",
     userImg: "PS"
   },
@@ -230,7 +225,6 @@ function RouteComponent() {
                           {user.status}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-slate-500">{user.lastAccess}</td>
                       <td className="px-5 py-4">
                         <div className="flex justify-end gap-2">
                           <button className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">
