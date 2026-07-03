@@ -33,7 +33,6 @@ const navBasedOnRole: Record<Role, NavItem[]> = {
 // ─── Componente ────────────────────────────────────────────────────────────────
 export function Sidebar() {
   const user = authenticationStore((state) => state.user)
-  const changeRole = authenticationStore((state) => state.changeRole)
   const logout = authenticationStore((state) => state.logout)
 
   const pathname = window.location.pathname
@@ -75,11 +74,6 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="px-3 py-4 border-t border-white/10 space-y-0.5">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors"
-          onClick={changeRole}>
-          toggleRole
-        </button>
-
         <Link to="/support" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors">
           <span className="text-[15px] w-5 text-center">💬</span>
           Support

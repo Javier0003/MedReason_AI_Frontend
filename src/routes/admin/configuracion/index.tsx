@@ -3,7 +3,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
 import type { Role, User, UserStatus } from '../../../types'
-import { useQuery } from '@tanstack/react-query'
 
 export const Route = createFileRoute('/admin/configuracion/')({
   component: RouteComponent,
@@ -12,42 +11,38 @@ export const Route = createFileRoute('/admin/configuracion/')({
 
 const initialUsers: User[] = [
   {
-    id: "1",
+    id: 1,
     name: 'Dra. Laura Méndez',
     email: 'laura.mendez@medreason.ai',
     role: 'DOCTOR',
     status: 'Activo',
-    lastAccess: 'Hoy, 9:35 AM',
     profession: "qwe",
     userImg: "qwe"
   },
   {
-    id: "2",
+    id: 2,
     name: 'Carlos Ramírez',
     email: 'carlos.ramirez@medreason.ai',
     role: 'ADMIN',
     status: 'Activo',
-    lastAccess: 'Ayer, 6:10 PM',
     profession: "qwe",
     userImg: "qwe"
   },
   {
-    id: "3",
+    id: 3,
     name: 'Dra. Ana Castillo',
     email: 'ana.castillo@medreason.ai',
     role: 'DOCTOR',
     status: 'Pendiente',
-    lastAccess: 'Sin acceso reciente',
     profession: "qwe",
     userImg: "qwe"
   },
   {
-    id: "4",
+    id: 4,
     name: 'Miguel Torres',
     email: 'miguel.torres@medreason.ai',
     role: 'DOCTOR',
     status: 'Inactivo',
-    lastAccess: 'Hace 8 días',
     profession: "qwe",
     userImg: "qwe"
   },
@@ -102,12 +97,11 @@ function RouteComponent() {
     if (!newUser.name.trim() || !newUser.email.trim()) return
 
     const user: User = {
-      id: `${Date.now()}`,
+      id: Date.now(),
       name: newUser.name,
       email: newUser.email,
       role: newUser.role,
       status: newUser.status,
-      lastAccess: 'Nuevo usuario',
       profession: "smth",
       userImg: "qaweb"
     }
@@ -122,7 +116,7 @@ function RouteComponent() {
     setShowModal(false)
   }
 
-  const changeStatus = (id: string, status: UserStatus) => {
+  const changeStatus = (id: number, status: UserStatus) => {
     setUsers((currentUsers) =>
       currentUsers.map((user) =>
         user.id === id ? { ...user, status } : user,
@@ -130,7 +124,7 @@ function RouteComponent() {
     )
   }
 
-  const deleteUser = (id: string) => {
+  const deleteUser = (id: number) => {
     setUsers((currentUsers) => currentUsers.filter((user) => user.id !== id))
   }
 
@@ -280,8 +274,6 @@ function RouteComponent() {
                           {user.status}
                         </span>
                       </td>
-
-                      <td className="px-5 py-4 text-slate-500">{user.lastAccess}</td>
 
                       <td className="px-5 py-4">
                         <div className="flex justify-end gap-2">

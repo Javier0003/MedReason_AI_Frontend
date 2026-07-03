@@ -11,52 +11,47 @@ export const Route = createFileRoute('/admin/dashboard/')({
  
 const initialUsers: User[] = [
   {
-    id: "1",
+    id: 1,
     name: 'Dra. Laura Méndez',
     email: 'laura.mendez@medreason.ai',
     role: 'DOCTOR',
     status: 'Activo',
-    lastAccess: 'Hoy, 9:35 AM',
     profession: "Cardiología",
     userImg: "LM"
   },
   {
-    id: "2",
+    id: 2,
     name: 'Carlos Ramírez',
     email: 'carlos.ramirez@medreason.ai',
     role: 'ADMIN',
     status: 'Activo',
-    lastAccess: 'Hoy, 6:10 PM',
     profession: "Administrador",
     userImg: "CR"
   },
   {
-    id: "3",
+    id: 3,
     name: 'Dra. Ana Castillo',
     email: 'ana.castillo@medreason.ai',
     role: 'DOCTOR',
     status: 'Pendiente',
-    lastAccess: 'Sin acceso reciente',
     profession: "Neurocirugía",
     userImg: "AC"
   },
   {
-    id: "4",
+    id: 4,
     name: 'Miguel Torres',
     email: 'miguel.torres@medreason.ai',
     role: 'DOCTOR',
     status: 'Inactivo',
-    lastAccess: 'Hace 8 días',
     profession: "Neumología",
     userImg: "MT"
   },
   {
-    id: "5",
+    id: 5,
     name: 'Dra. Patricia Sáenz',
     email: 'patricia.saenz@medreason.ai',
     role: 'DOCTOR',
     status: 'Activo',
-    lastAccess: 'Hoy, 2:15 PM',
     profession: "Oncología",
     userImg: "PS"
   },
@@ -230,7 +225,6 @@ function RouteComponent() {
                           {user.status}
                         </span>
                       </td>
-                      <td className="px-5 py-4 text-slate-500">{user.lastAccess}</td>
                       <td className="px-5 py-4">
                         <div className="flex justify-end gap-2">
                           <button className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50">

@@ -10,7 +10,6 @@ export type User = {
   userImg: string;
   profession: string;
   status: UserStatus
-  lastAccess: string
 }
 
 export interface Paciente {
