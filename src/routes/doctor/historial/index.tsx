@@ -65,8 +65,8 @@ function MiniCalendario({ label, fecha, onChange }: { label: string; fecha: Date
       <div className="flex items-center justify-between mb-3">
         <span className="text-[12px] font-bold text-slate-700">{MESES[mes]} {anio}</span>
         <div className="flex gap-1">
-          <button onClick={anterior} className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-400 text-xs">‹</button>
-          <button onClick={siguiente} className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-400 text-xs">›</button>
+          <button type="button" onClick={anterior} className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-400 text-xs">‹</button>
+          <button type="button" onClick={siguiente} className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-400 text-xs">›</button>
         </div>
       </div>
       <div className="grid grid-cols-7 mb-1">
@@ -78,6 +78,7 @@ function MiniCalendario({ label, fecha, onChange }: { label: string; fecha: Date
           const seleccionado = dia === fecha.getDate() && mes === fecha.getMonth() && anio === fecha.getFullYear()
           return (
             <button
+              type="button"
               key={i}
               onClick={() => onChange(new Date(anio, mes, dia))}
               className={`w-7 h-7 mx-auto flex items-center justify-center rounded-full text-[12px] transition-colors ${seleccionado ? 'bg-[#1565d8] text-white font-bold' : 'text-slate-600 hover:bg-[#1565d8]/10 hover:text-[#1565d8]'
@@ -105,7 +106,6 @@ function RouteComponent() {
   const [modalDetalle, setModalDetalle] = useState<Consulta | null>(null)
 
 
-  // TODO: no tiene sentido usar memo ya que simplemente las pediremos al backend
   const consultas = useMemo(() =>
     CONSULTAS.filter(c => tipoDx === 'Todos los diagnósticos' || c.tipoDx === tipoDx),
     [tipoDx]
@@ -148,6 +148,7 @@ function RouteComponent() {
       {/* Filtros */}
       <div className="flex items-center gap-3 pt-4">
         <select
+          aria-label="Rango de fechas"
           value={rango}
           onChange={e => setRango(e.target.value as RangoFecha)}
           className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
@@ -156,6 +157,7 @@ function RouteComponent() {
         </select>
 
         <select
+          aria-label="Tipo de diagnóstico"
           value={tipoDx}
           onChange={e => setTipoDx(e.target.value as DiagnosticType)}
           className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
@@ -164,6 +166,7 @@ function RouteComponent() {
         </select>
 
         <button
+          type="button"
           onClick={handleApplyFilters}
           className="h-9 px-4 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
         >
@@ -173,7 +176,7 @@ function RouteComponent() {
         {rango === 'Rango personalizado' && (
           <span className="text-[12px] text-slate-400 font-medium">
             {fechaDesde.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })} — {fechaHasta.toLocaleDateString('es-ES', { month: 'short', day: 'numeric', year: 'numeric' })}
-            <button onClick={() => setModalRango(true)} className="ml-2 text-[#1565d8] hover:underline">Editar</button>
+            <button type="button" onClick={() => setModalRango(true)} className="ml-2 text-[#1565d8] hover:underline">Editar</button>
           </span>
         )}
       </div>
@@ -186,8 +189,8 @@ function RouteComponent() {
           <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
             <h2 className="text-[14px] font-bold text-slate-800">Historial de Consultas Médicas</h2>
             <div className="flex gap-2">
-              <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">⬇</button>
-              <button className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">🖨</button>
+              <button type="button" className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">⬇</button>
+              <button type="button" className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">🖨</button>
             </div>
           </div>
 
@@ -230,6 +233,7 @@ function RouteComponent() {
                     </td>
                     <td className="px-4 py-3.5">
                       <button
+                        type="button"
                         onClick={() => setModalDetalle(c)}
                         className="text-[11px] font-semibold text-slate-500 border border-slate-200 px-2.5 py-1 rounded-lg hover:bg-slate-50 hover:text-[#1565d8] hover:border-[#1565d8]/30 transition-colors"
                       >
@@ -246,14 +250,14 @@ function RouteComponent() {
           <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100">
             <p className="text-[11px] text-slate-400">Mostrando 1–{consultas.length} de 1,284 registros</p>
             <div className="flex items-center gap-1">
-              <button className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">‹</button>
+              <button type="button" className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">‹</button>
               {[1, 2, 3, '...', 129].map((p, i) => (
-                <button key={i} className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors
+                <button type="button" key={i} className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors
                     ${p === 1 ? 'bg-[#1565d8] text-white' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
                   {p}
                 </button>
               ))}
-              <button className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">›</button>
+              <button type="button" className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">›</button>
             </div>
           </div>
         </div>
@@ -305,7 +309,7 @@ function RouteComponent() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">Rango de Fechas</p>
                 <h2 className="text-[15px] font-bold text-slate-800">Seleccionar rango personalizado</h2>
               </div>
-              <button onClick={() => setModalRango(false)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
+              <button type="button" onClick={() => setModalRango(false)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
             </div>
             <div className="px-6 py-5 flex gap-6">
               <MiniCalendario label="Desde" fecha={fechaDesde} onChange={setFechaDesde} />
@@ -313,8 +317,8 @@ function RouteComponent() {
               <MiniCalendario label="Hasta" fecha={fechaHasta} onChange={setFechaHasta} />
             </div>
             <div className="px-6 pb-5 flex gap-3">
-              <button onClick={() => setModalRango(false)} className="flex-1 h-10 border border-slate-200 text-slate-600 text-[13px] font-semibold rounded-lg hover:bg-slate-50 transition-colors">Cancelar</button>
-              <button onClick={() => setModalRango(false)} className="flex-1 h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">Aplicar Rango</button>
+              <button type="button" onClick={() => setModalRango(false)} className="flex-1 h-10 border border-slate-200 text-slate-600 text-[13px] font-semibold rounded-lg hover:bg-slate-50 transition-colors">Cancelar</button>
+              <button type="button" onClick={() => setModalRango(false)} className="flex-1 h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">Aplicar Rango</button>
             </div>
           </div>
         </div>
@@ -329,7 +333,7 @@ function RouteComponent() {
                 <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">Detalles de la Consulta</p>
                 <h2 className="text-[15px] font-bold text-slate-800">{modalDetalle.paciente}</h2>
               </div>
-              <button onClick={() => setModalDetalle(null)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
+              <button type="button" onClick={() => setModalDetalle(null)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
             </div>
             <div className="px-6 py-5 space-y-4">
               {[
@@ -345,7 +349,7 @@ function RouteComponent() {
               ))}
             </div>
             <div className="px-6 pb-5">
-              <button onClick={() => setModalDetalle(null)} className="w-full h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">Cerrar</button>
+              <button type="button" onClick={() => setModalDetalle(null)} className="w-full h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">Cerrar</button>
             </div>
           </div>
         </div>

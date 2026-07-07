@@ -112,10 +112,10 @@ function RouteComponent() {
             </div>
 
             <div className="flex flex-row gap-2 p-2 w-full justify-end">
-              <button className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" onClick={handleSaveDraft}>
+              <button type="button" className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded" onClick={handleSaveDraft}>
                 Save Draft
               </button>
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleCompleteConsultation}>
+              <button type="button" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleCompleteConsultation}>
                 Complete Consultation
               </button>
             </div>

@@ -107,6 +107,7 @@ function RouteComponent() {
             <p className="text-[13px] text-slate-400 mt-0.5">Gestión de médicos y administradores del sistema.</p>
           </div>
           <button
+            type="button"
             onClick={() => setMostrarFormulario(true)}
             className="text-[12px] font-semibold text-white bg-[#1565d8] px-4 py-2 rounded-lg hover:bg-[#0f56bd] transition-colors"
           >
@@ -141,6 +142,7 @@ function RouteComponent() {
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]">🔍</span>
               <input
+                aria-label="Buscar por nombre o email"
                 type="text"
                 placeholder="Buscar por nombre o email..."
                 value={search}
@@ -148,12 +150,13 @@ function RouteComponent() {
                 className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
               />
               {search && (
-                <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">✕</button>
+                <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">✕</button>
               )}
             </div>
 
             <div className="flex gap-3">
               <select
+                aria-label="Filtrar por rol"
                 value={rolFilter}
                 onChange={e => setRolFilter(e.target.value)}
                 className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 cursor-pointer"
@@ -164,6 +167,7 @@ function RouteComponent() {
               </select>
 
               <select
+                aria-label="Filtrar por estado"
                 value={estadoFilter}
                 onChange={e => setEstadoFilter(e.target.value)}
                 className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 cursor-pointer"
@@ -226,12 +230,14 @@ function RouteComponent() {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
+                        type="button"
                         onClick={() => setEditando(u)}
                         className="text-[11px] font-semibold text-[#1565d8] hover:text-[#0f56bd] px-2 py-1 rounded border border-[#1565d8]/30 hover:bg-[#1565d8]/5 transition-colors"
                       >
                         Editar
                       </button>
                       <button
+                        type="button"
                         onClick={async () => { await actualizarUsuario(u.id, { activo: !u.activo }) }}
                         className={`text-[11px] font-semibold px-2 py-1 rounded border transition-colors ${
                           u.activo
@@ -265,6 +271,7 @@ function RouteComponent() {
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
               <h2 className="text-[15px] font-bold text-slate-800">Información del Usuario</h2>
               <button
+                type="button"
                 onClick={() => setUsuarioSeleccionado(null)}
                 className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg"
               >✕</button>
@@ -303,6 +310,7 @@ function RouteComponent() {
             </div>
             <div className="px-6 pb-5">
               <button
+                type="button"
                 onClick={() => setUsuarioSeleccionado(null)}
                 className="w-full h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[13px] font-semibold rounded-lg transition-colors"
               >Cerrar</button>
@@ -383,29 +391,29 @@ function FormularioUsuario({
           <h2 className="text-[15px] font-bold text-slate-800">
             {usuario ? 'Editar Usuario' : 'Nuevo Usuario'}
           </h2>
-          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-lg">✕</button>
+          <button type="button" onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-lg">✕</button>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1">Nombre</label>
-            <input type="text" value={nombre} onChange={e => setNombre(e.target.value)}
+            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-nombre">Nombre</label>
+            <input id="form-nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
           </div>
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1">Email</label>
-            <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-email">Email</label>
+            <input id="form-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
           </div>
           {!usuario && (
             <div>
-              <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1">Contraseña</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+              <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-password">Contraseña</label>
+              <input id="form-password" type="password" value={password} onChange={e => setPassword(e.target.value)}
                 className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
             </div>
           )}
           <div>
-            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1">Rol</label>
-            <select value={rol} onChange={e => setRol(e.target.value as Rol)}
+            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-rol">Rol</label>
+            <select id="form-rol" value={rol} onChange={e => setRol(e.target.value as Rol)}
               className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]">
               <option value="DOCTOR">Médico</option>
               <option value="ADMIN">Administrador</option>
@@ -414,11 +422,11 @@ function FormularioUsuario({
           {error && <p className="text-[13px] text-red-500">{error}</p>}
         </div>
         <div className="px-6 pb-5 flex gap-3">
-          <button onClick={onClose}
+          <button type="button" onClick={onClose}
             className="flex-1 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[13px] font-semibold rounded-lg transition-colors">
             Cancelar
           </button>
-          <button onClick={handleSubmit} disabled={loading}
+          <button type="button" onClick={handleSubmit} disabled={loading}
             className="flex-1 h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors disabled:opacity-50">
             {loading ? 'Guardando...' : usuario ? 'Guardar Cambios' : 'Crear Usuario'}
           </button>

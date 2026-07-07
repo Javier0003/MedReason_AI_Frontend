@@ -66,7 +66,7 @@ function RouteComponent() {
   const [pagina, setPagina] = useState(1)
   const [usuarioInput, setUsuarioInput] = useState('')
   const [usuario, setUsuario] = useState('')
-  const debounceRef = useRef<number | undefined>(undefined)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => {
     debounceRef.current = setTimeout(() => {
       setUsuario(usuarioInput)
@@ -113,6 +113,7 @@ function RouteComponent() {
         {/* Filtros */}
         <div className="flex flex-wrap gap-3">
           <input
+            aria-label="Filtrar por usuario"
             type="text"
             placeholder="Filtrar por usuario..."
             value={usuarioInput}
@@ -120,12 +121,14 @@ function RouteComponent() {
             className="px-3 py-2 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-[#1565d8] w-48"
           />
           <input
+            aria-label="Filtrar por fecha"
             type="date"
             value={fecha}
             onChange={e => { setFecha(e.target.value); setPagina(1) }}
             className="px-3 py-2 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-[#1565d8]"
           />
           <select
+            aria-label="Filtrar por tipo de acción"
             value={tipoAccion}
             onChange={e => { setTipoAccion(e.target.value); setPagina(1) }}
             className="px-3 py-2 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-[#1565d8]"
@@ -194,12 +197,14 @@ function RouteComponent() {
             </p>
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={() => setPagina(p => Math.max(1, p - 1))}
                 disabled={pagina === 1}
                 className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >‹</button>
               {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
                 <button
+                  type="button"
                   key={n}
                   onClick={() => setPagina(n)}
                   className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
@@ -210,6 +215,7 @@ function RouteComponent() {
                 >{n}</button>
               ))}
               <button
+                type="button"
                 onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))}
                 disabled={pagina === totalPaginas}
                 className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
