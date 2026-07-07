@@ -59,12 +59,16 @@ function RouteComponent() {
   const messageForAi = useRef<HTMLInputElement>(null)
 
   const handleAskAI = () => {
-
-
     alert("AI suggestions requested")
   }
 
-
+  return (
+    <MainPanel>
+      <div>
+          
+      </div>
+    </MainPanel>
+  )
 
   return (
     <MainPanel>

@@ -8,7 +8,7 @@ import MainPanel from '../../../components/main-panel'
 
 export const Route = createFileRoute('/doctor/historial/')({
   component: RouteComponent,
-  beforeLoad: isAuthenticated
+  beforeLoad: isAuthenticated,
 })
 
 // ─── Mock data ─────────────────────────────────────────────────────────────────

@@ -4,7 +4,6 @@ import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
 import Calendario from '../../../components/calendario'
 import { MESES } from '../../../constants/constants'
-import type { Paciente } from '../../../types'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
 
@@ -16,13 +15,6 @@ export const Route = createFileRoute('/doctor/pacientes/')({
 interface Tarea {
   titulo: string
   tiempo: string
-}
-
-const STATUS_CONFIG = {
-  COMPLETED: { label: 'COMPLETADO', classes: 'bg-emerald-100 text-emerald-700' },
-  IN_PROGRESS: { label: 'EN PROGRESO', classes: 'bg-blue-100 text-blue-700' },
-  WAITING: { label: 'EN ESPERA', classes: 'bg-amber-100 text-amber-700' },
-  SCHEDULED: { label: 'PROGRAMADO', classes: 'bg-slate-100 text-slate-500' },
 }
 
 const TAREAS_MOCK: Record<number, Tarea[]> = {
@@ -55,23 +47,16 @@ function RouteComponent() {
   const { data, isLoading } = useQuery({
     queryKey: ['pacientes'],
     queryFn: async () => {
-      const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
+      const res = await fetchWithToken<{ pacientes: pacientesTemporal[] }>('http://localhost:3000/api/pacientes', {
         headers: {
           'content-type': 'application/json'
         },
         method: 'GET'
       })
 
-      if (!res.ok) {
-        throw new Error('Error fetching pacientes')
-      }
-
-      const data = await res.json() as { pacientes: Paciente[] }
-      console.log(data)
-      return data.pacientes as unknown as pacientesTemporal[]
+      return res.data?.pacientes as unknown as pacientesTemporal[]
     },
   })
-
 
   const pacientesFiltrados = useMemo(() =>
     data ? data.filter(p =>
@@ -87,14 +72,59 @@ function RouteComponent() {
   )
 
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
+  const [editandoPaciente, setEditandoPaciente] = useState<pacientesTemporal | null>(null)
 
-  const [nuevoPaciente, setNuevoPaciente] = useState({
+  const [nuevoPaciente, setNuevoPaciente] = useState<Omit<pacientesTemporal, 'id' | 'creadoPorId'>>({
     nombre: "",
-    edad: "",
-    telefono: "",
-    tipo: "",
-    estado: "Pendiente",
+    edad: 0,
+    sexo: "",
+    documento: "",
   })
+
+  const handleDeletePaciente = async (id: number) => {
+    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'DELETE'
+    })
+
+    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
+  }
+
+  const handleEditPaciente = async (id: number, updatedData: Partial<pacientesTemporal>) => {
+    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'PUT',
+      body: JSON.stringify(updatedData)
+    })
+
+    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
+  }
+
+  const handleCrearPaciente = async () => {
+    const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(nuevoPaciente)
+    })
+
+
+    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
+
+    setNuevoPaciente({
+      nombre: "",
+      edad: 0,
+      sexo: "",
+      documento: "",
+    })
+
+    setMostrarFormulario(false)
+  }
 
   return (
     <MainPanel>
@@ -102,8 +132,8 @@ function RouteComponent() {
 
         {/* Header */}
         <div>
-          <h1 className="text-[24px] font-bold text-slate-900">Mis Pacientes</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">Gestiona y consulta la información de todos tus pacientes registrados.</p>
+          <h1 className="text-[24px] font-bold text-slate-900">Pacientes</h1>
+          <p className="text-[13px] text-slate-400 mt-0.5">Gestiona y consulta la información de todos los pacientes registrados.</p>
         </div>
 
         {/* Tabla + Calendario */}
@@ -147,7 +177,7 @@ function RouteComponent() {
               <table className="w-full">
                 <thead className="bg-slate-50/80 sticky top-0 z-10">
                   <tr>
-                    {['Hora', 'Nombre del Paciente', 'Tipo', 'Estado'].map(h => (
+                    {['Edad', 'Nombre del Paciente', 'Tipo', 'Acciones'].map(h => (
                       <th key={h} className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
                     ))}
                   </tr>
@@ -179,9 +209,24 @@ function RouteComponent() {
                         </td>
                         <td className="px-5 py-3.5 text-[13px] text-slate-500">{p.documento}</td>
                         <td className="px-5 py-3.5">
-                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${STATUS_CONFIG['COMPLETED']?.classes}`}>
-                            {STATUS_CONFIG['COMPLETED']?.label}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              onClick={() => setEditandoPaciente(p)}
+                              className="text-[11px] font-semibold text-[#1565d8] hover:text-[#0f56bd] px-2 py-1 rounded border border-[#1565d8]/30 hover:bg-[#1565d8]/5 transition-colors"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`¿Eliminar a ${p.nombre}?`)) {
+                                  handleDeletePaciente(p.id)
+                                }
+                              }}
+                              className="text-[11px] font-semibold text-red-500 hover:text-red-600 px-2 py-1 rounded border border-red-200 hover:bg-red-50 transition-colors"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )
@@ -203,11 +248,10 @@ function RouteComponent() {
                   <button
                     key={n}
                     onClick={() => setPagina(n)}
-                    className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
-                      n === paginaActual
-                        ? 'bg-[#1565d8] text-white'
-                        : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
-                    }`}
+                    className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${n === paginaActual
+                      ? 'bg-[#1565d8] text-white'
+                      : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
+                      }`}
                   >{n}</button>
                 ))}
                 <button
@@ -304,7 +348,7 @@ function RouteComponent() {
                     onChange={(e) =>
                       setNuevoPaciente({
                         ...nuevoPaciente,
-                        edad: e.target.value,
+                        edad: parseInt(e.target.value) || 0,
                       })
                     }
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
@@ -313,54 +357,40 @@ function RouteComponent() {
 
                 <div>
                   <label className="mb-2 block text-sm font-semibold">
-                    Teléfono
-                  </label>
-
-                  <input
-                    type="text"
-                    value={nuevoPaciente.telefono}
-                    onChange={(e) =>
-                      setNuevoPaciente({
-                        ...nuevoPaciente,
-                        telefono: e.target.value,
-                      })
-                    }
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold">
-                    Tipo de Consulta
+                    Sexo
                   </label>
 
                   <select
-                    value={nuevoPaciente.tipo}
+                    value={nuevoPaciente.sexo}
                     onChange={(e) =>
                       setNuevoPaciente({
                         ...nuevoPaciente,
-                        tipo: e.target.value,
+                        sexo: e.target.value,
                       })
                     }
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
                   >
                     <option value="">Seleccione...</option>
-                    <option>Consulta Inicial</option>
-                    <option>Seguimiento</option>
-                    <option>Urgencia</option>
-                    <option>Revisión</option>
+                    <option>Masculino</option>
+                    <option>Femenino</option>
                   </select>
                 </div>
 
-                <div className="col-span-2">
+                <div>
                   <label className="mb-2 block text-sm font-semibold">
-                    Observaciones
+                    Documento
                   </label>
 
-                  <textarea
-                    rows={4}
-                    className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
-                    placeholder="Escriba alguna observación..."
+                  <input
+                    type="text"
+                    value={nuevoPaciente.documento}
+                    onChange={(e) =>
+                      setNuevoPaciente({
+                        ...nuevoPaciente,
+                        documento: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
                   />
                 </div>
 
@@ -377,39 +407,7 @@ function RouteComponent() {
                 </button>
 
                 <button
-                  onClick={async () => {
-                    console.log(nuevoPaciente)
-                    const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
-                      headers: {
-                        'content-type': 'application/json'
-                      },
-                      method: 'POST',
-                      body: JSON.stringify({
-                        nombre: nuevoPaciente.nombre,
-                        edad: Number(nuevoPaciente.edad),
-                        sexo: nuevoPaciente.nombre,
-                        documento: nuevoPaciente.nombre,
-                      })
-                    })
-
-                    if (!res.ok) {
-                      console.log(res.status)
-                      console.error('Error al guardar paciente')
-                      return
-                    }
-
-                    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
-
-                    setNuevoPaciente({
-                      nombre: "",
-                      edad: "",
-                      telefono: "",
-                      tipo: "",
-                      estado: "Pendiente",
-                    })
-
-                    setMostrarFormulario(false)
-                  }}
+                  onClick={handleCrearPaciente}
                   className="rounded-lg bg-[#1565d8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f56bd]"
                 >
                   Guardar Paciente
@@ -419,6 +417,68 @@ function RouteComponent() {
 
             </div>
 
+          </div>
+        )}
+
+        {/* Modal Editar Paciente */}
+        {editandoPaciente && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+            <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Editar Paciente</h2>
+                  <p className="text-sm text-slate-500">Actualice la información del paciente.</p>
+                </div>
+                <button onClick={() => setEditandoPaciente(null)} className="text-2xl text-slate-400 hover:text-slate-700">×</button>
+              </div>
+              <div className="grid grid-cols-2 gap-5 p-6">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold">Nombre Completo</label>
+                  <input
+                    type="text"
+                    value={editandoPaciente.nombre}
+                    onChange={e => setEditandoPaciente({ ...editandoPaciente, nombre: e.target.value })}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold">Edad</label>
+                  <input
+                    type="number"
+                    value={editandoPaciente.edad}
+                    onChange={e => setEditandoPaciente({ ...editandoPaciente, edad: Number(e.target.value) })}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold">Documento</label>
+                  <input
+                    type="text"
+                    value={editandoPaciente.documento}
+                    onChange={e => setEditandoPaciente({ ...editandoPaciente, documento: e.target.value })}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
+                <button onClick={() => setEditandoPaciente(null)} className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium hover:bg-slate-100">
+                  Cancelar
+                </button>
+                <button
+                  onClick={async () => {
+                    await handleEditPaciente(editandoPaciente.id, {
+                      nombre: editandoPaciente.nombre,
+                      edad: editandoPaciente.edad,
+                      documento: editandoPaciente.documento,
+                    })
+                    setEditandoPaciente(null)
+                  }}
+                  className="rounded-lg bg-[#1565d8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f56bd]"
+                >
+                  Guardar Cambios
+                </button>
+              </div>
+            </div>
           </div>
         )}
 

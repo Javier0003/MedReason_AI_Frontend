@@ -53,7 +53,7 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-0.5">
-        {navBasedOnRole[user?.role ?? "DOCTOR"].map((item) => {
+        {navBasedOnRole[user?.rol ?? "DOCTOR"].map((item) => {
           const isActive = pathname === item.href
           return (
             <Link
