@@ -1,10 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
 import Calendario from '../../../components/calendario'
 import { MESES } from '../../../constants/constants'
-import type { Paciente } from '../../../types'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
 
@@ -16,13 +15,6 @@ export const Route = createFileRoute('/doctor/pacientes/')({
 interface Tarea {
   titulo: string
   tiempo: string
-}
-
-const STATUS_CONFIG = {
-  COMPLETED: { label: 'COMPLETADO', classes: 'bg-emerald-100 text-emerald-700' },
-  IN_PROGRESS: { label: 'EN PROGRESO', classes: 'bg-blue-100 text-blue-700' },
-  WAITING: { label: 'EN ESPERA', classes: 'bg-amber-100 text-amber-700' },
-  SCHEDULED: { label: 'PROGRAMADO', classes: 'bg-slate-100 text-slate-500' },
 }
 
 const TAREAS_MOCK: Record<number, Tarea[]> = {
@@ -48,30 +40,22 @@ const ITEMS_POR_PAGINA = 10
 function RouteComponent() {
   const [search, setSearch] = useState('')
   const [pagina, setPagina] = useState(1)
-  useEffect(() => setPagina(1), [search])
   const [modalDia, setModalDia] = useState<{ dia: number; tareas: Tarea[] } | null>(null)
   const tareasHoy = TAREAS_MOCK[new Date().getDate()] ?? []
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['pacientes'],
     queryFn: async () => {
-      const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
+      const res = await fetchWithToken<{ pacientes: pacientesTemporal[] }>('http://localhost:3000/api/pacientes', {
         headers: {
           'content-type': 'application/json'
         },
         method: 'GET'
       })
 
-      if (!res.ok) {
-        throw new Error('Error fetching pacientes')
-      }
-
-      const data = await res.json() as { pacientes: Paciente[] }
-      console.log(data)
-      return data.pacientes as unknown as pacientesTemporal[]
+      return res.data?.pacientes as unknown as pacientesTemporal[]
     },
   })
-
 
   const pacientesFiltrados = useMemo(() =>
     data ? data.filter(p =>
@@ -87,14 +71,59 @@ function RouteComponent() {
   )
 
   const [mostrarFormulario, setMostrarFormulario] = useState(false)
+  const [editandoPaciente, setEditandoPaciente] = useState<pacientesTemporal | null>(null)
 
-  const [nuevoPaciente, setNuevoPaciente] = useState({
+  const [nuevoPaciente, setNuevoPaciente] = useState<Omit<pacientesTemporal, 'id' | 'creadoPorId'>>({
     nombre: "",
-    edad: "",
-    telefono: "",
-    tipo: "",
-    estado: "Pendiente",
+    edad: 0,
+    sexo: "",
+    documento: "",
   })
+
+  const handleDeletePaciente = async (id: number) => {
+    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'DELETE'
+    })
+
+    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
+  }
+
+  const handleEditPaciente = async (id: number, updatedData: Partial<pacientesTemporal>) => {
+    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'PUT',
+      body: JSON.stringify(updatedData)
+    })
+
+    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
+  }
+
+  const handleCrearPaciente = async () => {
+    const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
+      headers: {
+        'content-type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify(nuevoPaciente)
+    })
+
+
+    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
+
+    setNuevoPaciente({
+      nombre: "",
+      edad: 0,
+      sexo: "",
+      documento: "",
+    })
+
+    setMostrarFormulario(false)
+  }
 
   return (
     <MainPanel>
@@ -102,8 +131,8 @@ function RouteComponent() {
 
         {/* Header */}
         <div>
-          <h1 className="text-[24px] font-bold text-slate-900">Mis Pacientes</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">Gestiona y consulta la información de todos tus pacientes registrados.</p>
+          <h1 className="text-[24px] font-bold text-slate-900">Pacientes</h1>
+          <p className="text-[13px] text-slate-400 mt-0.5">Gestiona y consulta la información de todos los pacientes registrados.</p>
         </div>
 
         {/* Tabla + Calendario */}
@@ -114,10 +143,11 @@ function RouteComponent() {
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
               <h2 className="text-[14px] font-bold text-slate-800">Lista de Pacientes</h2>
               <div className="flex gap-2">
-                <button className="text-[12px] font-semibold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
+                <button type="button" className="text-[12px] font-semibold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                   Exportar
                 </button>
                 <button
+                  type="button"
                   onClick={() => setMostrarFormulario(true)}
                   className="text-[12px] font-semibold text-white bg-[#1565d8] px-3 py-1.5 rounded-lg hover:bg-[#0f56bd] transition-colors"
                 >
@@ -130,15 +160,16 @@ function RouteComponent() {
             <div className="px-5 py-3 border-b border-slate-100 shrink-0">
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]">🔍</span>
-                <input
-                  type="text"
-                  placeholder="Buscar pacientes por nombre, tipo..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
-                />
-                {search && (
-                  <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">✕</button>
+                  <input
+                    aria-label="Buscar pacientes"
+                    type="text"
+                    placeholder="Buscar pacientes por nombre, tipo..."
+                    value={search}
+                    onChange={e => { setSearch(e.target.value); setPagina(1) }}
+                    className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
+                  />
+                  {search && (
+                    <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">✕</button>
                 )}
               </div>
             </div>
@@ -147,7 +178,7 @@ function RouteComponent() {
               <table className="w-full">
                 <thead className="bg-slate-50/80 sticky top-0 z-10">
                   <tr>
-                    {['Hora', 'Nombre del Paciente', 'Tipo', 'Estado'].map(h => (
+                    {['Edad', 'Nombre del Paciente', 'Tipo', 'Acciones'].map(h => (
                       <th key={h} className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
                     ))}
                   </tr>
@@ -179,9 +210,26 @@ function RouteComponent() {
                         </td>
                         <td className="px-5 py-3.5 text-[13px] text-slate-500">{p.documento}</td>
                         <td className="px-5 py-3.5">
-                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${STATUS_CONFIG['COMPLETED']?.classes}`}>
-                            {STATUS_CONFIG['COMPLETED']?.label}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setEditandoPaciente(p)}
+                              className="text-[11px] font-semibold text-[#1565d8] hover:text-[#0f56bd] px-2 py-1 rounded border border-[#1565d8]/30 hover:bg-[#1565d8]/5 transition-colors"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`¿Eliminar a ${p.nombre}?`)) {
+                                  handleDeletePaciente(p.id)
+                                }
+                              }}
+                              className="text-[11px] font-semibold text-red-500 hover:text-red-600 px-2 py-1 rounded border border-red-200 hover:bg-red-50 transition-colors"
+                            >
+                              Eliminar
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )
@@ -195,22 +243,24 @@ function RouteComponent() {
               <p className="text-[11px] text-slate-400">Mostrando {pacientesFiltrados.length} de {pacientesFiltrados.length} pacientes</p>
               <div className="flex items-center gap-1">
                 <button
+                  type="button"
                   onClick={() => setPagina(p => Math.max(1, p - 1))}
                   disabled={paginaActual === 1}
                   className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >‹</button>
                 {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
                   <button
+                    type="button"
                     key={n}
                     onClick={() => setPagina(n)}
-                    className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
-                      n === paginaActual
-                        ? 'bg-[#1565d8] text-white'
-                        : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
-                    }`}
+                    className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${n === paginaActual
+                      ? 'bg-[#1565d8] text-white'
+                      : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
+                      }`}
                   >{n}</button>
                 ))}
                 <button
+                  type="button"
                   onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))}
                   disabled={paginaActual === totalPaginas}
                   className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
@@ -239,7 +289,7 @@ function RouteComponent() {
                   ))}
                 </div>
               )}
-              <button className="w-full mt-4 py-2 text-[12px] font-semibold text-[#1565d8] hover:text-[#0f56bd] border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+              <button type="button" className="w-full mt-4 py-2 text-[12px] font-semibold text-[#1565d8] hover:text-[#0f56bd] border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
                 Ver Todas las Tareas
               </button>
             </div>
@@ -265,6 +315,7 @@ function RouteComponent() {
                 </div>
 
                 <button
+                  type="button"
                   onClick={() => setMostrarFormulario(false)}
                   className="text-2xl text-slate-400 hover:text-slate-700"
                 >
@@ -276,11 +327,12 @@ function RouteComponent() {
               <div className="grid grid-cols-2 gap-5 p-6">
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold">
+                  <label className="mb-2 block text-sm font-semibold" htmlFor="nuevo-nombre">
                     Nombre Completo
                   </label>
 
                   <input
+                    id="nuevo-nombre"
                     type="text"
                     value={nuevoPaciente.nombre}
                     onChange={(e) =>
@@ -294,17 +346,18 @@ function RouteComponent() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold">
+                  <label className="mb-2 block text-sm font-semibold" htmlFor="nuevo-edad">
                     Edad
                   </label>
 
                   <input
+                    id="nuevo-edad"
                     type="number"
                     value={nuevoPaciente.edad}
                     onChange={(e) =>
                       setNuevoPaciente({
                         ...nuevoPaciente,
-                        edad: e.target.value,
+                        edad: parseInt(e.target.value) || 0,
                       })
                     }
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
@@ -312,55 +365,43 @@ function RouteComponent() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-semibold">
-                    Teléfono
-                  </label>
-
-                  <input
-                    type="text"
-                    value={nuevoPaciente.telefono}
-                    onChange={(e) =>
-                      setNuevoPaciente({
-                        ...nuevoPaciente,
-                        telefono: e.target.value,
-                      })
-                    }
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold">
-                    Tipo de Consulta
+                  <label className="mb-2 block text-sm font-semibold" htmlFor="nuevo-sexo">
+                    Sexo
                   </label>
 
                   <select
-                    value={nuevoPaciente.tipo}
+                    id="nuevo-sexo"
+                    value={nuevoPaciente.sexo}
                     onChange={(e) =>
                       setNuevoPaciente({
                         ...nuevoPaciente,
-                        tipo: e.target.value,
+                        sexo: e.target.value,
                       })
                     }
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
                   >
                     <option value="">Seleccione...</option>
-                    <option>Consulta Inicial</option>
-                    <option>Seguimiento</option>
-                    <option>Urgencia</option>
-                    <option>Revisión</option>
+                    <option>Masculino</option>
+                    <option>Femenino</option>
                   </select>
                 </div>
 
-                <div className="col-span-2">
-                  <label className="mb-2 block text-sm font-semibold">
-                    Observaciones
+                <div>
+                  <label className="mb-2 block text-sm font-semibold" htmlFor="nuevo-documento">
+                    Documento
                   </label>
 
-                  <textarea
-                    rows={4}
-                    className="w-full resize-none rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
-                    placeholder="Escriba alguna observación..."
+                  <input
+                    id="nuevo-documento"
+                    type="text"
+                    value={nuevoPaciente.documento}
+                    onChange={(e) =>
+                      setNuevoPaciente({
+                        ...nuevoPaciente,
+                        documento: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
                   />
                 </div>
 
@@ -370,6 +411,7 @@ function RouteComponent() {
               <div className="flex justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
 
                 <button
+                  type="button"
                   onClick={() => setMostrarFormulario(false)}
                   className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium hover:bg-slate-100"
                 >
@@ -377,39 +419,8 @@ function RouteComponent() {
                 </button>
 
                 <button
-                  onClick={async () => {
-                    console.log(nuevoPaciente)
-                    const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
-                      headers: {
-                        'content-type': 'application/json'
-                      },
-                      method: 'POST',
-                      body: JSON.stringify({
-                        nombre: nuevoPaciente.nombre,
-                        edad: Number(nuevoPaciente.edad),
-                        sexo: nuevoPaciente.nombre,
-                        documento: nuevoPaciente.nombre,
-                      })
-                    })
-
-                    if (!res.ok) {
-                      console.log(res.status)
-                      console.error('Error al guardar paciente')
-                      return
-                    }
-
-                    queryClient.invalidateQueries({ queryKey: ['pacientes'] })
-
-                    setNuevoPaciente({
-                      nombre: "",
-                      edad: "",
-                      telefono: "",
-                      tipo: "",
-                      estado: "Pendiente",
-                    })
-
-                    setMostrarFormulario(false)
-                  }}
+                  type="button"
+                  onClick={handleCrearPaciente}
                   className="rounded-lg bg-[#1565d8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f56bd]"
                 >
                   Guardar Paciente
@@ -419,6 +430,72 @@ function RouteComponent() {
 
             </div>
 
+          </div>
+        )}
+
+        {/* Modal Editar Paciente */}
+        {editandoPaciente && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4">
+            <div className="w-full max-w-2xl overflow-hidden rounded-2xl bg-white shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
+                <div>
+                  <h2 className="text-xl font-bold text-slate-800">Editar Paciente</h2>
+                  <p className="text-sm text-slate-500">Actualice la información del paciente.</p>
+                </div>
+                <button type="button" onClick={() => setEditandoPaciente(null)} className="text-2xl text-slate-400 hover:text-slate-700">×</button>
+              </div>
+              <div className="grid grid-cols-2 gap-5 p-6">
+                <div>
+                  <label className="mb-2 block text-sm font-semibold" htmlFor="edit-nombre">Nombre Completo</label>
+                  <input
+                    id="edit-nombre"
+                    type="text"
+                    value={editandoPaciente.nombre}
+                    onChange={e => setEditandoPaciente({ ...editandoPaciente, nombre: e.target.value })}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold" htmlFor="edit-edad">Edad</label>
+                  <input
+                    id="edit-edad"
+                    type="number"
+                    value={editandoPaciente.edad}
+                    onChange={e => setEditandoPaciente({ ...editandoPaciente, edad: Number(e.target.value) })}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="mb-2 block text-sm font-semibold" htmlFor="edit-documento">Documento</label>
+                  <input
+                    id="edit-documento"
+                    type="text"
+                    value={editandoPaciente.documento}
+                    onChange={e => setEditandoPaciente({ ...editandoPaciente, documento: e.target.value })}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 focus:border-[#1565d8] focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 border-t border-slate-200 bg-slate-50 px-6 py-4">
+                <button type="button" onClick={() => setEditandoPaciente(null)} className="rounded-lg border border-slate-300 px-5 py-2 text-sm font-medium hover:bg-slate-100">
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={async () => {
+                    await handleEditPaciente(editandoPaciente.id, {
+                      nombre: editandoPaciente.nombre,
+                      edad: editandoPaciente.edad,
+                      documento: editandoPaciente.documento,
+                    })
+                    setEditandoPaciente(null)
+                  }}
+                  className="rounded-lg bg-[#1565d8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f56bd]"
+                >
+                  Guardar Cambios
+                </button>
+              </div>
+            </div>
           </div>
         )}
 
@@ -433,7 +510,7 @@ function RouteComponent() {
                     {MESES[new Date().getMonth()].charAt(0) + MESES[new Date().getMonth()].slice(1).toLowerCase()} {modalDia.dia}
                   </h2>
                 </div>
-                <button onClick={() => setModalDia(null)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
+                <button type="button" onClick={() => setModalDia(null)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
               </div>
               <div className="px-6 py-5 space-y-3">
                 {modalDia.tareas.length === 0 ? (
@@ -449,7 +526,7 @@ function RouteComponent() {
                 ))}
               </div>
               <div className="px-6 pb-5">
-                <button onClick={() => setModalDia(null)} className="w-full h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">
+                <button type="button" onClick={() => setModalDia(null)} className="w-full h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">
                   Cerrar
                 </button>
               </div>

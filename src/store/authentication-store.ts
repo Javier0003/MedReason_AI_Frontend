@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { User } from "../types";
 import Cookies from 'js-cookie'
+import { redirect } from "@tanstack/react-router";
 
 type AuthenticationState = {
   isAuthenticated: boolean;
@@ -63,7 +64,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
       user: {
         id: userData.id,
         name: userData.name,
-        role: userData.role,
+        rol: userData.rol,
         userImg: "https://example.com/user.jpg",
         profession: "Cardiologist",
         email: userData.email,
@@ -76,6 +77,9 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
   logout: async () => {
     // enviar solicitud de logout al backend si es necesario
 
+    Cookies.remove('authenticationToken', { path: '/' });
+    Cookies.remove('userData', { path: '/' });
     set({ isAuthenticated: false, authenticationToken: null, user: null })
+    throw redirect({ to: '/auth/login' });
   }
 }))

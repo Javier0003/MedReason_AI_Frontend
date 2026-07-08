@@ -3,10 +3,10 @@ import type { DATE_RANGE, DIAGNOSTIC_TYPE, DIAS, MESES } from "../constants/cons
 export type Role = 'DOCTOR' | 'ADMIN'
 
 export type User = {
-  id: string;
+  id: number;
   name: string;
   email: string
-  role: Role;
+  rol: Role;
   userImg: string;
   profession: string;
   status: UserStatus

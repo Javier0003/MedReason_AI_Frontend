@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import IconArrowRight from '../../../assets/svg/IconArrowRight';
 import IconEye from '../../../assets/svg/IconEye';
 import IconLock from '../../../assets/svg/IconLock';
@@ -10,41 +10,63 @@ import isAuthenticated from '../../../lib/is-authenticated';
 
 export const Route = createFileRoute('/auth/login/')({
   component: RouteComponent,
-  beforeLoad: isAuthenticated
+  beforeLoad: isAuthenticated,
 })
+
+const STORAGE_KEY = 'medreason_email'
+
+function loadSavedEmail(): string {
+  try {
+    return localStorage.getItem(STORAGE_KEY) ?? ''
+  } catch {
+    return ''
+  }
+}
+
+function saveEmail(email: string) {
+  localStorage.setItem(STORAGE_KEY, email)
+}
+
+function clearSavedEmail() {
+  localStorage.removeItem(STORAGE_KEY)
+}
 
 function RouteComponent() {
   const navigate = useNavigate()
-  const [errors, setErrors] = useState({
-    email: "",
-    password: "",
-  });
-  const [showPassword, setShowPassword] = useState(false);
+  const [errors, setErrors] = useState({ email: '', password: '' })
+  const [showPassword, setShowPassword] = useState(false)
+  const [rememberMe, setRememberMe] = useState(() => !!loadSavedEmail())
 
-  const email = useRef<HTMLInputElement>(null);
-  const password = useRef<HTMLInputElement>(null);
+  const email = useRef<HTMLInputElement>(null)
+  const password = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const savedEmail = loadSavedEmail()
+    if (email.current) email.current.value = savedEmail
+  }, [])
 
   const handleLogin = async () => {
-    const emailValue = email.current?.value;
-    const passwordValue = password.current?.value;
+    const emailValue = email.current?.value
+    const passwordValue = password.current?.value
 
-    const nextErrors = {
-      email: "",
-      password: "",
-    };
-    if (!emailValue) nextErrors.email = "Por favor, ingrese su correo electrónico.";
-    if (!passwordValue) nextErrors.password = "Por favor, ingrese su contraseña.";
+    const nextErrors = { email: '', password: '' }
+    if (!emailValue) nextErrors.email = 'Por favor, ingrese su correo electrónico.'
+    if (!passwordValue) nextErrors.password = 'Por favor, ingrese su contraseña.'
 
-    setErrors(nextErrors);
-    const hasErrors = Object.values(nextErrors).some(Boolean);
-    if (hasErrors) return;
+    setErrors(nextErrors)
+    if (Object.values(nextErrors).some(Boolean)) return
 
-    const is_authenticated = await authenticationStore.getState().authenticate(emailValue!, passwordValue!);
+    const is_authenticated = await authenticationStore.getState().authenticate(emailValue!, passwordValue!)
 
-    if(is_authenticated){
+    if (is_authenticated) {
+      if (rememberMe) {
+        saveEmail(emailValue!)
+      } else {
+        clearSavedEmail()
+      }
       navigate({ to: '/doctor/dashboard' })
     } else {
-      alert("Error de autenticación. Por favor, revise sus credenciales e intente nuevamente.")
+      alert('Error de autenticación. Por favor, revise sus credenciales e intente nuevamente.')
     }
   }
 
@@ -75,7 +97,6 @@ function RouteComponent() {
               </p>
             </div>
 
-            {/* Línea de EKG */}
             <svg
               viewBox="0 0 400 32"
               className="mb-6 h-7 w-full text-[#1565d8]/70"
@@ -92,7 +113,7 @@ function RouteComponent() {
               />
             </svg>
 
-            <div className="space-y-6">
+            <form className="space-y-6" onSubmit={async (e) => { e.preventDefault(); await handleLogin(); }}>
               <div>
                 <label className="mb-1.5 block text-[13px] font-medium text-slate-600" htmlFor="email">
                   Correo electrónico
@@ -103,6 +124,7 @@ function RouteComponent() {
                     aria-label="Correo electrónico"
                     type="email"
                     placeholder="nombre@mediflow.clinical"
+                    autoComplete="email"
                     className="w-full bg-transparent text-[14px] text-slate-700 outline-none placeholder:text-slate-400"
                     ref={email}
                   />
@@ -131,6 +153,7 @@ function RouteComponent() {
                     type={showPassword ? "text" : "password"}
                     aria-label="Contraseña"
                     placeholder="••••••••"
+                    autoComplete="current-password"
                     className="w-full bg-transparent text-[14px] text-slate-700 outline-none placeholder:text-slate-400"
                     ref={password}
                   />
@@ -148,6 +171,16 @@ function RouteComponent() {
                 </p>
               </div>
 
+              <label className="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={e => setRememberMe(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-[#1565d8] focus:ring-[#1565d8]/30"
+                />
+                <span className="text-[13px] text-slate-600">Recordar mis datos</span>
+              </label>
+
               <button
                 type="submit"
                 onClick={handleLogin}
@@ -156,7 +189,7 @@ function RouteComponent() {
                 Iniciar Sesión en el Panel Clínico
                 <IconArrowRight />
               </button>
-            </div>
+            </form>
           </section>
 
           <div className="mt-8 text-center">
