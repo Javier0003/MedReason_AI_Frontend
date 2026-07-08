@@ -64,7 +64,14 @@ function RouteComponent() {
       } else {
         clearSavedEmail()
       }
-      navigate({ to: '/doctor/dashboard' })
+
+      if(authenticationStore.getState().user?.rol === 'DOCTOR') {
+        navigate({ to: '/doctor/dashboard' })
+      } else if(authenticationStore.getState().user?.rol === 'ADMIN') {
+        navigate({ to: '/admin/dashboard' })
+      } else {
+        alert('Rol de usuario no reconocido. Por favor, contacte al soporte.')
+      }
     } else {
       alert('Error de autenticación. Por favor, revise sus credenciales e intente nuevamente.')
     }

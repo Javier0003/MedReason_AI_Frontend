@@ -41,7 +41,7 @@ export default async function isAuthenticated() {
   }
 
   if (user?.rol === 'ADMIN' && path === '/auth/login') {
-    throw redirect({ to: '/admin/Logs' })
+    throw redirect({ to: '/admin/dashboard' })
   }
 
   return true
