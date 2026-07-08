@@ -49,72 +49,89 @@ function RouteComponent() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#f3f4f7] text-slate-900">
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#f0f5fd] via-[#f6f8fc] to-[#eef3fc] text-slate-900">
+      {/* Fondo decorativo */}
       <div className="absolute inset-0">
-        <div className="absolute inset-y-0 left-1/2 w-105 -translate-x-1/2 bg-white/35 blur-2xl" />
-        <div className="absolute -left-24 top-20 h-72 w-72 rounded-full bg-white/30 blur-3xl" />
-        <div className="absolute right-20 top-24 h-130 w-[320px] rounded-[40px] border border-white/20 bg-white/10 blur-sm" />
-        <div className="absolute right-12 top-32 h-16 w-48 rounded-xl bg-white/12 blur-md" />
-        <div className="absolute right-14 top-60 h-70 w-55 rounded-[28px] border border-white/20 bg-white/10" />
-        <div className="absolute bottom-0 left-0 right-0 h-40 bg-linear-to-t from-white/20 to-transparent" />
+        <div className="absolute -top-40 right-1/4 h-[420px] w-[420px] rounded-full bg-[#1565d8]/12 blur-3xl" />
+        <div className="absolute -bottom-24 -left-16 h-80 w-80 rounded-full bg-[#1565d8]/8 blur-3xl" />
+        <div className="absolute right-0 top-1/3 h-56 w-56 rounded-full bg-[#1565d8]/6 blur-3xl" />
       </div>
 
-      <main className="relative z-10 flex min-h-screen items-center justify-center px-4 py-10">
-        <div className="w-full max-w-95">
-          <div className="mb-7 flex flex-col items-center text-center">
-            <div className="mb-2 flex items-center gap-2">
-              <div className="text-[#1565d8]">
-                <IconMedicalLogo className="h-7 w-7" />
-              </div>
-              <h1 className="text-[20px] font-bold tracking-[-0.02em] text-[#111827]">
-                MedReason AI
-              </h1>
-            </div>
-            <p className="text-[13px] text-slate-500">Portal de Sistemas Clínicos</p>
+      <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-4 py-14">
+        <div className="w-full max-w-100">
+
+          {/* Badge circular con anillo, flotando sobre la tarjeta */}
+          <div className="relative z-20 mx-auto -mb-9 flex h-18 w-18 items-center justify-center rounded-full bg-white text-[#1565d8] shadow-[0_12px_28px_rgba(21,101,216,0.25)] ring-4 ring-[#1565d8]/10">
+            <IconMedicalLogo className="h-8 w-8" />
           </div>
 
-          <section className="rounded-2xl border border-slate-200/80 bg-white/80 p-6 shadow-[0_8px_30px_rgba(15,23,42,0.10)] backdrop-blur-sm">
-            <div className="space-y-5">
+          <section className="rounded-[32px] border border-slate-200/60 bg-white pt-16 pb-9 px-8 shadow-[0_25px_60px_rgba(15,23,42,0.10)] sm:px-10">
+            <div className="mb-6 text-center">
+              <h1 className="text-[22px] font-bold tracking-[-0.02em] text-[#111827]">
+                MedReason AI
+              </h1>
+              <p className="mt-1.5 text-[13px] text-slate-500">
+                Ingresa con tus credenciales clínicas para continuar
+              </p>
+            </div>
+
+            {/* Línea de EKG */}
+            <svg
+              viewBox="0 0 400 32"
+              className="mb-6 h-7 w-full text-[#1565d8]/70"
+              preserveAspectRatio="none"
+              aria-hidden="true"
+            >
+              <polyline
+                points="0,16 20,16 26,12 32,16 40,16 44,18 48,2 52,26 56,16 64,16 74,10 84,16 100,16 140,16 160,16 166,12 172,16 180,16 184,18 188,2 192,26 196,16 204,16 214,10 224,16 240,16 280,16 300,16 306,12 312,16 320,16 324,18 328,2 332,26 336,16 344,16 354,10 364,16 380,16 400,16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+
+            <div className="space-y-6">
               <div>
-                <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500" htmlFor="email">
-                  Correo
+                <label className="mb-1.5 block text-[13px] font-medium text-slate-600" htmlFor="email">
+                  Correo electrónico
                 </label>
-                <div className="flex h-12 items-center gap-3 rounded-lg border border-slate-300 bg-[#fbfbfc] px-3 text-slate-500 focus-within:border-[#1565d8] focus-within:ring-2 focus-within:ring-[#1565d8]/10">
+                <div className="flex h-11 items-center gap-3 border-b-2 border-slate-200 px-1 text-slate-400 transition focus-within:border-[#1565d8]">
                   <IconMail />
                   <input
                     aria-label="Correo electrónico"
                     type="email"
                     placeholder="nombre@mediflow.clinical"
-                    className="w-full bg-transparent text-[15px] text-slate-600 outline-none placeholder:text-slate-400"
+                    className="w-full bg-transparent text-[14px] text-slate-700 outline-none placeholder:text-slate-400"
                     ref={email}
                   />
                 </div>
-
-                <p className="text-[13px] text-red-500">
+                <p className="mt-1 text-[12px] text-red-500">
                   {errors.email}
                 </p>
               </div>
 
               <div>
-                <div className="mb-2 flex items-center justify-between">
-                  <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-500" htmlFor="password">
+                <div className="mb-1.5 flex items-center justify-between">
+                  <label className="block text-[13px] font-medium text-slate-600" htmlFor="password">
                     Contraseña
                   </label>
                   <button
                     type="button"
-                    className="text-[11px] font-semibold text-[#1565d8] hover:text-[#0f56bd]"
+                    className="text-[12px] font-semibold text-[#1565d8] hover:text-[#0f56bd]"
                   >
                     ¿Olvidó su contraseña?
                   </button>
                 </div>
 
-                <div className="flex h-12 items-center gap-3 rounded-lg border border-slate-300 bg-[#fbfbfc] px-3 text-slate-500 focus-within:border-[#1565d8] focus-within:ring-2 focus-within:ring-[#1565d8]/10">
+                <div className="flex h-11 items-center gap-3 border-b-2 border-slate-200 px-1 text-slate-400 transition focus-within:border-[#1565d8]">
                   <IconLock />
                   <input
                     type={showPassword ? "text" : "password"}
                     aria-label="Contraseña"
                     placeholder="••••••••"
-                    className="w-full bg-transparent text-[15px] text-slate-700 outline-none placeholder:text-slate-400"
+                    className="w-full bg-transparent text-[14px] text-slate-700 outline-none placeholder:text-slate-400"
                     ref={password}
                   />
                   <button
@@ -126,17 +143,15 @@ function RouteComponent() {
                     <IconEye />
                   </button>
                 </div>
-                <p className="text-[13px] text-red-500">
+                <p className="mt-1 text-[12px] text-red-500">
                   {errors.password}
                 </p>
-
               </div>
-
 
               <button
                 type="submit"
                 onClick={handleLogin}
-                className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#1565d8] text-[15px] font-semibold text-white shadow-sm transition hover:bg-[#0f56bd] active:scale-[0.99]"
+                className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#1565d8] text-[14px] font-semibold text-white shadow-[0_10px_20px_rgba(21,101,216,0.25)] transition hover:bg-[#0f56bd] active:scale-[0.99]"
               >
                 Iniciar Sesión en el Panel Clínico
                 <IconArrowRight />
@@ -144,8 +159,8 @@ function RouteComponent() {
             </div>
           </section>
 
-          <div className="mt-6 text-center">
-            <p className="mx-auto max-w-72.5 text-[13px] leading-5 text-slate-600">
+          <div className="mt-8 text-center">
+            <p className="mx-auto max-w-80 text-[12.5px] leading-5 text-slate-500">
               Sistema Médico Confidencial. El acceso no autorizado está prohibido.
             </p>
 
