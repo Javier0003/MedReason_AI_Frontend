@@ -28,16 +28,18 @@ export default async function fetchWithToken<T>(url: string, options: RequestIni
 
   try {
     const res = await fetch(url, { ...options, headers });
-    if(res.status === 401) {
-      throw new Error("Unauthorized: Invalid or expired token");
+    const json = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      result.error = json.message || `HTTP ${res.status}`;
+      result.data = json as T;
+      result.success = false;
+      return result;
     }
-    const json = await res.json();
     result.data = json as T;
     result.success = true;
     return result;
   } catch (error) {
-    authenticationStore.getState().logout();
-    result.error = error as string;
+    result.error = (error as Error).message || 'Network error';
     result.success = false;
     return result
   }

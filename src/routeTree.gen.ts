@@ -21,6 +21,7 @@ import { Route as AdminMedicosIndexRouteImport } from './routes/admin/medicos/in
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
 import { Route as AdminConfiguracionIndexRouteImport } from './routes/admin/configuracion/index'
 import { Route as AdminLogsIndexRouteImport } from './routes/admin/Logs/index'
+import { Route as DoctorConsultaIdRouteImport } from './routes/doctor/consulta/$id'
 
 const SupportRoute = SupportRouteImport.update({
   id: '/support',
@@ -83,10 +84,16 @@ const AdminLogsIndexRoute = AdminLogsIndexRouteImport.update({
   path: '/admin/Logs/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DoctorConsultaIdRoute = DoctorConsultaIdRouteImport.update({
+  id: '/doctor/consulta/$id',
+  path: '/doctor/consulta/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/support': typeof SupportRoute
+  '/doctor/consulta/$id': typeof DoctorConsultaIdRoute
   '/admin/Logs/': typeof AdminLogsIndexRoute
   '/admin/configuracion/': typeof AdminConfiguracionIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
@@ -101,6 +108,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/support': typeof SupportRoute
+  '/doctor/consulta/$id': typeof DoctorConsultaIdRoute
   '/admin/Logs': typeof AdminLogsIndexRoute
   '/admin/configuracion': typeof AdminConfiguracionIndexRoute
   '/admin/dashboard': typeof AdminDashboardIndexRoute
@@ -116,6 +124,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/support': typeof SupportRoute
+  '/doctor/consulta/$id': typeof DoctorConsultaIdRoute
   '/admin/Logs/': typeof AdminLogsIndexRoute
   '/admin/configuracion/': typeof AdminConfiguracionIndexRoute
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
@@ -132,6 +141,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/support'
+    | '/doctor/consulta/$id'
     | '/admin/Logs/'
     | '/admin/configuracion/'
     | '/admin/dashboard/'
@@ -146,6 +156,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/support'
+    | '/doctor/consulta/$id'
     | '/admin/Logs'
     | '/admin/configuracion'
     | '/admin/dashboard'
@@ -160,6 +171,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/support'
+    | '/doctor/consulta/$id'
     | '/admin/Logs/'
     | '/admin/configuracion/'
     | '/admin/dashboard/'
@@ -175,6 +187,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SupportRoute: typeof SupportRoute
+  DoctorConsultaIdRoute: typeof DoctorConsultaIdRoute
   AdminLogsIndexRoute: typeof AdminLogsIndexRoute
   AdminConfiguracionIndexRoute: typeof AdminConfiguracionIndexRoute
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
@@ -273,12 +286,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLogsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/doctor/consulta/$id': {
+      id: '/doctor/consulta/$id'
+      path: '/doctor/consulta/$id'
+      fullPath: '/doctor/consulta/$id'
+      preLoaderRoute: typeof DoctorConsultaIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SupportRoute: SupportRoute,
+  DoctorConsultaIdRoute: DoctorConsultaIdRoute,
   AdminLogsIndexRoute: AdminLogsIndexRoute,
   AdminConfiguracionIndexRoute: AdminConfiguracionIndexRoute,
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
