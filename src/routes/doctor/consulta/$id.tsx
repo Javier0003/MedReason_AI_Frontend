@@ -50,7 +50,7 @@ function RouteComponent() {
 
   const messageForAi = useRef<HTMLInputElement>(null)
 
-  const [messages, setMessages] = useState<{ sender: string; text: string }[]>([])
+  const [messages, setMessages] = useState<{ sender: string; text: string; tokens?: number }[]>([])
   const [editandoSintomas, setEditandoSintomas] = useState(false)
   const [editandoObservaciones, setEditandoObservaciones] = useState(false)
   const [sintomasEdit, setSintomasEdit] = useState('')
@@ -89,7 +89,7 @@ function RouteComponent() {
       body: JSON.stringify({ consultaId: Number(id), question: text }),
     })
     if (res.success && res.data) {
-      setMessages(prev => [...prev, { sender: 'ai', text: res.data!.answer }])
+      setMessages(prev => [...prev, { sender: 'ai', text: res.data!.answer, tokens: res.data!.tokens }])
     } else {
       setMessages(prev => [...prev, { sender: 'ai', text: 'Error al obtener respuesta.' }])
     }
@@ -287,7 +287,7 @@ function RouteComponent() {
               <p className="text-[12px] text-slate-400 text-center mt-8">No hay mensajes aún. Escribe una pregunta para la IA.</p>
             )}
             {messages.map((message, index) => (
-              <Message key={index} sender={message.sender} text={message.text} />
+              <Message key={index} sender={message.sender} text={message.text} tokens={message.tokens} />
             ))}
           </section>
 
@@ -315,12 +315,15 @@ function RouteComponent() {
   )
 }
 
-function Message({ sender, text }: { sender: string; text: string }) {
+function Message({ sender, text, tokens }: { sender: string; text: string; tokens?: number }) {
   const isDoctor = sender === 'doctor'
   return (
     <div className={`flex ${isDoctor ? 'justify-end' : 'justify-start'}`}>
       <div className={`max-w-xs p-3 rounded-lg text-[13px] ${isDoctor ? 'bg-[#1565d8] text-white' : 'bg-slate-100 text-slate-700'}`}>
         <p>{text}</p>
+        {tokens !== undefined && (
+          <span className="block mt-1.5 text-[10px] opacity-60 text-right">{tokens} tokens</span>
+        )}
       </div>
     </div>
   )
