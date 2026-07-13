@@ -4,7 +4,6 @@ class FetchResult<T> {
   success: boolean;
   data: T | null;
   error: string | null;
-
   constructor() {
     this.success = false;
     this.data = null;

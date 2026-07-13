@@ -3,7 +3,7 @@ import MainPanel from '../../../components/main-panel'
 import isAuthenticated from '../../../lib/is-authenticated'
 import { useQuery } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import IconArrowRight from '../../../assets/svg/IconArrowRight'
 
@@ -21,6 +21,7 @@ type ConsultaData = {
   completed: string | null
   paciente: { id: number; nombre: string; documento: string }
   doctor: { id: number; nombre: string; email: string }
+  chatbotAnswers: { id: number; question: string; answer: string; tokens: number; createdAt: string }[]
 }
 
 export const Route = createFileRoute('/doctor/consulta/$id')({
@@ -58,6 +59,17 @@ function RouteComponent() {
   const [guardando, setGuardando] = useState(false)
   const [askingAI, setAskingAI] = useState(false)
 
+  useEffect(() => {
+    if (consulta?.chatbotAnswers) {
+      const msgs: { sender: string; text: string; tokens?: number }[] = []
+      for (const a of consulta.chatbotAnswers) {
+        msgs.push({ sender: 'doctor', text: a.question })
+        msgs.push({ sender: 'ai', text: a.answer, tokens: a.tokens })
+      }
+      setMessages(msgs)
+    }
+  }, [consulta?.chatbotAnswers])
+
   const guardarCambios = async (data: { input?: string; output?: string; completed?: string }) => {
     setGuardando(true)
     try {
@@ -83,7 +95,7 @@ function RouteComponent() {
     setAskingAI(true)
     setMessages(prev => [...prev, { sender: 'doctor', text }])
     messageForAi.current!.value = ''
-    const res = await fetchWithToken<{ answer: string }>('http://localhost:3000/api/chatbot/ask', {
+    const res = await fetchWithToken<{ answer: string, tokens: number }>('http://localhost:3000/api/chatbot/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ consultaId: Number(id), question: text }),
