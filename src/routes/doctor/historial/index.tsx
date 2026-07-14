@@ -1,359 +1,252 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState, useMemo } from 'react'
-import { Sidebar } from '../../../components/sidebar'
-import isAuthenticated from '../../../lib/is-authenticated'
-import type { Consulta, DiagnosticType, RangoFecha } from '../../../types'
-import { DATE_RANGE, DIAGNOSTIC_TYPE, DIAS, MESES } from '../../../constants/constants'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import MainPanel from '../../../components/main-panel'
+import isAuthenticated from '../../../lib/is-authenticated'
+import fetchWithToken from '../../../lib/fetch-with-token'
+import * as XLSX from 'xlsx'
 
 export const Route = createFileRoute('/doctor/historial/')({
   component: RouteComponent,
   beforeLoad: isAuthenticated,
 })
 
-// ─── Mock data ─────────────────────────────────────────────────────────────────
-const CONSULTAS: Consulta[] = [
-  { id: '1', fecha: '24 Oct, 2023', hora: '10:30 AM', paciente: 'Sarah Jenkins', iniciales: 'SJ', diagnostico: 'Control de Hipertensión', tipoDx: 'Hypertension', medico: 'Dr. Alexander Thorne', medicoColor: 'bg-blue-100 text-blue-700', status: 'COMPLETED' },
-  { id: '2', fecha: '23 Oct, 2023', hora: '02:15 PM', paciente: 'Michael Chen', iniciales: 'MC', diagnostico: 'Seguimiento Diabetes Tipo 2', tipoDx: 'Diabetes', medico: 'Dr. Elena Rodriguez', medicoColor: 'bg-purple-100 text-purple-700', status: 'COMPLETED' },
-  { id: '3', fecha: '22 Oct, 2023', hora: '09:00 AM', paciente: 'Linda Thompson', iniciales: 'LT', diagnostico: 'Bronquitis Aguda', tipoDx: 'Respiratory', medico: 'Dr. Alexander Thorne', medicoColor: 'bg-blue-100 text-blue-700', status: 'PENDING' },
-  { id: '4', fecha: '21 Oct, 2023', hora: '11:45 AM', paciente: 'David Miller', iniciales: 'DM', diagnostico: 'Examen Físico General', tipoDx: 'Physical', medico: 'Dr. Sarah Williams', medicoColor: 'bg-green-100 text-green-700', status: 'COMPLETED' },
-  { id: '5', fecha: '20 Oct, 2023', hora: '03:00 PM', paciente: 'Emma Wilson', iniciales: 'EW', diagnostico: 'Revisión de Arritmia Cardíaca', tipoDx: 'Cardiology', medico: 'Dr. Elena Rodriguez', medicoColor: 'bg-purple-100 text-purple-700', status: 'URGENT' },
-  { id: '6', fecha: '19 Oct, 2023', hora: '08:30 AM', paciente: 'James Carter', iniciales: 'JC', diagnostico: 'Control de Hipertensión', tipoDx: 'Hypertension', medico: 'Dr. Alexander Thorne', medicoColor: 'bg-blue-100 text-blue-700', status: 'COMPLETED' },
-]
-
-const STATUS_CONFIG = {
-  COMPLETED: { label: 'Completado', classes: 'bg-emerald-100 text-emerald-700' },
-  PENDING: { label: 'Pendiente', classes: 'bg-amber-100 text-amber-700' },
-  URGENT: { label: 'Urgente', classes: 'bg-red-100 text-red-600' },
+type ConsultaEntry = {
+  id: number
+  pacienteId: number
+  input: string
+  output: string
+  nivelRiesgo: string
+  modelo: string
+  tokens: number
+  createdAt: string
+  completed: string | null
+  paciente: { id: number; nombre: string; documento: string }
+  doctor: { id: number; nombre: string; email: string }
 }
 
-const DX_STATS = [
-  { label: 'Hipertensión', count: 2, color: 'bg-blue-500', pct: 33 },
-  { label: 'Diabetes', count: 1, color: 'bg-purple-500', pct: 17 },
-  { label: 'Respiratorio', count: 1, color: 'bg-teal-500', pct: 17 },
-  { label: 'Cardiología', count: 1, color: 'bg-red-500', pct: 17 },
-  { label: 'Examen Físico', count: 1, color: 'bg-green-500', pct: 16 },
-]
-
-const DX_LABELS_ES: Record<string, string> = {
-  'Todos los diagnósticos': 'Todos los diagnósticos',
-  'Hypertension': 'Hipertensión',
-  'Diabetes': 'Diabetes',
-  'Respiratory': 'Respiratorio',
-  'Physical': 'Examen Físico',
-  'Cardiology': 'Cardiología'
+type PaginatedResponse<T> = {
+  data: T[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
 }
 
-// ─── Mini Calendario (para el modal) ──────────────────────────────────────────
-function MiniCalendario({ label, fecha, onChange }: { label: string; fecha: Date; onChange: (d: Date) => void }) {
-  const [mes, setMes] = useState(fecha.getMonth())
-  const [anio, setAnio] = useState(fecha.getFullYear())
-
-  const primerDia = new Date(anio, mes, 1).getDay()
-  const diasEnMes = new Date(anio, mes + 1, 0).getDate()
-
-  const celdas = Array.from({ length: primerDia + diasEnMes }, (_, i) =>
-    i < primerDia ? null : i - primerDia + 1
-  )
-
-  const anterior = () => mes === 0 ? (setMes(11), setAnio(a => a - 1)) : setMes(m => m - 1)
-  const siguiente = () => mes === 11 ? (setMes(0), setAnio(a => a + 1)) : setMes(m => m + 1)
-
-  return (
-    <div className="flex-1">
-      <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-3">{label}</p>
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-[12px] font-bold text-slate-700">{MESES[mes]} {anio}</span>
-        <div className="flex gap-1">
-          <button type="button" onClick={anterior} className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-400 text-xs">‹</button>
-          <button type="button" onClick={siguiente} className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-100 text-slate-400 text-xs">›</button>
-        </div>
-      </div>
-      <div className="grid grid-cols-7 mb-1">
-        {DIAS.map((d, i) => <div key={i} className="text-center text-[9px] font-bold text-slate-400 py-1">{d}</div>)}
-      </div>
-      <div className="grid grid-cols-7 gap-y-1">
-        {celdas.map((dia, i) => {
-          if (!dia) return <div key={i} />
-          const seleccionado = dia === fecha.getDate() && mes === fecha.getMonth() && anio === fecha.getFullYear()
-          return (
-            <button
-              type="button"
-              key={i}
-              onClick={() => onChange(new Date(anio, mes, dia))}
-              className={`w-7 h-7 mx-auto flex items-center justify-center rounded-full text-[12px] transition-colors ${seleccionado ? 'bg-[#1565d8] text-white font-bold' : 'text-slate-600 hover:bg-[#1565d8]/10 hover:text-[#1565d8]'
-                }`}
-            >
-              {dia}
-            </button>
-          )
-        })}
-      </div>
-    </div>
-  )
+const RIESGO_COLORS: Record<string, string> = {
+  Alto: 'bg-rose-100 text-rose-700',
+  Medio: 'bg-amber-100 text-amber-700',
+  Bajo: 'bg-emerald-100 text-emerald-700',
 }
 
-// ─── Componente principal ──────────────────────────────────────────────────────
 function RouteComponent() {
-  // const [consultas, setConsultas] = useState<Consulta[]>(CONSULTAS)
+  const navigate = useNavigate()
+  const [pagina, setPagina] = useState(1)
+  const [fechaInicio, setFechaInicio] = useState('')
+  const [fechaFin, setFechaFin] = useState('')
+  const [pacienteSearch, setPacienteSearch] = useState('')
 
+  const pageSize = 10
 
-  const [rango, setRango] = useState<RangoFecha>('Últimos 30 días')
-  const [tipoDx, setTipoDx] = useState<DiagnosticType>('Todos los diagnósticos')
-  const [modalRango, setModalRango] = useState(false)
-  const [fechaDesde, setFechaDesde] = useState(new Date(2023, 9, 1))
-  const [fechaHasta, setFechaHasta] = useState(new Date(2023, 9, 31))
-  const [modalDetalle, setModalDetalle] = useState<Consulta | null>(null)
+  const params = new URLSearchParams({ page: String(pagina), pageSize: String(pageSize), all: 'true' })
+  if (fechaInicio) params.set('fechaInicio', fechaInicio)
+  if (fechaFin) params.set('fechaFin', fechaFin)
+  if (pacienteSearch) params.set('pacienteId', pacienteSearch)
 
+  const { data, isLoading } = useQuery({
+    queryKey: ['historial', pagina, fechaInicio, fechaFin, pacienteSearch],
+    queryFn: async () => {
+      const res = await fetchWithToken<PaginatedResponse<ConsultaEntry>>(
+        `http://localhost:3000/api/consulta/historial?${params.toString()}`
+      )
+      if (!res.success || !res.data) throw new Error(res.error || 'Error al obtener historial')
+      return res.data
+    },
+    retry: false,
+  })
 
-  const consultas = useMemo(() =>
-    CONSULTAS.filter(c => tipoDx === 'Todos los diagnósticos' || c.tipoDx === tipoDx),
-    [tipoDx]
-  )
-
-  const handleApplyFilters = () => {
-    if (rango === 'Rango personalizado') setModalRango(true)
+  const exportToExcel = () => {
+    if (!data?.data?.length) return
+    const rows = data.data.map(c => ({
+      ID: c.id,
+      Paciente: c.paciente.nombre,
+      Documento: c.paciente.documento,
+      Médico: c.doctor.nombre,
+      Síntomas: c.input,
+      Diagnóstico: c.output,
+      Riesgo: c.nivelRiesgo,
+      Modelo: c.modelo,
+      Tokens: c.tokens,
+      Estado: c.completed ? 'Completada' : 'Ongoing',
+      Fecha: new Date(c.createdAt).toLocaleDateString('es-ES'),
+    }))
+    const ws = XLSX.utils.json_to_sheet(rows)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Historial')
+    XLSX.writeFile(wb, `historial_consultas_${new Date().toISOString().slice(0, 10)}.xlsx`)
   }
 
   return (
     <MainPanel>
-      {/* Header */}
-      <div>
-        <h1 className="text-[22px] font-bold text-slate-900">Historial de Pacientes</h1>
-        <p className="text-[13px] text-slate-400 mt-0.5">Acceda y gestione registros clínicos completos e historiales de consultas previas.</p>
-      </div>
-
-      {/* Métricas */}
-      <div className="grid grid-cols-2 gap-4 pt-4">
-        <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Registros</p>
-              <p className="text-[32px] font-bold text-slate-900 leading-none">1,284</p>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-[#1565d8]/10 flex items-center justify-center text-[18px]">🗂️</div>
+      <div className="flex flex-col h-full min-h-0">
+        <div className="flex items-center justify-between mb-1 shrink-0">
+          <div>
+            <h1 className="text-[22px] font-bold text-slate-900">Historial de Consultas</h1>
+            <p className="text-[13px] text-slate-400 mt-0.5">Todas las consultas realizadas en el sistema.</p>
           </div>
         </div>
-        <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm">
-          <div className="flex items-start justify-between">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Derivaciones Urgentes</p>
-              <p className="text-[32px] font-bold text-slate-900 leading-none">24</p>
-            </div>
-            <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-[18px]">⚠️</div>
+
+        <div className="grid grid-cols-3 gap-4 mb-4 shrink-0">
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Consultas</p>
+            <p className="text-[32px] font-bold text-slate-900 leading-none">{data?.total?.toLocaleString() ?? '—'}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Página Actual</p>
+            <p className="text-[32px] font-bold text-slate-900 leading-none">{data?.page ?? '—'} / {data?.totalPages ?? '—'}</p>
+          </div>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Registros por Página</p>
+            <p className="text-[32px] font-bold text-slate-900 leading-none">{pageSize}</p>
           </div>
         </div>
-      </div>
 
-      {/* Filtros */}
-      <div className="flex items-center gap-3 pt-4">
-        <select
-          aria-label="Rango de fechas"
-          value={rango}
-          onChange={e => setRango(e.target.value as RangoFecha)}
-          className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
-        >
-          {DATE_RANGE.map(r => <option key={r} value={r}>{r}</option>)}
-        </select>
-
-        <select
-          aria-label="Tipo de diagnóstico"
-          value={tipoDx}
-          onChange={e => setTipoDx(e.target.value as DiagnosticType)}
-          className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 cursor-pointer"
-        >
-          {DIAGNOSTIC_TYPE.map(t => <option key={t} value={t}>{DX_LABELS_ES[t]}</option>)}
-        </select>
-
-        <button
-          type="button"
-          onClick={handleApplyFilters}
-          className="h-9 px-4 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
-        >
-          ✦ Aplicar Filtros
-        </button>
-
-        {rango === 'Rango personalizado' && (
-          <span className="text-[12px] text-slate-400 font-medium">
-            {fechaDesde.toLocaleDateString('es-ES', { month: 'short', day: 'numeric' })} — {fechaHasta.toLocaleDateString('es-ES', { month: 'short', day: 'numeric', year: 'numeric' })}
-            <button type="button" onClick={() => setModalRango(true)} className="ml-2 text-[#1565d8] hover:underline">Editar</button>
-          </span>
-        )}
-      </div>
-
-      {/* Tabla + Stats */}
-      <div className="grid grid-cols-3 gap-4 pt-4">
-
-        {/* Tabla */}
-        <div className="col-span-2 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-            <h2 className="text-[14px] font-bold text-slate-800">Historial de Consultas Médicas</h2>
-            <div className="flex gap-2">
-              <button type="button" className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">⬇</button>
-              <button type="button" className="w-8 h-8 flex items-center justify-center rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-400 transition-colors">🖨</button>
-            </div>
+        <div className="flex items-center gap-3 mb-4 shrink-0 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Desde</span>
+            <input
+              type="date"
+              value={fechaInicio}
+              onChange={e => { setPagina(1); setFechaInicio(e.target.value) }}
+              className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+            />
           </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Hasta</span>
+            <input
+              type="date"
+              value={fechaFin}
+              onChange={e => { setPagina(1); setFechaFin(e.target.value) }}
+              className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+            />
+          </div>
+          <input
+            type="number"
+            placeholder="ID del paciente"
+            value={pacienteSearch}
+            onChange={e => { setPagina(1); setPacienteSearch(e.target.value) }}
+            className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-[160px]"
+          />
+          <button
+            type="button"
+            onClick={exportToExcel}
+            disabled={!data?.data?.length}
+            className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
+          >
+            Exportar Excel
+          </button>
+        </div>
 
-          <table className="w-full">
-            <thead className="bg-slate-50/80">
-              <tr>
-                {['Fecha', 'Paciente', 'Diagnóstico', 'Médico Tratante', 'Estado', 'Acción'].map(h => (
-                  <th key={h} className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 overflow-y-auto">
-              {consultas.map(c => {
-                const s = STATUS_CONFIG[c.status]
-                return (
-                  <tr key={c.id} className="hover:bg-slate-50/60 transition-colors">
-                    <td className="px-4 py-3.5">
-                      <p className="text-[12px] font-semibold text-slate-700">{c.fecha}</p>
-                      <p className="text-[11px] text-slate-400">{c.hora}</p>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[10px] font-bold shrink-0">{c.iniciales}</div>
-                        <span className="text-[13px] font-semibold text-slate-700">{c.paciente}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100">{c.diagnostico}</span>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <div className="flex items-center gap-1.5">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold shrink-0 ${c.medicoColor}`}>
-                          {c.medico.split(' ').slice(-1)[0].charAt(0)}
+        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.06)] flex flex-col min-h-0 flex-1">
+          <div className="flex-1 overflow-auto min-h-0">
+            <table className="w-full">
+              <thead className="bg-slate-50/80">
+                <tr>
+                  {['Fecha', 'Paciente', 'Síntomas', 'Riesgo', 'Médico', 'Estado'].map(h => (
+                    <th key={h} className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-10 text-center text-[13px] text-slate-400">Cargando historial...</td>
+                  </tr>
+                ) : !data?.data?.length ? (
+                  <tr>
+                    <td colSpan={6} className="px-5 py-10 text-center text-[13px] text-slate-400">No se encontraron consultas.</td>
+                  </tr>
+                ) : (
+                  data.data.map(c => (
+                    <tr
+                      key={c.id}
+                      onClick={() => navigate({ to: '/doctor/consulta/$id', params: { id: String(c.id) } })}
+                      className="hover:bg-slate-50/60 transition-colors cursor-pointer"
+                    >
+                      <td className="px-4 py-3.5">
+                        <p className="text-[12px] font-semibold text-slate-700">{new Date(c.createdAt).toLocaleDateString('es-ES')}</p>
+                        <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[10px] font-bold shrink-0">
+                            {c.paciente.nombre.charAt(0)}
+                          </div>
+                          <span className="text-[13px] font-semibold text-slate-700">{c.paciente.nombre}</span>
                         </div>
-                        <span className="text-[12px] text-slate-600">{c.medico}</span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${s.classes}`}>{s.label}</span>
-                    </td>
-                    <td className="px-4 py-3.5">
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[200px] block">{c.input}</span>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${RIESGO_COLORS[c.nivelRiesgo] ?? 'bg-slate-100 text-slate-500'}`}>
+                          {c.nivelRiesgo}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-[12px] text-slate-600">{c.doctor.nombre}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${c.completed ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                          }`}>
+                          {c.completed ? 'Completada' : 'Ongoing'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {data && data.totalPages > 0 && (
+            <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 shrink-0">
+              <p className="text-[11px] text-slate-400">
+                Mostrando {(data.page - 1) * pageSize + 1}–{Math.min(data.page * pageSize, data.total)} de {data.total} registros
+              </p>
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setPagina(p => Math.max(1, p - 1))}
+                  disabled={pagina <= 1}
+                  className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-30 text-xs"
+                >‹</button>
+                {Array.from({ length: data.totalPages }, (_, i) => i + 1)
+                  .filter(p => p === 1 || p === data.totalPages || Math.abs(p - pagina) <= 2)
+                  .map((p, idx, arr) => (
+                    <span key={p} className="flex items-center">
+                      {idx > 0 && arr[idx - 1] !== p - 1 && <span className="text-slate-300 px-1 text-xs">...</span>}
                       <button
                         type="button"
-                        onClick={() => setModalDetalle(c)}
-                        className="text-[11px] font-semibold text-slate-500 border border-slate-200 px-2.5 py-1 rounded-lg hover:bg-slate-50 hover:text-[#1565d8] hover:border-[#1565d8]/30 transition-colors"
-                      >
-                        Ver Detalles
-                      </button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-
-          {/* Paginación */}
-          <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100">
-            <p className="text-[11px] text-slate-400">Mostrando 1–{consultas.length} de 1,284 registros</p>
-            <div className="flex items-center gap-1">
-              <button type="button" className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">‹</button>
-              {[1, 2, 3, '...', 129].map((p, i) => (
-                <button type="button" key={i} className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors
-                    ${p === 1 ? 'bg-[#1565d8] text-white' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}`}>
-                  {p}
-                </button>
-              ))}
-              <button type="button" className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs">›</button>
-            </div>
-          </div>
-        </div>
-
-        {/* Estadísticas de diagnósticos */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm p-5">
-          <h3 className="text-[13px] font-bold text-slate-800 mb-4">Estadísticas de Diagnósticos</h3>
-          <div className="space-y-4">
-            {DX_STATS.map((dx, i) => (
-              <div key={i}>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[12px] font-semibold text-slate-600">{dx.label}</span>
-                  <span className="text-[11px] font-bold text-slate-400">{dx.count} casos</span>
-                </div>
-                <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                  <div className={`h-full ${dx.color} rounded-full transition-all`} style={{ width: `${dx.pct}%` }} />
-                </div>
+                        onClick={() => setPagina(p)}
+                        className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors
+                        ${p === pagina ? 'bg-[#1565d8] text-white' : 'border border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+                      >{p}</button>
+                    </span>
+                  ))}
+                <button
+                  type="button"
+                  onClick={() => setPagina(p => Math.min(data.totalPages, p + 1))}
+                  disabled={pagina >= data.totalPages}
+                  className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 disabled:opacity-30 text-xs"
+                >›</button>
               </div>
-            ))}
-          </div>
-
-          <div className="mt-6 pt-4 border-t border-slate-100">
-            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-3">Resumen de Estados</p>
-            <div className="space-y-2">
-              {[
-                { label: 'Completado', count: 4, color: 'bg-emerald-500' },
-                { label: 'Pendiente', count: 1, color: 'bg-amber-500' },
-                { label: 'Urgente', count: 1, color: 'bg-red-500' },
-              ].map((s, i) => (
-                <div key={i} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={`w-2 h-2 rounded-full ${s.color}`} />
-                    <span className="text-[12px] text-slate-600">{s.label}</span>
-                  </div>
-                  <span className="text-[12px] font-bold text-slate-700">{s.count}</span>
-                </div>
-              ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
-
-      {/* ── Modal Custom Range ── */}
-      {modalRango && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.15)] w-full max-w-lg">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">Rango de Fechas</p>
-                <h2 className="text-[15px] font-bold text-slate-800">Seleccionar rango personalizado</h2>
-              </div>
-              <button type="button" onClick={() => setModalRango(false)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
-            </div>
-            <div className="px-6 py-5 flex gap-6">
-              <MiniCalendario label="Desde" fecha={fechaDesde} onChange={setFechaDesde} />
-              <div className="w-px bg-slate-100" />
-              <MiniCalendario label="Hasta" fecha={fechaHasta} onChange={setFechaHasta} />
-            </div>
-            <div className="px-6 pb-5 flex gap-3">
-              <button type="button" onClick={() => setModalRango(false)} className="flex-1 h-10 border border-slate-200 text-slate-600 text-[13px] font-semibold rounded-lg hover:bg-slate-50 transition-colors">Cancelar</button>
-              <button type="button" onClick={() => setModalRango(false)} className="flex-1 h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">Aplicar Rango</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Modal View Details ── */}
-      {modalDetalle && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.15)] w-full max-w-md">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">Detalles de la Consulta</p>
-                <h2 className="text-[15px] font-bold text-slate-800">{modalDetalle.paciente}</h2>
-              </div>
-              <button type="button" onClick={() => setModalDetalle(null)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
-            </div>
-            <div className="px-6 py-5 space-y-4">
-              {[
-                { label: 'Fecha y Hora', value: `${modalDetalle.fecha} · ${modalDetalle.hora}` },
-                { label: 'Diagnóstico', value: modalDetalle.diagnostico },
-                { label: 'Médico Tratante', value: modalDetalle.medico },
-                { label: 'Estado', value: STATUS_CONFIG[modalDetalle.status].label },
-              ].map((row, i) => (
-                <div key={i} className="flex justify-between items-start">
-                  <span className="text-[12px] font-semibold text-slate-400 uppercase tracking-wide">{row.label}</span>
-                  <span className="text-[13px] font-semibold text-slate-700 text-right max-w-[60%]">{row.value}</span>
-                </div>
-              ))}
-            </div>
-            <div className="px-6 pb-5">
-              <button type="button" onClick={() => setModalDetalle(null)} className="w-full h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">Cerrar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </MainPanel>
   )
 }
