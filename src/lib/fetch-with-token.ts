@@ -1,4 +1,5 @@
 import { authenticationStore } from "../store/authentication-store";
+import { redirect } from '@tanstack/react-router'
 
 class FetchResult<T> {
   success: boolean;
@@ -12,7 +13,7 @@ class FetchResult<T> {
 }
 
 export default async function fetchWithToken<T>(url: string, options: RequestInit = {}): Promise<FetchResult<T>> {
-  const token = authenticationStore.getState().authenticationToken;
+  const {authenticationToken: token, logout} = authenticationStore.getState();
 
   if (!token) {
     throw new Error("No authentication token found");
@@ -29,6 +30,10 @@ export default async function fetchWithToken<T>(url: string, options: RequestIni
     const res = await fetch(url, { ...options, headers });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
+      if(json.message === "Token inválido o expirado") {
+        await logout();
+        throw redirect({ to: '/auth/login' })
+      }
       result.error = json.message || `HTTP ${res.status}`;
       result.data = json as T;
       result.success = false;

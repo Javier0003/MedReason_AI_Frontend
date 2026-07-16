@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import MainPanel from '../../../components/main-panel.tsx'
 import isAuthenticated from '../../../lib/is-authenticated.ts'
 import { useQuery } from '@tanstack/react-query'
@@ -51,7 +51,7 @@ type AuditLogEntry = {
   entidadId: number | null
   detalle: string
   createdAt: string
-  user: { id: number; nombre: string; email: string }
+  user: { id: number; nombre: string; email: string } | null
 }
 
 type PaginatedResponse<T> = {
@@ -167,8 +167,8 @@ function RouteComponent() {
                 ) : data.data.map(log => (
                   <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="px-5 py-2.5 w-[200px] truncate">
-                      <span className="text-[13px] font-semibold text-slate-700">{log.user.nombre}</span>
-                      <span className="text-[11px] text-slate-400 ml-2">{log.user.email}</span>
+                      <span className="text-[13px] font-semibold text-slate-700">{log.user?.nombre ?? '—'}</span>
+                      <span className="text-[11px] text-slate-400 ml-2">{log.user?.email ?? ''}</span>
                     </td>
                     <td className="px-5 py-2.5 w-[200px]">
                       <span className={`w-full flex items-center justify-center px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${ACTION_COLORS[log.accion] ?? 'bg-slate-100 text-slate-500'}`}>
