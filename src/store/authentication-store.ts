@@ -3,6 +3,8 @@ import type { User } from "../types";
 import Cookies from 'js-cookie'
 import { redirect } from "@tanstack/react-router";
 
+const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+
 type AuthenticationState = {
   isAuthenticated: boolean;
   authenticationToken: string | null;
@@ -25,7 +27,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
   authenticationToken: null,
   user: null,
   authenticate: async (email: string, password: string) => {
-    const res = await fetch("http://localhost:3000/api/auth/login", {
+    const res = await fetch(`${API_URL}/api/auth/login`, {
       headers: {
         'content-type': 'application/json'
       },
@@ -42,7 +44,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
 
     const data = await res.json() as LoginReturnType
 
-    const userRes = await fetch(`http://localhost:3000/api/usuarios/${data.id}`, {
+    const userRes = await fetch(`${API_URL}/api/usuarios/${data.id}`, {
       headers: {
         'content-type': 'application/json',
         'Authorization': `Bearer ${data.token}`
@@ -63,7 +65,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
       authenticationToken: data.token,
       user: {
         id: userData.id,
-        name: userData.name,
+        nombre: userData.nombre,
         rol: userData.rol,
         userImg: "https://example.com/user.jpg",
         profession: "Cardiologist",

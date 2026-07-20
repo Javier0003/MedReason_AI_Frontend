@@ -19,7 +19,7 @@ function RouteComponent() {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-metricas'],
     queryFn: async () => {
-      const res = await fetchWithToken<Metricas>('http://localhost:3000/api/admin/logs/metricas')
+      const res = await fetchWithToken<Metricas>('/api/admin/logs/metricas')
       if (!res.success) throw new Error(res.error || 'Error al obtener métricas')
       return res.data!
     },

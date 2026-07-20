@@ -15,7 +15,6 @@ import { Route as DoctorPacientesIndexRouteImport } from './routes/doctor/pacien
 import { Route as DoctorHistorialIndexRouteImport } from './routes/doctor/historial/index'
 import { Route as DoctorDashboardIndexRouteImport } from './routes/doctor/dashboard/index'
 import { Route as DoctorConsultaIndexRouteImport } from './routes/doctor/consulta/index'
-import { Route as DoctorConfiguracionIndexRouteImport } from './routes/doctor/configuracion/index'
 import { Route as AuthLoginIndexRouteImport } from './routes/auth/login/index'
 import { Route as AdminMedicosIndexRouteImport } from './routes/admin/medicos/index'
 import { Route as AdminDashboardIndexRouteImport } from './routes/admin/dashboard/index'
@@ -53,12 +52,6 @@ const DoctorConsultaIndexRoute = DoctorConsultaIndexRouteImport.update({
   path: '/doctor/consulta/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DoctorConfiguracionIndexRoute =
-  DoctorConfiguracionIndexRouteImport.update({
-    id: '/doctor/configuracion/',
-    path: '/doctor/configuracion/',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const AuthLoginIndexRoute = AuthLoginIndexRouteImport.update({
   id: '/auth/login/',
   path: '/auth/login/',
@@ -99,7 +92,6 @@ export interface FileRoutesByFullPath {
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/admin/medicos/': typeof AdminMedicosIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
-  '/doctor/configuracion/': typeof DoctorConfiguracionIndexRoute
   '/doctor/consulta/': typeof DoctorConsultaIndexRoute
   '/doctor/dashboard/': typeof DoctorDashboardIndexRoute
   '/doctor/historial/': typeof DoctorHistorialIndexRoute
@@ -114,7 +106,6 @@ export interface FileRoutesByTo {
   '/admin/dashboard': typeof AdminDashboardIndexRoute
   '/admin/medicos': typeof AdminMedicosIndexRoute
   '/auth/login': typeof AuthLoginIndexRoute
-  '/doctor/configuracion': typeof DoctorConfiguracionIndexRoute
   '/doctor/consulta': typeof DoctorConsultaIndexRoute
   '/doctor/dashboard': typeof DoctorDashboardIndexRoute
   '/doctor/historial': typeof DoctorHistorialIndexRoute
@@ -130,7 +121,6 @@ export interface FileRoutesById {
   '/admin/dashboard/': typeof AdminDashboardIndexRoute
   '/admin/medicos/': typeof AdminMedicosIndexRoute
   '/auth/login/': typeof AuthLoginIndexRoute
-  '/doctor/configuracion/': typeof DoctorConfiguracionIndexRoute
   '/doctor/consulta/': typeof DoctorConsultaIndexRoute
   '/doctor/dashboard/': typeof DoctorDashboardIndexRoute
   '/doctor/historial/': typeof DoctorHistorialIndexRoute
@@ -147,7 +137,6 @@ export interface FileRouteTypes {
     | '/admin/dashboard/'
     | '/admin/medicos/'
     | '/auth/login/'
-    | '/doctor/configuracion/'
     | '/doctor/consulta/'
     | '/doctor/dashboard/'
     | '/doctor/historial/'
@@ -162,7 +151,6 @@ export interface FileRouteTypes {
     | '/admin/dashboard'
     | '/admin/medicos'
     | '/auth/login'
-    | '/doctor/configuracion'
     | '/doctor/consulta'
     | '/doctor/dashboard'
     | '/doctor/historial'
@@ -177,7 +165,6 @@ export interface FileRouteTypes {
     | '/admin/dashboard/'
     | '/admin/medicos/'
     | '/auth/login/'
-    | '/doctor/configuracion/'
     | '/doctor/consulta/'
     | '/doctor/dashboard/'
     | '/doctor/historial/'
@@ -193,7 +180,6 @@ export interface RootRouteChildren {
   AdminDashboardIndexRoute: typeof AdminDashboardIndexRoute
   AdminMedicosIndexRoute: typeof AdminMedicosIndexRoute
   AuthLoginIndexRoute: typeof AuthLoginIndexRoute
-  DoctorConfiguracionIndexRoute: typeof DoctorConfiguracionIndexRoute
   DoctorConsultaIndexRoute: typeof DoctorConsultaIndexRoute
   DoctorDashboardIndexRoute: typeof DoctorDashboardIndexRoute
   DoctorHistorialIndexRoute: typeof DoctorHistorialIndexRoute
@@ -242,13 +228,6 @@ declare module '@tanstack/react-router' {
       path: '/doctor/consulta'
       fullPath: '/doctor/consulta/'
       preLoaderRoute: typeof DoctorConsultaIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/doctor/configuracion/': {
-      id: '/doctor/configuracion/'
-      path: '/doctor/configuracion'
-      fullPath: '/doctor/configuracion/'
-      preLoaderRoute: typeof DoctorConfiguracionIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/login/': {
@@ -305,7 +284,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDashboardIndexRoute: AdminDashboardIndexRoute,
   AdminMedicosIndexRoute: AdminMedicosIndexRoute,
   AuthLoginIndexRoute: AuthLoginIndexRoute,
-  DoctorConfiguracionIndexRoute: DoctorConfiguracionIndexRoute,
   DoctorConsultaIndexRoute: DoctorConsultaIndexRoute,
   DoctorDashboardIndexRoute: DoctorDashboardIndexRoute,
   DoctorHistorialIndexRoute: DoctorHistorialIndexRoute,

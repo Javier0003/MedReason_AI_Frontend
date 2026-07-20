@@ -39,7 +39,7 @@ function RouteComponent() {
   const { data, isLoading } = useQuery({
     queryKey: ['admin-usuarios'],
     queryFn: async () => {
-      const res = await fetchWithToken<{ usuarios: Usuario[] }>('http://localhost:3000/api/admin/users')
+      const res = await fetchWithToken<{ usuarios: Usuario[] }>('/api/admin/users')
       if (!res.success) throw new Error(res.error || 'Error al obtener usuarios')
       return res.data!.usuarios
     },
@@ -75,7 +75,7 @@ function RouteComponent() {
     nombre.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
   const crearUsuario = async (data: { nombre: string; email: string; password?: string; rol: Rol }) => {
-    const res = await fetchWithToken<{ usuario: Usuario }>('http://localhost:3000/api/admin/users', {
+    const res = await fetchWithToken<{ usuario: Usuario }>('/api/admin/users', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(data),
@@ -86,7 +86,7 @@ function RouteComponent() {
   }
 
   const actualizarUsuario = async (id: number, data: { nombre?: string; email?: string; rol?: Rol; activo?: boolean }) => {
-    const res = await fetchWithToken<{ usuario: Usuario }>(`http://localhost:3000/api/admin/users/${id}`, {
+    const res = await fetchWithToken<{ usuario: Usuario }>(`/api/admin/users/${id}`, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(data),

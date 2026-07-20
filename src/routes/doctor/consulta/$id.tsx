@@ -42,7 +42,7 @@ function RouteComponent() {
   const { data: consulta, isLoading, error } = useQuery({
     queryKey: ['consulta', id],
     queryFn: async () => {
-      const res = await fetchWithToken<ConsultaData>(`http://localhost:3000/api/consulta/${id}`)
+      const res = await fetchWithToken<ConsultaData>(`/api/consulta/${id}`)
       if (!res.success || !res.data) throw new Error(res.error || 'Error al obtener consulta')
       return res.data
     },
@@ -73,7 +73,7 @@ function RouteComponent() {
   const guardarCambios = async (data: { input?: string; output?: string; completed?: string }) => {
     setGuardando(true)
     try {
-      const res = await fetchWithToken<ConsultaData>(`http://localhost:3000/api/consulta/${id}`, {
+      const res = await fetchWithToken<ConsultaData>(`/api/consulta/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
@@ -95,7 +95,7 @@ function RouteComponent() {
     setAskingAI(true)
     setMessages(prev => [...prev, { sender: 'doctor', text }])
     messageForAi.current!.value = ''
-    const res = await fetchWithToken<{ answer: string, tokens: number }>('http://localhost:3000/api/chatbot/ask', {
+    const res = await fetchWithToken<{ answer: string, tokens: number }>('/api/chatbot/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ consultaId: Number(id), question: text }),

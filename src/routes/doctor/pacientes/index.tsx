@@ -2,8 +2,6 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState, useMemo } from 'react'
 import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
-import Calendario from '../../../components/calendario'
-import { MESES } from '../../../constants/constants'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
 
@@ -11,20 +9,6 @@ export const Route = createFileRoute('/doctor/pacientes/')({
   component: RouteComponent,
   beforeLoad: isAuthenticated
 })
-
-interface Tarea {
-  titulo: string
-  tiempo: string
-}
-
-const TAREAS_MOCK: Record<number, Tarea[]> = {
-  5: [
-    { titulo: 'Aprobar resultados de patología para Sala 402', tiempo: 'Vence en 20 mins' },
-    { titulo: 'Teleconsulta con el Dr. Aris', tiempo: 'Hoy, 4:30 PM' },
-  ],
-  12: [{ titulo: 'Reunión de personal — Sala de conferencias B', tiempo: '10:00 AM' }],
-  18: [{ titulo: 'Revisar resultados de laboratorio — Paciente #882', tiempo: '2:00 PM' }],
-}
 
 type pacientesTemporal = {
   creadoPorId: number
@@ -40,13 +24,11 @@ const ITEMS_POR_PAGINA = 10
 function RouteComponent() {
   const [search, setSearch] = useState('')
   const [pagina, setPagina] = useState(1)
-  const [modalDia, setModalDia] = useState<{ dia: number; tareas: Tarea[] } | null>(null)
-  const tareasHoy = TAREAS_MOCK[new Date().getDate()] ?? []
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['pacientes'],
     queryFn: async () => {
-      const res = await fetchWithToken<{ pacientes: pacientesTemporal[] }>('http://localhost:3000/api/pacientes', {
+      const res = await fetchWithToken<{ pacientes: pacientesTemporal[] }>('/api/pacientes', {
         headers: {
           'content-type': 'application/json'
         },
@@ -81,7 +63,7 @@ function RouteComponent() {
   })
 
   const handleDeletePaciente = async (id: number) => {
-    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+    const res = await fetchWithToken(`/api/pacientes/${id}`, {
       headers: {
         'content-type': 'application/json'
       },
@@ -92,7 +74,7 @@ function RouteComponent() {
   }
 
   const handleEditPaciente = async (id: number, updatedData: Partial<pacientesTemporal>) => {
-    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+    const res = await fetchWithToken(`/api/pacientes/${id}`, {
       headers: {
         'content-type': 'application/json'
       },
@@ -104,7 +86,7 @@ function RouteComponent() {
   }
 
   const handleCrearPaciente = async () => {
-    const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
+    const res = await fetchWithToken('/api/pacientes', {
       headers: {
         'content-type': 'application/json'
       },
@@ -135,11 +117,8 @@ function RouteComponent() {
           <p className="text-[13px] text-slate-400 mt-0.5">Gestiona y consulta la información de todos los pacientes registrados.</p>
         </div>
 
-        {/* Tabla + Calendario */}
-        <div className="grid grid-cols-3 gap-4">
-
-          {/* Tabla de Pacientes */}
-          <div className="col-span-2 rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm flex flex-col overflow-hidden">
+        {/* Tabla de Pacientes */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm flex flex-col overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
               <h2 className="text-[14px] font-bold text-slate-800">Lista de Pacientes</h2>
               <div className="flex gap-2">
@@ -268,33 +247,6 @@ function RouteComponent() {
               </div>
             </div>
           </div>
-
-          {/* Calendario */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm p-5 flex flex-col">
-            <Calendario onDiaClick={(dia, tareas) => setModalDia({ dia, tareas })} />
-            <div className="mt-4 pt-4 border-t border-slate-100 flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-slate-400">Tareas Prioritarias</span>
-              {tareasHoy.length === 0 ? (
-                <p className="text-[12px] text-slate-400 mt-2">No hay tareas para hoy.</p>
-              ) : (
-                <div className="space-y-3 mt-3">
-                  {tareasHoy.map((t, i) => (
-                    <div key={i} className="flex items-start gap-2.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[#1565d8] mt-1.5 shrink-0" />
-                      <div>
-                        <p className="text-[12px] font-semibold text-slate-700 leading-snug">{t.titulo}</p>
-                        <p className="text-[11px] text-slate-400 mt-0.5">{t.tiempo}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <button type="button" className="w-full mt-4 py-2 text-[12px] font-semibold text-[#1565d8] hover:text-[#0f56bd] border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
-                Ver Todas las Tareas
-              </button>
-            </div>
-          </div>
-        </div>
 
         {/* Modal Nuevo Paciente */}
         {mostrarFormulario && (
@@ -493,41 +445,6 @@ function RouteComponent() {
                   className="rounded-lg bg-[#1565d8] px-5 py-2 text-sm font-semibold text-white hover:bg-[#0f56bd]"
                 >
                   Guardar Cambios
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Modal Tareas del Día */}
-        {modalDia && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.15)] w-full max-w-sm">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
-                <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400">Tareas</p>
-                  <h2 className="text-[15px] font-bold text-slate-800">
-                    {MESES[new Date().getMonth()].charAt(0) + MESES[new Date().getMonth()].slice(1).toLowerCase()} {modalDia.dia}
-                  </h2>
-                </div>
-                <button type="button" onClick={() => setModalDia(null)} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg">✕</button>
-              </div>
-              <div className="px-6 py-5 space-y-3">
-                {modalDia.tareas.length === 0 ? (
-                  <p className="text-[13px] text-slate-400 text-center py-6">No hay tareas para este día.</p>
-                ) : modalDia.tareas.map((t, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3.5 bg-slate-50 rounded-xl">
-                    <span className="w-2 h-2 rounded-full bg-[#1565d8] mt-1.5 shrink-0" />
-                    <div>
-                      <p className="text-[13px] font-semibold text-slate-700">{t.titulo}</p>
-                      <p className="text-[11px] text-slate-400 mt-0.5">{t.tiempo}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="px-6 pb-5">
-                <button type="button" onClick={() => setModalDia(null)} className="w-full h-10 bg-[#1565d8] hover:bg-[#0f56bd] text-white text-[13px] font-semibold rounded-lg transition-colors">
-                  Cerrar
                 </button>
               </div>
             </div>
