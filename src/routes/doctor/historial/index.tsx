@@ -57,7 +57,7 @@ function RouteComponent() {
     queryKey: ['historial', pagina, fechaInicio, fechaFin, pacienteSearch],
     queryFn: async () => {
       const res = await fetchWithToken<PaginatedResponse<ConsultaEntry>>(
-        `http://localhost:3000/api/consulta/historial?${params.toString()}`
+        `/api/consulta/historial?${params.toString()}`
       )
       if (!res.success || !res.data) throw new Error(res.error || 'Error al obtener historial')
       return res.data

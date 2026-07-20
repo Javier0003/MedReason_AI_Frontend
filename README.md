@@ -1,69 +1,81 @@
-# MedReason_AI
+# MedReason_AI Frontend
 
-MedReason_AI is the frontend application for the MedReason_AI final project. It is built with React, Vite, Tailwind CSS, and TanStack Router, and includes separate routes for admin and doctor workflows along with a login page.
+Frontend de diagnóstico asistido por IA para el proyecto final MedReason_AI. Construido con React, Vite, Tailwind CSS v4, TanStack Router y TanStack Query.
 
-## Features
+## Rutas
 
-- React + TypeScript frontend
-- Vite-powered development experience
-- TanStack Router route-based navigation
-- Tailwind CSS styling
-- Placeholder routes for:
-  - `/auth/login`
-  - `/admin/configuracion`
-  - `/admin/medicos`
-  - `/admin/dashboard`
-  - `/doctor/configuracion`
-  - `/doctor/dashboard`
-  - `/doctor/logs`
-  - `/doctor/medicos`
-  - `/App` demo screen with a sample counter
+| Ruta | Descripción |
+|------|-------------|
+| `/auth/login` | Inicio de sesión |
+| `/admin/dashboard` | Dashboard administrativo con métricas del sistema |
+| `/admin/medicos` | Gestión de usuarios (médicos y administradores) |
+| `/admin/configuracion` | Configuración de modelo IA, parámetros y versiones de prompt |
+| `/admin/logs` | Auditoría de acciones del sistema |
+| `/doctor/dashboard` | Dashboard del médico: pacientes, consultas recientes, distribución de riesgos |
+| `/doctor/pacientes` | CRUD de pacientes |
+| `/doctor/consulta` | Creación de consultas con diagnóstico IA e historial paginado |
+| `/doctor/consulta/$id` | Detalle de consulta con chatbot integrado |
+| `/doctor/historial` | Historial completo de consultas con filtros y exportación a Excel |
 
-## Project structure
+## Stack
 
-- `src/main.tsx` - app entry point
-- `src/routes/` - route definitions and page components
-- `src/App.tsx` - demo application screen
-- `src/store/` - example Zustand store
-- `src/assets/` - static images and assets
+- **React 19** + **TypeScript**
+- **Vite** — dev server y build
+- **TanStack Router** — routing type-safe
+- **TanStack Query** — data fetching y caché
+- **Tailwind CSS v4** — estilos utilitarios
+- **Zustand** — estado global (autenticación)
+- **js-cookie** — persistencia de sesión
 
-## Getting Started
+## Requisitos
 
-### Install dependencies
+- Node.js 20+
+- Backend corriendo en `http://localhost:3000` (por defecto)
+
+## Variables de entorno
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+## Inicio rápido
 
 ```bash
 npm install
-```
-
-### Run locally
-
-```bash
 npm run dev
 ```
 
-Open the local URL shown in the terminal to view the app.
+El servidor de desarrollo se abre en el puerto que indique Vite (usualmente `http://localhost:5173`).
 
-### Build for production
+## Scripts
 
-```bash
-npm run build
+| Comando | Descripción |
+|---------|-------------|
+| `npm run dev` | Inicia servidor de desarrollo |
+| `npm run build` | Compila TypeScript y genera assets de producción |
+| `npm run lint` | Ejecuta ESLint |
+| `npm run preview` | Previsualiza el build de producción |
+
+## Estructura
+
 ```
-
-### Preview production build
-
-```bash
-npm run preview
+src/
+├── main.tsx                  # Entry point
+├── routes/                   # Páginas por ruta (file-based)
+│   ├── auth/login/
+│   ├── admin/dashboard/
+│   ├── admin/medicos/
+│   ├── admin/configuracion/
+│   ├── admin/logs/
+│   ├── doctor/dashboard/
+│   ├── doctor/pacientes/
+│   ├── doctor/consulta/
+│   │   ├── index.tsx         # Lista + creación
+│   │   └── $id.tsx           # Detalle + chatbot
+│   └── doctor/historial/
+├── components/               # Componentes compartidos
+├── store/                    # Zustand stores
+├── lib/                      # Utilidades (fetchWithToken, etc.)
+├── types/                    # Tipos compartidos
+└── constants/                # Constantes
 ```
-
-## Available scripts
-
-- `npm run dev` - start development server
-- `npm run build` - compile TypeScript and build production assets
-- `npm run lint` - run ESLint across the project
-- `npm run preview` - preview the production build locally
-
-## Notes
-
-This frontend currently contains a basic route structure and placeholder pages for the admin and doctor sections. Use the existing routes and components as a scaffold for building the full MedReason_AI user experience.
-
-

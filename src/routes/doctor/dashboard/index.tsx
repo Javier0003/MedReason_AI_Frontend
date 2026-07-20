@@ -79,7 +79,7 @@ function RouteComponent() {
     queryKey: ['pacientes'],
     queryFn: async () => {
       const res = await fetchWithToken<{ pacientes: { id: number; nombre: string }[] }>(
-        'http://localhost:3000/api/pacientes',
+        '/api/pacientes',
         { method: 'GET', headers: { 'content-type': 'application/json' } }
       )
       return res.data?.pacientes ?? []
@@ -90,7 +90,7 @@ function RouteComponent() {
     queryKey: ['consulta-historial', 'all'],
     queryFn: async () => {
       const res = await fetchWithToken<PaginatedResponse<ConsultaResumen>>(
-        `http://localhost:3000/api/consulta/historial?all=true&pageSize=100`,
+        `/api/consulta/historial?all=true&pageSize=100`,
         { method: 'GET', headers: { 'content-type': 'application/json' } }
       )
       return res.data

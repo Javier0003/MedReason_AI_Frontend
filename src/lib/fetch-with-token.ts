@@ -12,7 +12,10 @@ class FetchResult<T> {
   }
 }
 
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+
 export default async function fetchWithToken<T>(url: string, options: RequestInit = {}): Promise<FetchResult<T>> {
+  const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`
   const {authenticationToken: token, logout} = authenticationStore.getState();
 
   if (!token) {
@@ -27,7 +30,7 @@ export default async function fetchWithToken<T>(url: string, options: RequestIni
   const result = new FetchResult<T>();
 
   try {
-    const res = await fetch(url, { ...options, headers });
+    const res = await fetch(fullUrl, { ...options, headers });
     const json = await res.json().catch(() => ({}));
     if (!res.ok) {
       if(json.message === "Token inválido o expirado") {

@@ -81,7 +81,7 @@ function RouteComponent() {
     queryKey: ['pacientes-busqueda', busquedaQuery],
     queryFn: async () => {
       const params = busquedaQuery ? `?search=${encodeURIComponent(busquedaQuery)}` : ''
-      const res = await fetchWithToken<{ pacientes: Paciente[] }>(`http://localhost:3000/api/pacientes${params}`)
+      const res = await fetchWithToken<{ pacientes: Paciente[] }>(`/api/pacientes${params}`)
       if (!res.success) throw new Error(res.error || 'Error al buscar pacientes')
       return res.data?.pacientes ?? []
     },
@@ -97,7 +97,7 @@ function RouteComponent() {
       if (fechaFin) params.set('fechaFin', fechaFin)
 
       const res = await fetchWithToken<PaginatedResponse<ConsultaEntry>>(
-        `http://localhost:3000/api/consulta/historial?${params}`
+        `/api/consulta/historial?${params}`
       )
       if (!res.success) throw new Error(res.error || 'Error al obtener historial')
       return res.data
@@ -124,7 +124,7 @@ function RouteComponent() {
     if (!selectedPaciente || !sintomas.trim()) return
     setCreando(true)
     try {
-      const res = await fetchWithToken<ConsultaEntry>('http://localhost:3000/api/consulta', {
+      const res = await fetchWithToken<ConsultaEntry>('/api/consulta', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pacienteId: selectedPaciente.id, input: sintomas.trim() }),

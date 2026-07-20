@@ -87,7 +87,7 @@ function RouteComponent() {
       if (tipoAccion) params.set('tipoAccion', tipoAccion)
 
       const res = await fetchWithToken<PaginatedResponse<AuditLogEntry>>(
-        `http://localhost:3000/api/admin/logs?${params}`
+        `/api/admin/logs?${params}`
       )
 
       if (!res.success) {

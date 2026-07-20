@@ -28,7 +28,7 @@ function RouteComponent() {
   const { data, isLoading } = useQuery({
     queryKey: ['pacientes'],
     queryFn: async () => {
-      const res = await fetchWithToken<{ pacientes: pacientesTemporal[] }>('http://localhost:3000/api/pacientes', {
+      const res = await fetchWithToken<{ pacientes: pacientesTemporal[] }>('/api/pacientes', {
         headers: {
           'content-type': 'application/json'
         },
@@ -63,7 +63,7 @@ function RouteComponent() {
   })
 
   const handleDeletePaciente = async (id: number) => {
-    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+    const res = await fetchWithToken(`/api/pacientes/${id}`, {
       headers: {
         'content-type': 'application/json'
       },
@@ -74,7 +74,7 @@ function RouteComponent() {
   }
 
   const handleEditPaciente = async (id: number, updatedData: Partial<pacientesTemporal>) => {
-    const res = await fetchWithToken(`http://localhost:3000/api/pacientes/${id}`, {
+    const res = await fetchWithToken(`/api/pacientes/${id}`, {
       headers: {
         'content-type': 'application/json'
       },
@@ -86,7 +86,7 @@ function RouteComponent() {
   }
 
   const handleCrearPaciente = async () => {
-    const res = await fetchWithToken('http://localhost:3000/api/pacientes', {
+    const res = await fetchWithToken('/api/pacientes', {
       headers: {
         'content-type': 'application/json'
       },
