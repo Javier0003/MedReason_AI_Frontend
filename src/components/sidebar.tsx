@@ -15,7 +15,6 @@ const DOCTOR_NAV: NavItem[] = [
   { label: 'Pacientes', href: '/doctor/pacientes', icon: '👤' },
   { label: 'Consultas', href: '/doctor/consulta', icon: '📋' },
   { label: 'Historial', href: '/doctor/historial', icon: '📊' },
-  { label: 'Settings', href: '/doctor/configuracion', icon: '⚙️' },
 ]
 
 const ADMIN_NAV: NavItem[] = [

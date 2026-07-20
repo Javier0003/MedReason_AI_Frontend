@@ -14,8 +14,8 @@ export default function MainPanel({ children }: { children: React.ReactNode }) {
           <h1 className="text-2xl font-bold">MedReason AI</h1>
 
           <UserLogo
-            name={user?.name ?? "User"}
-            profession={user?.profession ?? "Profession"}
+            name={user?.nombre ?? "User"}
+            profession={user?.rol ?? "Profession"}
           />
         </header>
 

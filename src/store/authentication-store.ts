@@ -63,7 +63,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
       authenticationToken: data.token,
       user: {
         id: userData.id,
-        name: userData.name,
+        nombre: userData.nombre,
         rol: userData.rol,
         userImg: "https://example.com/user.jpg",
         profession: "Cardiologist",

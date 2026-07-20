@@ -4,7 +4,7 @@ export type Role = 'DOCTOR' | 'ADMIN'
 
 export type User = {
   id: number;
-  name: string;
+  nombre: string;
   email: string
   rol: Role;
   userImg: string;
