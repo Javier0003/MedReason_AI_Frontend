@@ -39,6 +39,8 @@ const RIESGO_COLORS: Record<string, string> = {
   Bajo: 'bg-emerald-100 text-emerald-700',
 }
 
+const API_BASE_URL = 'http://localhost:3006'
+
 function RouteComponent() {
   const navigate = useNavigate()
   const [pagina, setPagina] = useState(1)
@@ -57,7 +59,7 @@ function RouteComponent() {
     queryKey: ['historial', pagina, fechaInicio, fechaFin, pacienteSearch],
     queryFn: async () => {
       const res = await fetchWithToken<PaginatedResponse<ConsultaEntry>>(
-        `http://localhost:3000/api/consulta/historial?${params.toString()}`
+        `${API_BASE_URL}/api/consulta/historial?${params.toString()}`
       )
       if (!res.success || !res.data) throw new Error(res.error || 'Error al obtener historial')
       return res.data

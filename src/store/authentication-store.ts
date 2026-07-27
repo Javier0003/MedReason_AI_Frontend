@@ -1,7 +1,6 @@
 import { create } from "zustand";
-import type { User } from "../types";
+import type { User, Role } from "../types";
 import Cookies from 'js-cookie'
-import { redirect } from "@tanstack/react-router";
 
 type AuthenticationState = {
   isAuthenticated: boolean;
@@ -20,12 +19,23 @@ type LoginReturnType = {
   id: number
 }
 
+// Forma real que devuelve el backend (campos en español),
+// distinta al tipo `User` que usa el resto del frontend.
+type UsuarioApiResponse = {
+  id: number
+  nombre: string
+  email: string
+  rol: Role
+}
+
+const API_BASE_URL = "http://localhost:3006"
+
 export const authenticationStore = create<AuthenticationState & AuthenticationActions>((set) => ({
   isAuthenticated: false,
   authenticationToken: null,
   user: null,
   authenticate: async (email: string, password: string) => {
-    const res = await fetch("http://localhost:3000/api/auth/login", {
+    const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
       headers: {
         'content-type': 'application/json'
       },
@@ -42,7 +52,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
 
     const data = await res.json() as LoginReturnType
 
-    const userRes = await fetch(`http://localhost:3000/api/usuarios/${data.id}`, {
+    const userRes = await fetch(`${API_BASE_URL}/api/usuarios/${data.id}`, {
       headers: {
         'content-type': 'application/json',
         'Authorization': `Bearer ${data.token}`
@@ -54,22 +64,24 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
       return false
     }
 
-    const userData = (await userRes.json() as {user: User}).user
+    const userData = (await userRes.json() as {user: UsuarioApiResponse}).user
+
+    const mappedUser: User = {
+      id: userData.id,
+      name: userData.nombre,
+      rol: userData.rol,
+      userImg: "https://example.com/user.jpg",
+      profession: userData.rol === 'ADMIN' ? 'Administrador' : 'Médico',
+      email: userData.email,
+      status: 'Activo'
+    }
 
     Cookies.set('authenticationToken', data.token, { expires: 7, path: '/' });
-    Cookies.set('userData', JSON.stringify(userData), { expires: 7, path: '/' });
+    Cookies.set('userData', JSON.stringify(mappedUser), { expires: 7, path: '/' });
     set({
       isAuthenticated: true,
       authenticationToken: data.token,
-      user: {
-        id: userData.id,
-        name: userData.name,
-        rol: userData.rol,
-        userImg: "https://example.com/user.jpg",
-        profession: "Cardiologist",
-        email: userData.email,
-        status: 'Activo'
-      }
+      user: mappedUser
     });
     return true;
   },
@@ -80,6 +92,5 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
     Cookies.remove('authenticationToken', { path: '/' });
     Cookies.remove('userData', { path: '/' });
     set({ isAuthenticated: false, authenticationToken: null, user: null })
-    throw redirect({ to: '/auth/login' });
   }
 }))

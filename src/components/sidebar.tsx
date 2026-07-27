@@ -11,18 +11,18 @@ interface NavItem {
 
 // ─── Menús por rol ─────────────────────────────────────────────────────────────
 const DOCTOR_NAV: NavItem[] = [
-  { label: 'Dashboard', href: '/doctor/dashboard', icon: '▣' },
-  { label: 'Pacientes', href: '/doctor/pacientes', icon: '👤' },
-  { label: 'Consultas', href: '/doctor/consulta', icon: '📋' },
-  { label: 'Historial', href: '/doctor/historial', icon: '📊' },
-  { label: 'Settings', href: '/doctor/configuracion', icon: '⚙️' },
+  { label: 'Dashboard', href: '/doctor/dashboard', icon: '' },
+  { label: 'Pacientes', href: '/doctor/pacientes', icon: '' },
+  { label: 'Consultas', href: '/doctor/consulta', icon: '' },
+  { label: 'Historial', href: '/doctor/historial', icon: '' },
+  { label: 'Settings', href: '/doctor/configuracion', icon: '' },
 ]
 
 const ADMIN_NAV: NavItem[] = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: '▣' },
-  { label: 'Users', href: '/admin/medicos', icon: '👥' },
-  { label: 'Logs', href: '/admin/Logs', icon: '📝' },
-  { label: 'Settings', href: '/admin/configuracion', icon: '⚙️' },
+  { label: 'Dashboard', href: '/admin/dashboard', icon: '' },
+  { label: 'Users', href: '/admin/medicos', icon: '' },
+  { label: 'Logs', href: '/admin/Logs', icon: '' },
+  { label: 'Settings', href: '/admin/configuracion', icon: '' },
 ]
 
 const navBasedOnRole: Record<Role, NavItem[]> = {
