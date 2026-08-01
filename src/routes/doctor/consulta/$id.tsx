@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import MainPanel from '../../../components/main-panel'
 import isAuthenticated from '../../../lib/is-authenticated'
 import { useQuery } from '@tanstack/react-query'
@@ -43,7 +43,11 @@ function RouteComponent() {
     queryKey: ['consulta', id],
     queryFn: async () => {
       const res = await fetchWithToken<ConsultaData>(`/api/consulta/${id}`)
-      if (!res.success || !res.data) throw new Error(res.error || 'Error al obtener consulta')
+      if (!res.success || !res.data) {
+        const err = new Error(res.error || 'Error al obtener consulta') as Error & { status?: number | null }
+        err.status = res.status
+        throw err
+      }
       return res.data
     },
     retry: false,
@@ -131,12 +135,25 @@ function RouteComponent() {
   }
 
   if (error) {
+    const notFound = (error as Error & { status?: number | null }).status === 404
     return (
       <MainPanel>
         <div className="flex items-center justify-center h-full p-6">
-          <div className="text-center space-y-2">
-            <p className="text-[13px] text-red-500">Error al cargar la consulta</p>
-            <p className="text-[12px] text-slate-400">{(error as Error).message}</p>
+          <div className="text-center space-y-3">
+            <p className="text-[15px] font-bold text-slate-700">
+              {notFound ? 'Registro no encontrado' : 'Error al cargar la consulta'}
+            </p>
+            <p className="text-[12px] text-slate-400">
+              {notFound
+                ? 'Esta consulta no existe o no tienes acceso a ella.'
+                : (error as Error).message}
+            </p>
+            <Link
+              to="/doctor/consulta"
+              className="inline-block mt-2 px-4 py-2 bg-[#1565d8] text-white rounded-lg text-[13px] font-semibold hover:bg-[#124fa8] transition-colors"
+            >
+              Volver al historial
+            </Link>
           </div>
         </div>
       </MainPanel>

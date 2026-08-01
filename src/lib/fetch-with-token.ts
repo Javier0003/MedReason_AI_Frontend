@@ -5,14 +5,16 @@ class FetchResult<T> {
   success: boolean;
   data: T | null;
   error: string | null;
+  status: number | null;
   constructor() {
     this.success = false;
     this.data = null;
     this.error = null;
+    this.status = null;
   }
 }
 
-const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3007'
 
 export default async function fetchWithToken<T>(url: string, options: RequestInit = {}): Promise<FetchResult<T>> {
   const fullUrl = url.startsWith('http') ? url : `${BASE_URL}${url}`
@@ -37,11 +39,13 @@ export default async function fetchWithToken<T>(url: string, options: RequestIni
         await logout();
         throw redirect({ to: '/auth/login' })
       }
+      result.status = res.status;
       result.error = json.message || `HTTP ${res.status}`;
       result.data = json as T;
       result.success = false;
       return result;
     }
+    result.status = res.status;
     result.data = json as T;
     result.success = true;
     return result;
