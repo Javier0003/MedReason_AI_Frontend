@@ -35,7 +35,7 @@ function RouteComponent() {
   const { data: configData } = useQuery({
     queryKey: ['admin-config'],
     queryFn: async () => {
-      const res = await fetchWithToken<{ config: IaConfig }>('/api/admin/config')
+      const res = await fetchWithToken<{ config: IaConfig }>('/api/admin/configSystem')
       if (!res.success || !res.data) throw new Error(res.error || 'Error')
       return res.data.config
     },
@@ -44,7 +44,7 @@ function RouteComponent() {
   const { data: versions, refetch: refetchVersions } = useQuery({
     queryKey: ['admin-prompt-versions'],
     queryFn: async () => {
-      const res = await fetchWithToken<{ versions: PromptVersion[] }>('/api/admin/config/prompt-versions')
+      const res = await fetchWithToken<{ versions: PromptVersion[] }>('/api/admin/configSystem/prompt-versions')
       if (!res.success || !res.data) throw new Error(res.error || 'Error')
       return res.data.versions
     },
@@ -53,7 +53,7 @@ function RouteComponent() {
   const { data: availableModels } = useQuery({
     queryKey: ['admin-models'],
     queryFn: async () => {
-      const res = await fetchWithToken<{ models: string[] }>('/api/admin/config/models')
+      const res = await fetchWithToken<{ models: string[] }>('/api/admin/configSystem/models')
       if (!res.success || !res.data) throw new Error(res.error || 'Error')
       return res.data.models
     },
@@ -82,7 +82,7 @@ function RouteComponent() {
     if (temperatura !== configData?.temperatura) body.temperatura = temperatura
     if (systemPrompt !== configData?.systemPrompt) body.systemPrompt = systemPrompt
     if (Object.keys(body).length === 0) { setGuardando(false); return }
-    const res = await fetchWithToken<{ config: IaConfig }>('/api/admin/config', {
+    const res = await fetchWithToken<{ config: IaConfig }>('/api/admin/configSystem', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -96,7 +96,7 @@ function RouteComponent() {
   const crearPV = async () => {
     if (!nuevaVersion.trim() || !nuevoContenido.trim()) return
     setCreandoPV(true)
-    const res = await fetchWithToken('/api/admin/config/prompt-versions', {
+    const res = await fetchWithToken('/api/admin/configSystem/prompt-versions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ version: nuevaVersion.trim(), contenido: nuevoContenido.trim() }),
@@ -110,7 +110,7 @@ function RouteComponent() {
   }
 
   const activarPV = async (id: number) => {
-    await fetchWithToken(`/api/admin/config/prompt-versions/${id}/activate`, { method: 'PUT' })
+    await fetchWithToken(`/api/admin/configSystem/prompt-versions/${id}/activate`, { method: 'PUT' })
     refetchVersions()
   }
 

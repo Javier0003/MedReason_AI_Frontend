@@ -129,6 +129,10 @@ function RouteComponent() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pacienteId: selectedPaciente.id, input: sintomas.trim() }),
       })
+      if (res.status === 429) {
+        alert('Has alcanzado el límite de 100 consultas por hora. Intenta nuevamente más tarde.')
+        return
+      }
       if (!res.success || !res.data) throw new Error(res.error || 'Error al crear consulta')
       setResultadoConsulta(res.data)
       queryClient.invalidateQueries({ queryKey: ['consulta-historial'] })
