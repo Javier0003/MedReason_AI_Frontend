@@ -1,15 +1,22 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
 import { useQuery } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
-import type { Paciente } from '../../../types'
 
 export const Route = createFileRoute('/doctor/dashboard/')({
   component: RouteComponent,
   beforeLoad: isAuthenticated
 })
+
+type PacienteResumen = {
+  id: number
+  nombre: string
+  edad: number
+  sexo: string
+  documento: string
+}
 
 type ConsultaResumen = {
   id: number
@@ -36,24 +43,10 @@ type PaginatedResponse<T> = {
 }
 
 const RIESGO_COLORS: Record<string, string> = {
-  Alto: 'bg-red-100 text-red-700',
-  Medio: 'bg-amber-100 text-amber-700',
-  Bajo: 'bg-emerald-100 text-emerald-700',
+  Alto: 'bg-red-50 text-red-600',
+  Medio: 'bg-amber-50 text-amber-600',
+  Bajo: 'bg-emerald-50 text-emerald-600',
 }
-
-const STATUS_CONFIG: Record<string, { label: string; classes: string }> = {
-  COMPLETED:   { label: 'COMPLETADO',   classes: 'bg-emerald-100 text-emerald-700' },
-  IN_PROGRESS: { label: 'EN PROGRESO', classes: 'bg-blue-100 text-blue-700' },
-  WAITING:     { label: 'EN ESPERA',    classes: 'bg-amber-100 text-amber-700' },
-  SCHEDULED:   { label: 'PROGRAMADO',   classes: 'bg-slate-100 text-slate-500' },
-}
-
-const PACIENTES_HOY: Paciente[] = [
-  { id: '1', hora: '09:00 AM', nombre: 'Arthur Wagner',  iniciales: 'AW', tipo: 'Seguimiento',       status: 'COMPLETED'   },
-  { id: '2', hora: '10:30 AM', nombre: 'Maria Santos',   iniciales: 'MS', tipo: 'Consulta Inicial',  status: 'IN_PROGRESS' },
-  { id: '3', hora: '11:15 AM', nombre: 'James Link',     iniciales: 'JL', tipo: 'Urgencia',          status: 'WAITING'     },
-  { id: '4', hora: '01:45 PM', nombre: 'Emily Davis',    iniciales: 'ED', tipo: 'Revisión Radiológica', status: 'SCHEDULED'   },
-]
 
 function iniciales(nombre: string) {
   return nombre.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()
@@ -75,10 +68,12 @@ function hoy() {
 }
 
 function RouteComponent() {
+  const [search, setSearch] = useState('')
+
   const { data: pacientesData, isLoading: loadingPacientes } = useQuery({
     queryKey: ['pacientes'],
     queryFn: async () => {
-      const res = await fetchWithToken<{ pacientes: { id: number; nombre: string }[] }>(
+      const res = await fetchWithToken<{ pacientes: PacienteResumen[] }>(
         '/api/pacientes',
         { method: 'GET', headers: { 'content-type': 'application/json' } }
       )
@@ -97,9 +92,18 @@ function RouteComponent() {
     },
   })
 
-  const totalPacientes = pacientesData?.length ?? 0
+  const pacientes = pacientesData ?? []
+  const totalPacientes = pacientes.length
   const consultas = historialData?.data ?? []
   const totalConsultas = historialData?.total ?? 0
+
+  const pacientesFiltrados = useMemo(
+    () => pacientes.filter(p =>
+      p.nombre.toLowerCase().includes(search.toLowerCase()) ||
+      p.documento.toLowerCase().includes(search.toLowerCase())
+    ),
+    [search, pacientes]
+  )
 
   const consultasHoy = useMemo(
     () => consultas.filter(c => c.createdAt.startsWith(hoy())),
@@ -187,49 +191,70 @@ function RouteComponent() {
             })}
           </div>
 
-          {/* Tabla Pacientes de Hoy + Últimas Consultas */}
+          {/* Tabla Pacientes + Últimas Consultas */}
           <div className="grid grid-cols-2 gap-4 pt-4">
-            {/* Pacientes de Hoy */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden">
+            {/* Pacientes */}
+            <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden flex flex-col">
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
-                <h2 className="text-[14px] font-bold text-slate-800">Pacientes de Hoy</h2>
+                <h2 className="text-[14px] font-bold text-slate-800">Pacientes</h2>
+                <Link to="/doctor/pacientes" className="text-[12px] font-semibold text-[#1565d8] hover:text-[#0f56bd] transition-colors">Ver todos</Link>
               </div>
-              <table className="w-full">
-                <thead className="bg-slate-50/80">
-                  <tr>
-                    {['Hora', 'Nombre', 'Tipo', 'Estado'].map(h => (
-                      <th key={h} className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {PACIENTES_HOY.map(p => {
-                    const s = STATUS_CONFIG[p.status]
-                    return (
+
+              <div className="px-5 py-3 border-b border-slate-100">
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]">🔍</span>
+                  <input
+                    type="text"
+                    placeholder="Buscar pacientes por nombre o documento..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
+                  />
+                  {search && (
+                    <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">✕</button>
+                  )}
+                </div>
+              </div>
+
+              <div className="overflow-y-auto max-h-[360px]">
+                <table className="w-full">
+                  <thead className="bg-slate-50/80 sticky top-0">
+                    <tr>
+                      {['Edad', 'Nombre', 'Documento', 'Sexo'].map(h => (
+                        <th key={h} className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100">
+                    {pacientesFiltrados.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-5 py-10 text-center text-[13px] text-slate-400">
+                          No se encontraron pacientes{search && ` para "${search}"`}
+                        </td>
+                      </tr>
+                    ) : pacientesFiltrados.map(p => (
                       <tr key={p.id} className="hover:bg-slate-50/60 transition-colors cursor-pointer">
-                        <td className="px-5 py-3.5 text-[12px] font-semibold text-slate-400">{p.hora}</td>
+                        <td className="px-5 py-3.5 text-[12px] font-semibold text-slate-400">{p.edad}</td>
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[11px] font-bold shrink-0">{p.iniciales}</div>
+                            <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[11px] font-bold shrink-0">{iniciales(p.nombre)}</div>
                             <span className="text-[13px] font-semibold text-slate-700">{p.nombre}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 text-[13px] text-slate-500">{p.tipo}</td>
-                        <td className="px-5 py-3.5">
-                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${s.classes}`}>{s.label}</span>
-                        </td>
+                        <td className="px-5 py-3.5 text-[13px] text-slate-500">{p.documento}</td>
+                        <td className="px-5 py-3.5 text-[13px] text-slate-500">{p.sexo}</td>
                       </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
             {/* Últimas Consultas */}
             <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
                 <h2 className="text-[14px] font-bold text-slate-800">Últimas Consultas</h2>
-                <Link to="/doctor/consulta/historial" className="text-[12px] font-semibold text-[#1565d8] hover:text-[#0f56bd] transition-colors">Ver todas</Link>
+                <Link to="/doctor/historial" className="text-[12px] font-semibold text-[#1565d8] hover:text-[#0f56bd] transition-colors">Ver todas</Link>
               </div>
               {ultimasConsultas.length === 0 ? (
                 <div className="px-5 py-10 text-center text-[13px] text-slate-400">No hay consultas registradas.</div>
