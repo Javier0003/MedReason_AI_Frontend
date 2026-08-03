@@ -7,6 +7,7 @@ import IconMail from '../../../assets/svg/IconMail';
 import IconMedicalLogo from '../../../assets/svg/IconMedicalLogo';
 import { authenticationStore } from '../../../store/authentication-store';
 import isAuthenticated from '../../../lib/is-authenticated';
+import { showToast, clearAllToasts } from '../../../lib/toast';
 
 export const Route = createFileRoute('/auth/login/')({
   component: RouteComponent,
@@ -36,6 +37,7 @@ function RouteComponent() {
   const [errors, setErrors] = useState({ email: '', password: '' })
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(() => !!loadSavedEmail())
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const email = useRef<HTMLInputElement>(null)
   const password = useRef<HTMLInputElement>(null)
@@ -56,6 +58,7 @@ function RouteComponent() {
     setErrors(nextErrors)
     if (Object.values(nextErrors).some(Boolean)) return
 
+    setIsSubmitting(true)
     const is_authenticated = await authenticationStore.getState().authenticate(emailValue!, passwordValue!)
 
     if (is_authenticated) {
@@ -66,14 +69,18 @@ function RouteComponent() {
       }
 
       if(authenticationStore.getState().user?.rol === 'DOCTOR') {
-        navigate({ to: '/doctor/dashboard' })
+        showToast('Bienvenido', 'Inicio de sesión exitoso. Redirigiendo al panel...', 'success')
+        setTimeout(() => { clearAllToasts(); navigate({ to: '/doctor/dashboard' }); }, 1500)
       } else if(authenticationStore.getState().user?.rol === 'ADMIN') {
-        navigate({ to: '/admin/dashboard' })
+        showToast('Bienvenido', 'Inicio de sesión exitoso. Redirigiendo al panel de control...', 'success')
+        setTimeout(() => { clearAllToasts(); navigate({ to: '/admin/dashboard' }); }, 1500)
       } else {
-        alert('Rol de usuario no reconocido. Por favor, contacte al soporte.')
+        showToast('Atención', 'Rol de usuario no reconocido. Por favor, contacte al soporte.', 'warning')
+        setIsSubmitting(false)
       }
     } else {
-      alert('Error de autenticación. Por favor, revise sus credenciales e intente nuevamente.')
+      showToast('Error de Autenticación', 'Por favor, revise sus credenciales e intente nuevamente.', 'error')
+      setIsSubmitting(false)
     }
   }
 
@@ -191,10 +198,15 @@ function RouteComponent() {
               <button
                 type="submit"
                 onClick={handleLogin}
-                className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#1565d8] text-[14px] font-semibold text-white shadow-[0_10px_20px_rgba(21,101,216,0.25)] transition hover:bg-[#0f56bd] active:scale-[0.99]"
+                disabled={isSubmitting}
+                className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#1565d8] text-[14px] font-semibold text-white shadow-[0_10px_20px_rgba(21,101,216,0.25)] transition hover:bg-[#0f56bd] active:scale-[0.99] disabled:opacity-70 disabled:cursor-wait"
               >
-                Iniciar Sesión en el Panel Clínico
-                <IconArrowRight />
+                {isSubmitting ? 'Verificando credenciales...' : (
+                  <>
+                    Iniciar Sesión en el Panel Clínico
+                    <IconArrowRight />
+                  </>
+                )}
               </button>
             </form>
           </section>
