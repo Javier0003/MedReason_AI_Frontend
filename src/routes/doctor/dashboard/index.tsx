@@ -36,8 +36,13 @@ type PaginatedResponse<T> = {
 
 const RIESGO_COLORS: Record<string, string> = {
   Alto: 'bg-red-100 text-red-700',
+  Alta: 'bg-red-100 text-red-700',
   Medio: 'bg-amber-100 text-amber-700',
+  Media: 'bg-amber-100 text-amber-700',
+  Moderado: 'bg-amber-100 text-amber-700',
+  Moderada: 'bg-amber-100 text-amber-700',
   Bajo: 'bg-emerald-100 text-emerald-700',
+  Baja: 'bg-emerald-100 text-emerald-700',
 }
 
 const STATUS_CONFIG: Record<string, { label: string; classes: string }> = {
@@ -111,8 +116,15 @@ function RouteComponent() {
   const riesgos = useMemo(() => {
     const counts = { Alto: 0, Medio: 0, Bajo: 0 }
     for (const c of consultas) {
-      const k = c.nivelRiesgo as keyof typeof counts
-      if (k in counts) counts[k]++
+      if (!c.nivelRiesgo) continue
+      const r = c.nivelRiesgo.toLowerCase().trim()
+      let k: 'Alto' | 'Medio' | 'Bajo' | null = null
+      
+      if (r === 'alto' || r === 'alta') k = 'Alto'
+      else if (r === 'medio' || r === 'media' || r === 'moderado' || r === 'moderada') k = 'Medio'
+      else if (r === 'bajo' || r === 'baja' || r === 'leve') k = 'Bajo'
+      
+      if (k) counts[k]++
     }
     return counts
   }, [consultas])
@@ -251,8 +263,8 @@ function RouteComponent() {
                       <tr key={c.id} className="hover:bg-slate-50/60 transition-colors cursor-pointer">
                         <td className="px-5 py-3.5">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[11px] font-bold shrink-0">{iniciales(c.paciente.nombre)}</div>
-                            <span className="text-[13px] font-semibold text-slate-700">{c.paciente.nombre}</span>
+                            <div className="w-7 h-7 rounded-full bg-[#1565d8]/10 text-[#1565d8] flex items-center justify-center text-[11px] font-bold shrink-0">{iniciales(c.paciente?.nombre || 'Desconocido')}</div>
+                            <span className="text-[13px] font-semibold text-slate-700">{c.paciente?.nombre || 'Desconocido'}</span>
                           </div>
                         </td>
                         <td className="px-5 py-3.5">

@@ -63,7 +63,7 @@ function RouteComponent() {
   })
 
   const handleDeletePaciente = async (id: number) => {
-    const res = await fetchWithToken(`/api/pacientes/${id}`, {
+    await fetchWithToken(`/api/pacientes/${id}`, {
       headers: {
         'content-type': 'application/json'
       },
@@ -82,6 +82,8 @@ function RouteComponent() {
       body: JSON.stringify(updatedData)
     })
 
+    if (!res.success) return;
+
     queryClient.invalidateQueries({ queryKey: ['pacientes'] })
   }
 
@@ -93,6 +95,8 @@ function RouteComponent() {
       method: 'POST',
       body: JSON.stringify(nuevoPaciente)
     })
+
+    if (!res.success) return;
 
 
     queryClient.invalidateQueries({ queryKey: ['pacientes'] })

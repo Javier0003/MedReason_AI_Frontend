@@ -74,22 +74,24 @@ function RouteComponent() {
   const inicales = (nombre: string) =>
     nombre.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
 
-  const crearUsuario = async (data: { nombre: string; email: string; password?: string; rol: Rol }) => {
+  const crearUsuario = async (data: { nombre: string; email: string; password?: string; rol: Rol }, hideToast?: boolean) => {
     const res = await fetchWithToken<{ usuario: Usuario }>('/api/admin/usuarios', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(data),
+      hideToastOnError: hideToast,
     })
     if (!res.success) throw new Error(res.error || 'Error al crear usuario')
     queryClient.invalidateQueries({ queryKey: ['admin-usuarios'] })
     return res.data!.usuario
   }
 
-  const actualizarUsuario = async (id: number, data: { nombre?: string; email?: string; rol?: Rol; activo?: boolean }) => {
+  const actualizarUsuario = async (id: number, data: { nombre?: string; email?: string; rol?: Rol; activo?: boolean }, hideToast?: boolean) => {
     const res = await fetchWithToken<{ usuario: Usuario }>(`/api/admin/usuarios/${id}`, {
       method: 'PUT',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(data),
+      hideToastOnError: hideToast,
     })
     if (!res.success) throw new Error(res.error || 'Error al actualizar usuario')
     queryClient.invalidateQueries({ queryKey: ['admin-usuarios'] })
@@ -238,7 +240,7 @@ function RouteComponent() {
                       </button>
                       <button
                         type="button"
-                        onClick={async () => { await actualizarUsuario(u.id, { activo: !u.activo }) }}
+                        onClick={async () => { await actualizarUsuario(u.id, { activo: !u.activo }, false) }}
                         className={`text-[11px] font-semibold px-2 py-1 rounded border transition-colors ${
                           u.activo
                             ? 'text-red-500 border-red-200 hover:bg-red-50'
@@ -324,7 +326,7 @@ function RouteComponent() {
         <FormularioUsuario
           onClose={() => setMostrarFormulario(false)}
           onSubmit={async (datos) => {
-            await crearUsuario(datos)
+            await crearUsuario(datos, true)
             setMostrarFormulario(false)
           }}
         />
@@ -336,7 +338,7 @@ function RouteComponent() {
           usuario={editando}
           onClose={() => setEditando(null)}
           onSubmit={async (datos) => {
-            await actualizarUsuario(editando.id, datos)
+            await actualizarUsuario(editando.id, datos, true)
             setEditando(null)
           }}
         />

@@ -4,6 +4,7 @@ import MainPanel from '../../../components/main-panel'
 import isAuthenticated from '../../../lib/is-authenticated'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
+import { showToast } from '../../../lib/toast'
 
 export const Route = createFileRoute('/doctor/consulta/')({
   component: RouteComponent,
@@ -130,7 +131,7 @@ function RouteComponent() {
         body: JSON.stringify({ pacienteId: selectedPaciente.id, input: sintomas.trim() }),
       })
       if (res.status === 429) {
-        alert('Has alcanzado el límite de 100 consultas por hora. Intenta nuevamente más tarde.')
+        showToast('Límite de Consultas', 'Has alcanzado el límite de 100 consultas por hora. Intenta nuevamente más tarde.', 'warning')
         return
       }
       if (!res.success || !res.data) throw new Error(res.error || 'Error al crear consulta')
@@ -309,10 +310,15 @@ function RouteComponent() {
                       {resultadoConsulta.nivelRiesgo}
                     </span>
                   </div>
-                  <div className="bg-slate-50 rounded-xl p-4 space-y-2">
-                    <p className="text-[11px] font-bold uppercase tracking-wide text-slate-400">Diagnóstico Generado</p>
-                    <p className="text-[13px] text-slate-700 whitespace-pre-wrap leading-relaxed">{resultadoConsulta.output}</p>
-                  </div>
+                    <div className="text-center p-6 bg-white border border-slate-200 rounded-lg">
+                      <div className="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+                        ✓
+                      </div>
+                      <p className="text-[16px] font-bold text-slate-800">¡Diagnóstico de IA Completo!</p>
+                      <p className="text-[13px] text-slate-500 mt-2">
+                        El expediente se ha procesado exitosamente. Haz clic en el botón de abajo para ver el análisis detallado, los riesgos y las tarjetas de diagnóstico en pantalla completa.
+                      </p>
+                    </div>
                   <div className="flex gap-4 text-[12px] text-slate-400">
                     <span>Modelo: {resultadoConsulta.modelo}</span>
                     <span>Tokens: {resultadoConsulta.tokens.toLocaleString()}</span>
@@ -326,9 +332,9 @@ function RouteComponent() {
                     >Cerrar</button>
                     <button
                       type="button"
-                      onClick={() => { setResultadoConsulta(null); setSelectedPaciente(null); setSintomas(''); setBusquedaPacientes(''); setBusquedaQuery('') }}
-                      className="px-4 py-2 bg-[#1565d8] text-white rounded-lg text-[13px] font-semibold hover:bg-[#124fa8] transition-colors"
-                    >Nueva Consulta</button>
+                      onClick={() => navigate({ to: '/doctor/consulta/$id', params: { id: String(resultadoConsulta.id) } })}
+                      className="px-6 py-2.5 bg-[#1565d8] text-white rounded-lg text-[13px] font-bold hover:bg-[#124fa8] transition-colors shadow-sm w-full"
+                    >Abrir Expediente Completo ➔</button>
                   </div>
                 </div>
               ) : (
@@ -385,9 +391,17 @@ function RouteComponent() {
                     type="button"
                     onClick={crearConsulta}
                     disabled={!selectedPaciente || !sintomas.trim() || creando}
-                    className="w-full py-2.5 bg-[#1565d8] text-white rounded-lg text-[13px] font-semibold hover:bg-[#124fa8] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center w-full py-2.5 bg-[#1565d8] text-white rounded-lg text-[13px] font-semibold hover:bg-[#124fa8] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    {creando ? 'Procesando con IA...' : 'Realizar Consulta'}
+                    {creando ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Procesando con IA...
+                      </>
+                    ) : 'Realizar Consulta'}
                   </button>
                 </>
               )}
