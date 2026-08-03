@@ -4,7 +4,6 @@ import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
 import { useQuery } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
-import type { Paciente } from '../../../types'
 
 export const Route = createFileRoute('/doctor/dashboard/')({
   component: RouteComponent,
@@ -47,18 +46,9 @@ const RIESGO_COLORS: Record<string, string> = {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; classes: string }> = {
-  COMPLETED:   { label: 'COMPLETADO',   classes: 'bg-emerald-100 text-emerald-700' },
+  COMPLETED:   { label: 'COMPLETADO', classes: 'bg-emerald-100 text-emerald-700' },
   IN_PROGRESS: { label: 'EN PROGRESO', classes: 'bg-blue-100 text-blue-700' },
-  WAITING:     { label: 'EN ESPERA',    classes: 'bg-amber-100 text-amber-700' },
-  SCHEDULED:   { label: 'PROGRAMADO',   classes: 'bg-slate-100 text-slate-500' },
 }
-
-const PACIENTES_HOY: Paciente[] = [
-  { id: '1', hora: '09:00 AM', nombre: 'Arthur Wagner',  iniciales: 'AW', tipo: 'Seguimiento',       status: 'COMPLETED'   },
-  { id: '2', hora: '10:30 AM', nombre: 'Maria Santos',   iniciales: 'MS', tipo: 'Consulta Inicial',  status: 'IN_PROGRESS' },
-  { id: '3', hora: '11:15 AM', nombre: 'James Link',     iniciales: 'JL', tipo: 'Urgencia',          status: 'WAITING'     },
-  { id: '4', hora: '01:45 PM', nombre: 'Emily Davis',    iniciales: 'ED', tipo: 'Revisión Radiológica', status: 'SCHEDULED'   },
-]
 
 function iniciales(nombre: string) {
   return nombre.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()
@@ -109,6 +99,18 @@ function RouteComponent() {
   const consultasHoy = useMemo(
     () => consultas.filter(c => c.createdAt.startsWith(hoy())),
     [consultas]
+  )
+
+  const pacientesHoy = useMemo(
+    () => consultasHoy.map(c => ({
+      id: String(c.id),
+      hora: formatearHora(c.createdAt),
+      nombre: c.paciente.nombre,
+      iniciales: iniciales(c.paciente.nombre),
+      tipo: c.nivelRiesgo,
+      status: c.completed ? 'COMPLETED' : 'IN_PROGRESS',
+    })),
+    [consultasHoy]
   )
 
   const riesgos = useMemo(() => {
@@ -215,7 +217,7 @@ function RouteComponent() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
-                  {PACIENTES_HOY.map(p => {
+                  {pacientesHoy.map(p => {
                     const s = STATUS_CONFIG[p.status]
                     return (
                       <tr key={p.id} className="hover:bg-slate-50/60 transition-colors cursor-pointer">
@@ -226,7 +228,9 @@ function RouteComponent() {
                             <span className="text-[13px] font-semibold text-slate-700">{p.nombre}</span>
                           </div>
                         </td>
-                        <td className="px-5 py-3.5 text-[13px] text-slate-500">{p.tipo}</td>
+                        <td className="px-5 py-3.5">
+                          <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${RIESGO_COLORS[p.tipo] ?? 'bg-slate-100 text-slate-500'}`}>{p.tipo}</span>
+                        </td>
                         <td className="px-5 py-3.5">
                           <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${s.classes}`}>{s.label}</span>
                         </td>
