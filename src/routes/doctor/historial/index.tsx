@@ -15,7 +15,7 @@ type ConsultaEntry = {
   id: number
   pacienteId: number
   input: string
-  output: string
+  output: string | unknown
   nivelRiesgo: string
   modelo: string
   tokens: number
@@ -45,6 +45,7 @@ function RouteComponent() {
   const [fechaInicio, setFechaInicio] = useState('')
   const [fechaFin, setFechaFin] = useState('')
   const [pacienteSearch, setPacienteSearch] = useState('')
+  const [exportando, setExportando] = useState(false)
 
   const pageSize = 10
 
@@ -65,25 +66,44 @@ function RouteComponent() {
     retry: false,
   })
 
-  const exportToExcel = () => {
-    if (!data?.data?.length) return
-    const rows = data.data.map(c => ({
-      ID: c.id,
-      Paciente: c.paciente.nombre,
-      Documento: c.paciente.documento,
-      Médico: c.doctor.nombre,
-      Síntomas: c.input,
-      Diagnóstico: c.output,
-      Riesgo: c.nivelRiesgo,
-      Modelo: c.modelo,
-      Tokens: c.tokens,
-      Estado: c.completed ? 'Completada' : 'Ongoing',
-      Fecha: new Date(c.createdAt).toLocaleDateString('es-ES'),
-    }))
-    const ws = XLSX.utils.json_to_sheet(rows)
-    const wb = XLSX.utils.book_new()
-    XLSX.utils.book_append_sheet(wb, ws, 'Historial')
-    XLSX.writeFile(wb, `historial_consultas_${new Date().toISOString().slice(0, 10)}.xlsx`)
+  const exportToExcel = async () => {
+    if (exportando) return
+    setExportando(true)
+    try {
+      const paramsTodos = new URLSearchParams({ page: '1', pageSize: '100000', all: 'true' })
+      if (fechaInicio) paramsTodos.set('fechaInicio', fechaInicio)
+      if (fechaFin) paramsTodos.set('fechaFin', fechaFin)
+      if (pacienteSearch) paramsTodos.set('pacienteId', pacienteSearch)
+
+      const res = await fetchWithToken<PaginatedResponse<ConsultaEntry>>(
+        `/api/consulta/historial?${paramsTodos.toString()}`
+      )
+      if (!res.success || !res.data) throw new Error(res.error || 'Error al obtener historial')
+      const registros = res.data.data
+      if (!registros.length) return
+
+      const rows = registros.map(c => ({
+        ID: c.id,
+        Paciente: c.paciente.nombre,
+        Documento: c.paciente.documento,
+        Médico: c.doctor.nombre,
+        Síntomas: c.input,
+        Diagnóstico: typeof c.output === 'string' ? c.output : JSON.stringify(c.output),
+        Riesgo: c.nivelRiesgo,
+        Modelo: c.modelo,
+        Tokens: c.tokens,
+        Estado: c.completed ? 'Completada' : 'Ongoing',
+        Fecha: new Date(c.createdAt).toLocaleDateString('es-ES'),
+      }))
+      const ws = XLSX.utils.json_to_sheet(rows)
+      const wb = XLSX.utils.book_new()
+      XLSX.utils.book_append_sheet(wb, ws, 'Historial')
+      XLSX.writeFile(wb, `historial_consultas_${new Date().toISOString().slice(0, 10)}.xlsx`)
+    } catch (e) {
+      console.log((e as Error).message)
+    } finally {
+      setExportando(false)
+    }
   }
 
   return (
@@ -140,10 +160,10 @@ function RouteComponent() {
           <button
             type="button"
             onClick={exportToExcel}
-            disabled={!data?.data?.length}
+            disabled={exportando}
             className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
           >
-            Exportar Excel
+            {exportando ? 'Exportando...' : 'Exportar Excel'}
           </button>
         </div>
 

@@ -12,7 +12,7 @@ type ConsultaData = {
   doctorId: number
   pacienteId: number
   input: string
-  output: string
+  output: string | unknown
   nivelRiesgo: string
   modelo: string
   promptVersion: string
@@ -33,6 +33,123 @@ const RIESGO_COLORS: Record<string, string> = {
   Alto: 'bg-rose-100 text-rose-700',
   Medio: 'bg-amber-100 text-amber-700',
   Bajo: 'bg-emerald-100 text-emerald-700',
+}
+
+function outputAString(output: string | unknown): string {
+  if (typeof output === 'string') return output
+  try {
+    return JSON.stringify(output, null, 2)
+  } catch {
+    return String(output ?? '')
+  }
+}
+
+type Diagnostico = {
+  diagnostico_diferencial?: string
+  hipotesis?: string
+  probabilidad?: string
+  evidencia_a_favor?: string
+  evidencia_en_contra?: string
+  signos_de_alarma?: string[]
+  estudios_complementarios?: string[]
+  nivel_urgencia?: string
+  porcentaje_confianza?: string
+}
+
+function extraerDiagnosticos(output: string | unknown): Diagnostico[] | null {
+  if (typeof output === 'string') return null
+  if (Array.isArray(output)) {
+    const items = output as unknown[]
+    if (items.length > 0 && typeof items[0] === 'object' && items[0] !== null) return items as Diagnostico[]
+    return null
+  }
+  if (output && typeof output === 'object') {
+    const obj = output as Record<string, unknown>
+    const nested = obj.analisis_clinico as Record<string, unknown> | undefined
+    const list = Array.isArray(obj) ? obj : nested?.diagnosticos_diferenciales
+    if (Array.isArray(list) && list.length > 0 && typeof list[0] === 'object' && list[0] !== null) {
+      return list as Diagnostico[]
+    }
+  }
+  return null
+}
+
+function listar(items?: string[]) {
+  if (!Array.isArray(items) || items.length === 0) return null
+  return (
+    <ul className="list-disc pl-4 space-y-0.5">
+      {items.map((item, i) => (
+        <li key={i}>{item}</li>
+      ))}
+    </ul>
+  )
+}
+
+function DiagnosticoOutput({ output }: { output: string | unknown }) {
+  if (typeof output === 'string') {
+    return <p className="text-[13px] text-slate-700 whitespace-pre-wrap leading-relaxed">{output}</p>
+  }
+
+  const diagnosticos = extraerDiagnosticos(output)
+  if (!diagnosticos) {
+    return <pre className="text-[13px] text-slate-700 whitespace-pre-wrap leading-relaxed font-sans">{outputAString(output)}</pre>
+  }
+
+  return (
+    <div className="space-y-4">
+      {diagnosticos.map((d, i) => (
+        <div key={i} className="rounded-xl border border-slate-200 p-4 space-y-3">
+          <div className="flex items-start justify-between gap-3">
+            <h3 className="text-[13px] font-bold text-slate-800">
+              {i + 1}. {d.diagnostico_diferencial ?? d.hipotesis ?? 'Diagnóstico'}
+            </h3>
+            <div className="flex flex-col items-end gap-1 shrink-0">
+              {d.probabilidad && (
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide bg-[#1565d8]/10 text-[#1565d8]">
+                  Probabilidad: {d.probabilidad}
+                </span>
+              )}
+              {d.porcentaje_confianza && (
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-bold tracking-wide bg-slate-100 text-slate-600">
+                  Confianza: {d.porcentaje_confianza}
+                </span>
+              )}
+            </div>
+          </div>
+
+          {d.evidencia_a_favor && (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-emerald-600 mb-0.5">Evidencia a favor</p>
+              <p className="text-[12px] text-slate-600 leading-relaxed">{d.evidencia_a_favor}</p>
+            </div>
+          )}
+          {d.evidencia_en_contra && (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-rose-600 mb-0.5">Evidencia en contra</p>
+              <p className="text-[12px] text-slate-600 leading-relaxed">{d.evidencia_en_contra}</p>
+            </div>
+          )}
+          {listar(d.signos_de_alarma) && (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-amber-600 mb-0.5">Signos de alarma</p>
+              {listar(d.signos_de_alarma)}
+            </div>
+          )}
+          {listar(d.estudios_complementarios) && (
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500 mb-0.5">Estudios complementarios</p>
+              {listar(d.estudios_complementarios)}
+            </div>
+          )}
+          {d.nivel_urgencia && (
+            <p className="text-[12px] text-slate-500">
+              <span className="font-bold text-slate-700">Nivel de urgencia:</span> {d.nivel_urgencia}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  )
 }
 
 function RouteComponent() {
@@ -176,7 +293,7 @@ function RouteComponent() {
   }
 
   const iniciarEdicionObservaciones = () => {
-    setObservacionesEdit(consulta.output)
+    setObservacionesEdit(outputAString(consulta.output))
     setEditandoObservaciones(true)
   }
 
@@ -283,7 +400,7 @@ function RouteComponent() {
                 className="w-full border border-slate-200 rounded-lg p-3 text-[13px] focus:outline-none focus:border-[#1565d8] resize-none"
               />
             ) : (
-              <p className="text-[13px] text-slate-700 whitespace-pre-wrap leading-relaxed">{consulta.output}</p>
+              <DiagnosticoOutput output={consulta.output} />
             )}
           </div>
 
