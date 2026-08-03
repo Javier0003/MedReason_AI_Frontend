@@ -1,6 +1,13 @@
 import { useState } from "react"
 import { DIAS, MESES } from "../constants/constants"
-import { TAREAS_MOCK, type Tarea } from "../routes/doctor/dashboard"
+export type Tarea = {
+  id: string
+  titulo: string
+  hora: string
+  tipo: 'consulta' | 'urgencia' | 'revisión'
+}
+
+const TAREAS_MOCK: Record<number, Tarea[]> = {}
 
 export default function Calendario({ onDiaClick }: { onDiaClick: (dia: number, tareas: Tarea[]) => void }) {
   const hoy = new Date()

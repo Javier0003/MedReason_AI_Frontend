@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import MainPanel from '../../../components/main-panel'
 import isAuthenticated from '../../../lib/is-authenticated'
 import fetchWithToken from '../../../lib/fetch-with-token'
@@ -35,10 +35,15 @@ type PaginatedResponse<T> = {
 
 const RIESGO_COLORS: Record<string, string> = {
   Alto: 'bg-rose-100 text-rose-700',
+  Alta: 'bg-rose-100 text-rose-700',
   Medio: 'bg-amber-100 text-amber-700',
+  Media: 'bg-amber-100 text-amber-700',
+  Moderado: 'bg-amber-100 text-amber-700',
+  Moderada: 'bg-amber-100 text-amber-700',
   Bajo: 'bg-emerald-100 text-emerald-700',
+  Baja: 'bg-emerald-100 text-emerald-700',
+  Leve: 'bg-emerald-100 text-emerald-700',
 }
-
 function RouteComponent() {
   const navigate = useNavigate()
   const [pagina, setPagina] = useState(1)
@@ -195,7 +200,7 @@ function RouteComponent() {
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[12px] text-slate-600">{c.doctor.nombre}</span>
+                          <span className="text-[12px] text-slate-600">{c.doctor?.nombre || 'Desconocido'}</span>
                         </div>
                       </td>
                       <td className="px-4 py-3.5">
