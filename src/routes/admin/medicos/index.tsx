@@ -239,7 +239,7 @@ function RouteComponent() {
                       </span>
                     </div>
                     <div className="text-[13px] text-slate-500">
-                      {new Date(u.creadoEn).toLocaleDateString()}
+                      {new Date(u.creadoEn).toLocaleDateString('es-ES')}
                     </div>
                     <div className="flex items-center gap-2">
                       <button
@@ -308,7 +308,7 @@ function RouteComponent() {
                 </div>
                 <div>
                   <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1">Registro</p>
-                  <p className="text-[13px] text-slate-700">{new Date(usuarioSeleccionado.creadoEn).toLocaleString()}</p>
+                  <p className="text-[13px] text-slate-700">{new Date(usuarioSeleccionado.creadoEn).toLocaleString('es-ES')}</p>
                 </div>
                 <div className="pt-3 border-t border-slate-100">
                   <p className="text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-2">Estado</p>

@@ -274,7 +274,7 @@ function RouteComponent() {
                       {c.tokens.toLocaleString()}
                     </td>
                     <td className="px-5 py-2.5 text-[12px] text-slate-400 whitespace-nowrap w-[170px]">
-                      {new Date(c.createdAt).toLocaleString()}
+                      {new Date(c.createdAt).toLocaleString('es-ES')}
                     </td>
                   </tr>
                 ))}

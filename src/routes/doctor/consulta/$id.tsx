@@ -305,7 +305,7 @@ function RouteComponent() {
                 <span className="text-slate-300">|</span>
                 <p>Médico Tratante: <span className="text-slate-700">Dr. {consulta.doctor.nombre}</span></p>
                 <span className="text-slate-300">|</span>
-                <p>Fecha: <span className="text-slate-700">{new Date(consulta.createdAt).toLocaleDateString()}</span></p>
+                <p>Fecha: <span className="text-slate-700">{new Date(consulta.createdAt).toLocaleDateString('es-ES')}</span></p>
               </section>
             </div>
             <div className="flex flex-col items-end gap-2">

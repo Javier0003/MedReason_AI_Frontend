@@ -194,7 +194,7 @@ function RouteComponent() {
                       {log.detalle}
                     </td>
                     <td className="px-5 py-2.5 text-[12px] text-slate-400 whitespace-nowrap w-[170px]">
-                      {new Date(log.createdAt).toLocaleString()}
+                      {new Date(log.createdAt).toLocaleString('es-ES')}
                     </td>
                   </tr>
                 ))}
