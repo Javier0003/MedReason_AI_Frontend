@@ -272,7 +272,7 @@ function RouteComponent() {
                       <span className={`w-full flex items-center justify-center px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${
                         c.completed ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                       }`}>
-                        {c.completed ? 'Completada' : 'Ongoing'}
+                        {c.completed ? 'Completada' : 'En Progreso'}
                       </span>
                     </td>
                     <td className="px-5 py-2.5 text-[12px] text-slate-400 w-[140px] truncate">

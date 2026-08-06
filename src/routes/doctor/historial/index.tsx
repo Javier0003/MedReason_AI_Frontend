@@ -97,7 +97,7 @@ function RouteComponent() {
         Riesgo: c.nivelRiesgo,
         Modelo: c.modelo,
         Tokens: c.tokens,
-        Estado: c.completed ? 'Completada' : 'Ongoing',
+        Estado: c.completed ? 'Completada' : 'En Progreso',
         Fecha: new Date(c.createdAt).toLocaleDateString('es-ES'),
       }))
       const ws = XLSX.utils.json_to_sheet(rows)
@@ -239,7 +239,7 @@ function RouteComponent() {
                       <td className="px-4 py-3.5">
                         <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${c.completed ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                           }`}>
-                          {c.completed ? 'Completada' : 'Ongoing'}
+                          {c.completed ? 'Completada' : 'En Progreso'}
                         </span>
                       </td>
                     </tr>
