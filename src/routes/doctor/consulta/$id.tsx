@@ -50,6 +50,56 @@ const RIESGO_COLORS: Record<string, { bg: string, text: string, border: string, 
   Bajo: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', bar: 'bg-emerald-500' },
 }
 
+/**
+ * Función auxiliar para parsear y limpiar el texto JSON devuelto por la IA.
+ * Extraída para mantener el cuerpo del componente limpio y legible.
+ */
+function parseAIOutput(output: any): ConsultaOutputObj | null {
+  if (!output) return null;
+  if (typeof output === 'object') return output;
+  if (typeof output === 'string') {
+    try {
+      // Limpiar posible formato markdown que traen algunos registros viejos
+      let cleanStr = output.trim();
+      if (cleanStr.startsWith('```json')) cleanStr = cleanStr.replace(/^```json\s*/, '');
+      if (cleanStr.startsWith('```')) cleanStr = cleanStr.replace(/^```\s*/, '');
+      if (cleanStr.endsWith('```')) cleanStr = cleanStr.replace(/\s*```$/, '');
+      
+      // Intentar parsear de forma robusta eliminando caracteres basura del final si falla
+      let parsed = null;
+      let s = cleanStr;
+      
+      // Loop de seguridad de máximo 50 iteraciones para no trabar el navegador
+      let attempts = 0;
+      while (s.length > 0 && attempts < 50) {
+        try {
+          parsed = JSON.parse(s);
+          break;
+        } catch (e) {
+          s = s.slice(0, -1).trim();
+          attempts++;
+        }
+      }
+      
+      if (!parsed) return null;
+      
+      // Si al parsear nos sigue devolviendo un string (JSON doblemente serializado), parsearlo de nuevo
+      if (typeof parsed === 'string') {
+        try {
+          return JSON.parse(parsed);
+        } catch (e) {
+          return parsed as any;
+        }
+      }
+      
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
 function RouteComponent() {
   const { id } = Route.useParams()
   const queryClient = useQueryClient()
@@ -89,50 +139,7 @@ function RouteComponent() {
     }
   }, [consulta?.chatbotAnswers])
 
-  const parsedOutput = useMemo(() => {
-    if (!consulta?.output) return null
-    if (typeof consulta.output === 'object') return consulta.output
-    if (typeof consulta.output === 'string') {
-      try {
-        // Limpiar posible formato markdown que traen algunos registros viejos
-        let cleanStr = consulta.output.trim()
-        if (cleanStr.startsWith('```json')) cleanStr = cleanStr.replace(/^```json\s*/, '')
-        if (cleanStr.startsWith('```')) cleanStr = cleanStr.replace(/^```\s*/, '')
-        if (cleanStr.endsWith('```')) cleanStr = cleanStr.replace(/\s*```$/, '')
-        // Intentar parsear de forma robusta eliminando caracteres basura del final si falla
-        let parsed = null;
-        let s = cleanStr;
-        
-        // Loop de seguridad de máximo 50 iteraciones para no trabar el navegador
-        let attempts = 0;
-        while (s.length > 0 && attempts < 50) {
-          try {
-            parsed = JSON.parse(s);
-            break;
-          } catch (e) {
-            s = s.slice(0, -1).trim();
-            attempts++;
-          }
-        }
-        
-        if (!parsed) return null;
-        
-        // Si al parsear nos sigue devolviendo un string (JSON doblemente serializado), parsearlo de nuevo
-        if (typeof parsed === 'string') {
-          try {
-            return JSON.parse(parsed);
-          } catch (e) {
-            return parsed;
-          }
-        }
-        
-        return parsed;
-      } catch (e) {
-        return null;
-      }
-    }
-    return null
-  }, [consulta?.output])
+  const parsedOutput = useMemo(() => parseAIOutput(consulta?.output), [consulta?.output])
 
   const guardarCambios = async (data: { input?: string; output?: string; completed?: string }) => {
     setGuardando(true)
