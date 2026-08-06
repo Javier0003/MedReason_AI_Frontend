@@ -40,8 +40,14 @@ type Paciente = {
 
 const RIESGO_COLORS: Record<string, string> = {
   Alto: 'bg-rose-100 text-rose-700',
+  Alta: 'bg-rose-100 text-rose-700',
   Medio: 'bg-amber-100 text-amber-700',
+  Media: 'bg-amber-100 text-amber-700',
+  Moderado: 'bg-amber-100 text-amber-700',
+  Moderada: 'bg-amber-100 text-amber-700',
   Bajo: 'bg-emerald-100 text-emerald-700',
+  Baja: 'bg-emerald-100 text-emerald-700',
+  Leve: 'bg-emerald-100 text-emerald-700',
 }
 
 const getVisiblePages = (current: number, total: number) => {
@@ -252,8 +258,10 @@ function RouteComponent() {
                       <span className="text-[13px] font-semibold text-slate-700">{c.paciente.nombre}</span>
                       <span className="text-[11px] text-slate-400 ml-2">#{c.paciente.documento}</span>
                     </td>
-                    <td className="px-5 py-2.5 text-[13px] text-slate-500 truncate whitespace-nowrap overflow-hidden max-w-0">
-                      {c.input}
+                    <td className="px-5 py-2.5 w-[200px]">
+                      <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[200px] block">
+                        {c.input}
+                      </span>
                     </td>
                     <td className="px-5 py-2.5 w-[100px]">
                       <span className={`w-full flex items-center justify-center px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${RIESGO_COLORS[c.nivelRiesgo] ?? 'bg-slate-100 text-slate-500'}`}>
@@ -273,8 +281,9 @@ function RouteComponent() {
                     <td className="px-5 py-2.5 text-[13px] text-slate-500 w-[80px]">
                       {c.tokens.toLocaleString()}
                     </td>
-                    <td className="px-5 py-2.5 text-[12px] text-slate-400 whitespace-nowrap w-[170px]">
-                      {new Date(c.createdAt).toLocaleString('es-ES')}
+                    <td className="px-5 py-2.5 whitespace-nowrap w-[170px]">
+                      <p className="text-[12px] font-semibold text-slate-700">{new Date(c.createdAt).toLocaleDateString('es-ES')}</p>
+                      <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
                     </td>
                   </tr>
                 ))}
