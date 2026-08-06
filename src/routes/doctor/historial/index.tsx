@@ -187,7 +187,7 @@ function RouteComponent() {
             <table className="w-full">
               <thead className="bg-slate-50/80">
                 <tr>
-                  {['Fecha', 'ID Paciente', 'Paciente', 'Síntomas', 'Riesgo', 'Médico', 'Estado'].map(h => (
+                  {['ID Paciente', 'Fecha', 'Paciente', 'Síntomas', 'Riesgo', 'Médico', 'Estado'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
                   ))}
                 </tr>
@@ -209,11 +209,11 @@ function RouteComponent() {
                       className="hover:bg-slate-50/60 transition-colors cursor-pointer"
                     >
                       <td className="px-4 py-3.5">
-                        <p className="text-[12px] font-semibold text-slate-700">{new Date(c.createdAt).toLocaleDateString('es-ES')}</p>
-                        <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+                        <span className="text-[12px] font-bold text-slate-400">#{c.paciente.id}</span>
                       </td>
                       <td className="px-4 py-3.5">
-                        <span className="text-[12px] font-bold text-slate-400">#{c.paciente.id}</span>
+                        <p className="text-[12px] font-semibold text-slate-700">{new Date(c.createdAt).toLocaleDateString('es-ES')}</p>
+                        <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2">
