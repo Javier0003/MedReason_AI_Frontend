@@ -89,6 +89,19 @@ function RouteComponent() {
     }
   }, [consulta?.chatbotAnswers])
 
+  const parsedOutput = useMemo(() => {
+    if (!consulta?.output) return null
+    if (typeof consulta.output === 'object') return consulta.output
+    if (typeof consulta.output === 'string') {
+      try {
+        return JSON.parse(consulta.output)
+      } catch (e) {
+        return null
+      }
+    }
+    return null
+  }, [consulta?.output])
+
   const guardarCambios = async (data: { input?: string; output?: string; completed?: string }) => {
     setGuardando(true)
     try {
@@ -190,19 +203,6 @@ function RouteComponent() {
       </MainPanel>
     )
   }
-
-  const parsedOutput = useMemo(() => {
-    if (!consulta?.output) return null
-    if (typeof consulta.output === 'object') return consulta.output
-    if (typeof consulta.output === 'string') {
-      try {
-        return JSON.parse(consulta.output)
-      } catch (e) {
-        return null
-      }
-    }
-    return null
-  }, [consulta?.output])
 
   const iniciarEdicionSintomas = () => {
     setSintomasEdit(consulta.input)
