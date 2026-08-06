@@ -217,6 +217,7 @@ function RouteComponent() {
               <thead className="bg-slate-50/80 sticky top-0">
                 <tr>
                   {[
+                    { label: 'ID', w: 'w-[60px]' },
                     { label: 'Paciente', w: 'w-[180px]' },
                     { label: 'Síntomas', w: 'w-auto' },
                     { label: 'Riesgo', w: 'w-[100px]' },
@@ -232,18 +233,21 @@ function RouteComponent() {
               <tbody className="divide-y divide-slate-100">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-10 text-center text-[13px] text-slate-400">
+                    <td colSpan={8} className="px-5 py-10 text-center text-[13px] text-slate-400">
                       Cargando historial...
                     </td>
                   </tr>
                 ) : !data || data.data.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-10 text-center text-[13px] text-slate-400">
+                    <td colSpan={8} className="px-5 py-10 text-center text-[13px] text-slate-400">
                       No se encontraron consultas.
                     </td>
                   </tr>
                 ) : data.data.map(c => (
                   <tr key={c.id} onClick={() => navigate({ to: '/doctor/consulta/$id', params: { id: String(c.id) } })} className="hover:bg-slate-50/60 transition-colors cursor-pointer">
+                    <td className="px-5 py-2.5 w-[60px] truncate text-[12px] font-bold text-slate-400">
+                      #{c.paciente.id}
+                    </td>
                     <td className="px-5 py-2.5 w-[180px] truncate">
                       <span className="text-[13px] font-semibold text-slate-700">{c.paciente.nombre}</span>
                       <span className="text-[11px] text-slate-400 ml-2">#{c.paciente.documento}</span>

@@ -187,7 +187,7 @@ function RouteComponent() {
             <table className="w-full">
               <thead className="bg-slate-50/80">
                 <tr>
-                  {['Fecha', 'Paciente', 'Síntomas', 'Riesgo', 'Médico', 'Estado'].map(h => (
+                  {['Fecha', 'ID Paciente', 'Paciente', 'Síntomas', 'Riesgo', 'Médico', 'Estado'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
                   ))}
                 </tr>
@@ -195,11 +195,11 @@ function RouteComponent() {
               <tbody className="divide-y divide-slate-100">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-10 text-center text-[13px] text-slate-400">Cargando historial...</td>
+                    <td colSpan={7} className="px-5 py-10 text-center text-[13px] text-slate-400">Cargando historial...</td>
                   </tr>
                 ) : !data?.data?.length ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-10 text-center text-[13px] text-slate-400">No se encontraron consultas.</td>
+                    <td colSpan={7} className="px-5 py-10 text-center text-[13px] text-slate-400">No se encontraron consultas.</td>
                   </tr>
                 ) : (
                   data.data.map(c => (
@@ -211,6 +211,9 @@ function RouteComponent() {
                       <td className="px-4 py-3.5">
                         <p className="text-[12px] font-semibold text-slate-700">{new Date(c.createdAt).toLocaleDateString('es-ES')}</p>
                         <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+                      </td>
+                      <td className="px-4 py-3.5">
+                        <span className="text-[12px] font-bold text-slate-400">#{c.paciente.id}</span>
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2">
