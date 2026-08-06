@@ -143,6 +143,18 @@ function RouteComponent() {
           
           <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-slate-100 shrink-0 flex-wrap">
             <div className="flex items-center gap-4 flex-wrap flex-1">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
+                </span>
+                <input
+                  type="number"
+                  placeholder="ID del paciente"
+                  value={pacienteSearch}
+                  onChange={e => { setPagina(1); setPacienteSearch(e.target.value) }}
+                  className="h-9 pl-8 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-[160px]"
+                />
+              </div>
               <div className="flex items-center gap-2">
                 <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Desde</span>
                 <input
@@ -159,18 +171,6 @@ function RouteComponent() {
                   value={fechaFin}
                   onChange={e => { setPagina(1); setFechaFin(e.target.value) }}
                   className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
-                />
-              </div>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
-                  <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
-                </span>
-                <input
-                  type="number"
-                  placeholder="ID del paciente"
-                  value={pacienteSearch}
-                  onChange={e => { setPagina(1); setPacienteSearch(e.target.value) }}
-                  className="h-9 pl-8 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-[160px]"
                 />
               </div>
             </div>
