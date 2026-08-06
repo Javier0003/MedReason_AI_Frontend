@@ -258,8 +258,8 @@ function RouteComponent() {
                       <span className="text-[13px] font-semibold text-slate-700">{c.paciente.nombre}</span>
                       <span className="text-[11px] text-slate-400 ml-2">#{c.paciente.documento}</span>
                     </td>
-                    <td className="px-5 py-2.5 w-[200px]">
-                      <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[200px] block">
+                    <td className="px-5 py-2.5 w-[250px]">
+                      <span title={c.input} className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[250px]">
                         {c.input}
                       </span>
                     </td>

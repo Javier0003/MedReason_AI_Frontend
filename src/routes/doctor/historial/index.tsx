@@ -223,8 +223,10 @@ function RouteComponent() {
                           <span className="text-[13px] font-semibold text-slate-700">{c.paciente.nombre}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[200px] block">{c.input}</span>
+                      <td className="px-4 py-3.5 w-[250px]">
+                        <span title={c.input} className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[250px]">
+                          {c.input}
+                        </span>
                       </td>
                       <td className="px-4 py-3.5">
                         <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${RIESGO_COLORS[c.nivelRiesgo] ?? 'bg-slate-100 text-slate-500'}`}>
