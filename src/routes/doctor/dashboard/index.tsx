@@ -57,7 +57,7 @@ function formatearFecha(iso: string) {
 
 function formatearHora(iso: string) {
   const d = new Date(iso)
-  return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 function hoy() {
