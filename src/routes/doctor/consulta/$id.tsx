@@ -441,7 +441,7 @@ function RouteComponent() {
               className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-[14px] font-bold hover:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {consulta.completed ? (
-                <><span>✓</span> Expediente Cerrado</>
+                <><span className="mr-1.5"><i className="fa-solid fa-check"></i></span> Expediente Cerrado</>
               ) : guardando ? (
                 'Procesando...'
               ) : (

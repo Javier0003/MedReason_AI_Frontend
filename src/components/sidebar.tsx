@@ -6,22 +6,22 @@ import type { Role } from '../types'
 interface NavItem {
   label: string
   href: string
-  icon: string
+  icon: React.ReactNode
 }
 
 // ─── Menús por rol ─────────────────────────────────────────────────────────────
 const DOCTOR_NAV: NavItem[] = [
-  { label: 'Dashboard', href: '/doctor/dashboard', icon: '▣' },
-  { label: 'Pacientes', href: '/doctor/pacientes', icon: '👤' },
-  { label: 'Consultas', href: '/doctor/consulta', icon: '📋' },
-  { label: 'Historial', href: '/doctor/historial', icon: '📊' },
+  { label: 'Dashboard', href: '/doctor/dashboard', icon: <i className="fa-solid fa-chart-pie"></i> },
+  { label: 'Pacientes', href: '/doctor/pacientes', icon: <i className="fa-solid fa-users"></i> },
+  { label: 'Consultas', href: '/doctor/consulta', icon: <i className="fa-solid fa-stethoscope"></i> },
+  { label: 'Historial', href: '/doctor/historial', icon: <i className="fa-solid fa-clock-rotate-left"></i> },
 ]
 
 const ADMIN_NAV: NavItem[] = [
-  { label: 'Dashboard', href: '/admin/dashboard', icon: '▣' },
-  { label: 'Users', href: '/admin/medicos', icon: '👥' },
-  { label: 'Logs', href: '/admin/Logs', icon: '📝' },
-  { label: 'Settings', href: '/admin/configuracion', icon: '⚙️' },
+  { label: 'Dashboard', href: '/admin/dashboard', icon: <i className="fa-solid fa-chart-pie"></i> },
+  { label: 'Users', href: '/admin/medicos', icon: <i className="fa-solid fa-users-gear"></i> },
+  { label: 'Logs', href: '/admin/Logs', icon: <i className="fa-solid fa-rectangle-list"></i> },
+  { label: 'Settings', href: '/admin/configuracion', icon: <i className="fa-solid fa-gear"></i> },
 ]
 
 const navBasedOnRole: Record<Role, NavItem[]> = {
@@ -74,7 +74,7 @@ export function Sidebar() {
       {/* Footer */}
       <div className="px-3 py-4 border-t border-white/10 space-y-0.5">
         <Link to="/support" className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors">
-          <span className="text-[15px] w-5 text-center">💬</span>
+          <span className="text-[15px] w-5 text-center"><i className="fa-regular fa-comment-dots"></i></span>
           Support
         </Link>
         <Link
@@ -82,7 +82,7 @@ export function Sidebar() {
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium text-white/50 hover:text-white hover:bg-white/8 transition-colors"
           onClick={async () => await logout()}
         >
-          <span className="text-[15px] w-5 text-center">🚪</span>
+          <span className="text-[15px] w-5 text-center"><i className="fa-solid fa-arrow-right-from-bracket"></i></span>
           Sign Out
         </Link>
       </div>

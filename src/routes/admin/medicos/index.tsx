@@ -98,24 +98,19 @@ function RouteComponent() {
     return res.data!.usuario
   }
 
+  const headerContent = (
+    <div className="flex flex-1 items-center justify-between w-full">
+      <div>
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Usuarios del Sistema</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Gestión de médicos y administradores del sistema.</p>
+      </div>
+    </div>
+  )
+
   return (
-    <MainPanel>
+    <MainPanel headerContent={headerContent}>
       <section className="space-y-6 p-6">
 
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-[24px] font-bold text-slate-900">Usuarios del Sistema</h1>
-            <p className="text-[13px] text-slate-400 mt-0.5">Gestión de médicos y administradores del sistema.</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setMostrarFormulario(true)}
-            className="text-[12px] font-semibold text-white bg-[#1565d8] px-4 py-2 rounded-lg hover:bg-[#0f56bd] transition-colors"
-          >
-            + Nuevo Usuario
-          </button>
-        </div>
 
         {/* Estadísticas rápidas */}
         <div className="grid grid-cols-3 gap-4">
@@ -139,46 +134,62 @@ function RouteComponent() {
         {/* Tabla */}
         <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm flex flex-col overflow-hidden h-[600px]">
 
-          {/* Filtros */}
-          <div className="px-5 py-4 border-b border-slate-100 space-y-3">
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]">🔍</span>
-              <input
-                aria-label="Buscar por nombre o email"
-                type="text"
-                placeholder="Buscar por nombre o email..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
-              />
-              {search && (
-                <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">✕</button>
-              )}
+          {/* Filtros y Acción */}
+          <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-4">
+            <div className="grid grid-cols-3 gap-4 flex-1">
+              <div className="relative col-span-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
+                </span>
+                <input
+                  aria-label="Buscar por nombre o email"
+                  type="text"
+                  placeholder="Buscar por nombre o email..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full h-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
+                />
+                {search && (
+                  <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
+                )}
+              </div>
+
+              <div className="col-span-1">
+                <select
+                  aria-label="Filtrar por rol"
+                  value={rolFilter}
+                  onChange={e => setRolFilter(e.target.value)}
+                  className="w-full h-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 cursor-pointer"
+                >
+                  <option value="Todos">Todos los roles</option>
+                  <option value="DOCTOR">Médico</option>
+                  <option value="ADMIN">Administrador</option>
+                </select>
+              </div>
+
+              <div className="col-span-1">
+                <select
+                  aria-label="Filtrar por estado"
+                  value={estadoFilter}
+                  onChange={e => setEstadoFilter(e.target.value)}
+                  className="w-full h-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 cursor-pointer"
+                >
+                  <option value="Todos">Todos los estados</option>
+                  <option value="ACTIVO">Activo</option>
+                  <option value="INACTIVO">Inactivo</option>
+                </select>
+              </div>
             </div>
 
-            <div className="flex gap-3">
-              <select
-                aria-label="Filtrar por rol"
-                value={rolFilter}
-                onChange={e => setRolFilter(e.target.value)}
-                className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 cursor-pointer"
-              >
-                <option value="Todos">Todos los roles</option>
-                <option value="DOCTOR">Médico</option>
-                <option value="ADMIN">Administrador</option>
-              </select>
-
-              <select
-                aria-label="Filtrar por estado"
-                value={estadoFilter}
-                onChange={e => setEstadoFilter(e.target.value)}
-                className="flex-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 cursor-pointer"
-              >
-                <option value="Todos">Todos los estados</option>
-                <option value="ACTIVO">Activo</option>
-                <option value="INACTIVO">Inactivo</option>
-              </select>
-            </div>
+            <button
+              type="button"
+              onClick={() => setMostrarFormulario(true)}
+              className="px-5 py-2 flex items-center justify-center text-[13px] font-semibold text-white bg-[#1565d8] rounded-lg hover:bg-[#0f56bd] transition-colors shadow-sm shrink-0"
+            >
+              + Nuevo Usuario
+            </button>
           </div>
 
           {/* Tabla */}
@@ -276,7 +287,9 @@ function RouteComponent() {
                 type="button"
                 onClick={() => setUsuarioSeleccionado(null)}
                 className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 transition-colors text-lg"
-              >✕</button>
+              >
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
             </div>
             <div className="px-6 py-5">
               <div className="flex items-center gap-4 mb-5 pb-5 border-b border-slate-100">
@@ -388,40 +401,58 @@ function FormularioUsuario({
 
   return (
     <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="rounded-2xl border border-slate-200/80 bg-white shadow-2xl w-full max-w-md">
+      <div className="rounded-2xl border border-slate-200/80 bg-white shadow-2xl w-full max-w-lg">
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
           <h2 className="text-[15px] font-bold text-slate-800">
             {usuario ? 'Editar Usuario' : 'Nuevo Usuario'}
           </h2>
-          <button type="button" onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-lg">✕</button>
+          <button type="button" onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-full hover:bg-slate-100 text-slate-400 text-lg">
+                  <i className="fa-solid fa-xmark"></i>
+                </button>
         </div>
-        <div className="px-6 py-5 space-y-4">
-          <div>
-            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-nombre">Nombre</label>
-            <input id="form-nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
-          </div>
-          <div>
-            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-email">Email</label>
-            <input id="form-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
-          </div>
-          {!usuario && (
-            <div>
-              <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-password">Contraseña</label>
-              <input id="form-password" type="password" value={password} onChange={e => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
+        <div className="px-6 py-5 space-y-6">
+          <fieldset>
+            <legend className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-3 border-b border-slate-100 pb-2 w-full">
+              Información Personal
+            </legend>
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-nombre">Nombre</label>
+                <input id="form-nombre" type="text" value={nombre} onChange={e => setNombre(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
+              </div>
+              <div className="flex-1">
+                <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-email">Email</label>
+                <input id="form-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
+              </div>
             </div>
-          )}
-          <div>
-            <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-rol">Rol</label>
-            <select id="form-rol" value={rol} onChange={e => setRol(e.target.value as Rol)}
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]">
-              <option value="DOCTOR">Médico</option>
-              <option value="ADMIN">Administrador</option>
-            </select>
-          </div>
-          {error && <p className="text-[13px] text-red-500">{error}</p>}
+          </fieldset>
+          
+          <fieldset>
+            <legend className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500 mb-3 border-b border-slate-100 pb-2 w-full">
+              Detalles de Cuenta
+            </legend>
+            <div className="flex gap-4">
+              {!usuario && (
+                <div className="flex-1">
+                  <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-password">Contraseña</label>
+                  <input id="form-password" type="password" value={password} onChange={e => setPassword(e.target.value)}
+                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
+                </div>
+              )}
+              <div className="flex-1">
+                <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-rol">Rol</label>
+                <select id="form-rol" value={rol} onChange={e => setRol(e.target.value as Rol)}
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]">
+                  <option value="DOCTOR">Médico</option>
+                  <option value="ADMIN">Administrador</option>
+                </select>
+              </div>
+            </div>
+          </fieldset>
+
+          {error && <p className="text-[13px] text-red-500 font-semibold">{error}</p>}
         </div>
         <div className="px-6 pb-5 flex gap-3">
           <button type="button" onClick={onClose}

@@ -91,68 +91,78 @@ function RouteComponent() {
     XLSX.writeFile(wb, `historial_consultas_${new Date().toISOString().slice(0, 10)}.xlsx`)
   }
 
-  return (
-    <MainPanel>
-      <div className="flex flex-col h-full min-h-0">
-        <div className="flex items-center justify-between mb-1 shrink-0">
-          <div>
-            <h1 className="text-[22px] font-bold text-slate-900">Historial de Consultas</h1>
-            <p className="text-[13px] text-slate-400 mt-0.5">Todas las consultas realizadas en el sistema.</p>
-          </div>
-        </div>
+  const headerContent = (
+    <div className="flex flex-1 items-center justify-between w-full">
+      <div>
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Historial de Consultas</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Todas las consultas realizadas en el sistema.</p>
+      </div>
+    </div>
+  )
 
-        <div className="grid grid-cols-3 gap-4 mb-4 shrink-0">
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Consultas</p>
+  return (
+    <MainPanel headerContent={headerContent}>
+      <section className="h-full p-8 flex flex-col min-h-0 gap-6">
+        
+        <div className="grid grid-cols-3 gap-5 shrink-0">
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Consultas</p>
             <p className="text-[32px] font-bold text-slate-900 leading-none">{data?.total?.toLocaleString() ?? '—'}</p>
           </div>
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Página Actual</p>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Página Actual</p>
             <p className="text-[32px] font-bold text-slate-900 leading-none">{data?.page ?? '—'} / {data?.totalPages ?? '—'}</p>
           </div>
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Registros por Página</p>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Registros por Página</p>
             <p className="text-[32px] font-bold text-slate-900 leading-none">{pageSize}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mb-4 shrink-0 flex-wrap">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Desde</span>
-            <input
-              type="date"
-              value={fechaInicio}
-              onChange={e => { setPagina(1); setFechaInicio(e.target.value) }}
-              className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
-            />
+        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.04)] flex flex-col min-h-0 flex-1">
+          
+          <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-slate-100 shrink-0 flex-wrap">
+            <div className="flex items-center gap-4 flex-wrap flex-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Desde</span>
+                <input
+                  type="date"
+                  value={fechaInicio}
+                  onChange={e => { setPagina(1); setFechaInicio(e.target.value) }}
+                  className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Hasta</span>
+                <input
+                  type="date"
+                  value={fechaFin}
+                  onChange={e => { setPagina(1); setFechaFin(e.target.value) }}
+                  className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                />
+              </div>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
+                </span>
+                <input
+                  type="number"
+                  placeholder="ID del paciente"
+                  value={pacienteSearch}
+                  onChange={e => { setPagina(1); setPacienteSearch(e.target.value) }}
+                  className="h-9 pl-8 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-[160px]"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={exportToExcel}
+              disabled={!data?.data?.length}
+              className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2 shrink-0 shadow-sm"
+            >
+              Exportar Excel
+            </button>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Hasta</span>
-            <input
-              type="date"
-              value={fechaFin}
-              onChange={e => { setPagina(1); setFechaFin(e.target.value) }}
-              className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
-            />
-          </div>
-          <input
-            type="number"
-            placeholder="ID del paciente"
-            value={pacienteSearch}
-            onChange={e => { setPagina(1); setPacienteSearch(e.target.value) }}
-            className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-[160px]"
-          />
-          <button
-            type="button"
-            onClick={exportToExcel}
-            disabled={!data?.data?.length}
-            className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
-          >
-            Exportar Excel
-          </button>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.06)] flex flex-col min-h-0 flex-1">
           <div className="flex-1 overflow-auto min-h-0">
             <table className="w-full">
               <thead className="bg-slate-50/80">
@@ -251,7 +261,7 @@ function RouteComponent() {
             </div>
           )}
         </div>
-      </div>
+      </section>
     </MainPanel>
   )
 }

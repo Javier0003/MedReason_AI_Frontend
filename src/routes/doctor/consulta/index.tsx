@@ -44,6 +44,13 @@ const RIESGO_COLORS: Record<string, string> = {
   Bajo: 'bg-emerald-100 text-emerald-700',
 }
 
+const getVisiblePages = (current: number, total: number) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  if (current <= 4) return [1, 2, 3, 4, 5, '...', total]
+  if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total]
+  return [1, '...', current - 1, current, current + 1, '...', total]
+}
+
 function RouteComponent() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
@@ -144,54 +151,70 @@ function RouteComponent() {
     }
   }
 
+  const headerContent = (
+    <div className="flex flex-1 items-center justify-between w-full">
+      <div>
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Consultas IA</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Inicia un diagnóstico asistido por IA o revisa consultas recientes.</p>
+      </div>
+    </div>
+  )
+
   return (
-    <MainPanel>
-      <div className="p-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-[24px] font-bold text-slate-900">Historial de Consultas</h1>
-            <p className="text-[13px] text-slate-400 mt-0.5">
-              Consultas diagnósticas realizadas con IA.
-            </p>
+    <MainPanel headerContent={headerContent}>
+      <section className="h-full p-8 overflow-y-auto">
+        
+        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.04)] flex flex-col h-full min-h-[600px] overflow-hidden">
+          {/* Header de la tarjeta con filtros y acción */}
+          <div className="flex flex-wrap items-center justify-between gap-4 px-5 py-4 border-b border-slate-100 shrink-0">
+            <div className="flex items-center gap-3 flex-wrap flex-1">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                        <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
+                </span>
+                <input
+                  aria-label="Filtrar por ID de paciente"
+                  type="text"
+                  placeholder="ID del paciente..."
+                  value={pacienteInput}
+                  onChange={e => setPacienteInput(e.target.value)}
+                  className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-48"
+                />
+              </div>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]"><i className="fa-regular fa-calendar"></i></span>
+                <input
+                  aria-label="Fecha inicio"
+                  type="date"
+                  value={fechaInicio}
+                  onChange={e => { setFechaInicio(e.target.value); setPagina(1) }}
+                  className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                />
+              </div>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]"><i className="fa-regular fa-calendar"></i></span>
+                <input
+                  aria-label="Fecha fin"
+                  type="date"
+                  value={fechaFin}
+                  onChange={e => handleFechaFinChange(e.target.value)}
+                  className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                />
+              </div>
+            </div>
+            
+            <button
+              type="button"
+              onClick={abrirModal}
+              className="px-5 py-2 flex items-center justify-center text-[13px] font-semibold text-white bg-[#1565d8] rounded-lg hover:bg-[#0f56bd] transition-colors shadow-sm shrink-0 gap-2"
+            >
+              <i className="fa-solid fa-plus"></i> Nueva Consulta
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={abrirModal}
-            className="px-4 py-2 bg-[#1565d8] text-white rounded-lg text-[13px] font-semibold hover:bg-[#124fa8] transition-colors"
-          >
-            + Nueva Consulta
-          </button>
-        </div>
 
-        <div className="flex flex-wrap gap-3">
-          <input
-            aria-label="Filtrar por ID de paciente"
-            type="text"
-            placeholder="ID del paciente..."
-            value={pacienteInput}
-            onChange={e => setPacienteInput(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-[#1565d8] w-40"
-          />
-          <input
-            aria-label="Fecha inicio"
-            type="date"
-            value={fechaInicio}
-            onChange={e => { setFechaInicio(e.target.value); setPagina(1) }}
-            className="px-3 py-2 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-[#1565d8]"
-          />
-          <input
-            aria-label="Fecha fin"
-            type="date"
-            value={fechaFin}
-            onChange={e => handleFechaFinChange(e.target.value)}
-            className="px-3 py-2 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:border-[#1565d8]"
-          />
-        </div>
-
-        <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] overflow-hidden">
-          <div className="overflow-auto h-[500px]">
+          <div className="overflow-auto flex-1 min-h-0">
             <table className="w-full">
-              <thead className="bg-slate-50/80">
+              <thead className="bg-slate-50/80 sticky top-0">
                 <tr>
                   {[
                     { label: 'Paciente', w: 'w-[180px]' },
@@ -264,55 +287,58 @@ function RouteComponent() {
                 type="button"
                 onClick={() => setPagina(p => Math.max(1, p - 1))}
                 disabled={pagina === 1}
-                className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >‹</button>
-              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
-                <button
-                  type="button"
-                  key={n}
-                  onClick={() => setPagina(n)}
-                  className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
-                    n === pagina
-                      ? 'bg-[#1565d8] text-white'
-                      : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
-                  }`}
-                >{n}</button>
+                className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-[10px] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              ><i className="fa-solid fa-chevron-left"></i></button>
+              {getVisiblePages(pagina, totalPaginas).map((n, idx) => (
+                typeof n === 'number' ? (
+                  <button
+                    type="button"
+                    key={`page-${n}`}
+                    onClick={() => setPagina(n)}
+                    className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
+                      n === pagina
+                        ? 'bg-[#1565d8] text-white'
+                        : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >{n}</button>
+                ) : (
+                  <span key={`ellipsis-${idx}`} className="w-7 h-7 flex items-center justify-center text-slate-400 text-[12px] font-bold">...</span>
+                )
               ))}
               <button
                 type="button"
                 onClick={() => setPagina(p => Math.min(totalPaginas, p + 1))}
                 disabled={pagina === totalPaginas}
-                className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >›</button>
+                className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-[10px] transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              ><i className="fa-solid fa-chevron-right"></i></button>
             </div>
           </div>
         </div>
-      </div>
 
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-              <h2 className="text-[18px] font-bold text-slate-900">Nueva Consulta</h2>
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50/50">
+              <h2 className="text-[18px] font-bold text-slate-900"><i className="fa-solid fa-stethoscope text-[#1565d8] mr-2"></i> Nueva Consulta</h2>
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 text-slate-400 text-lg transition-colors"
-              >✕</button>
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-200 text-slate-400 hover:text-slate-600 text-lg transition-colors"
+              ><i className="fa-solid fa-xmark"></i></button>
             </div>
 
             <div className="p-6 space-y-5">
               {resultadoConsulta ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
-                    <span className="text-emerald-600 text-[13px] font-semibold">✓ Consulta creada exitosamente</span>
+                    <span className="text-emerald-700 text-[13px] font-semibold"><i className="fa-solid fa-circle-check mr-1.5"></i> Consulta creada exitosamente</span>
                     <span className={`ml-auto px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${RIESGO_COLORS[resultadoConsulta.nivelRiesgo]}`}>
                       {resultadoConsulta.nivelRiesgo}
                     </span>
                   </div>
                     <div className="text-center p-6 bg-white border border-slate-200 rounded-lg">
-                      <div className="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                        ✓
+                      <div className="w-16 h-16 bg-emerald-100 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl shadow-inner">
+                        <i className="fa-solid fa-check"></i>
                       </div>
                       <p className="text-[16px] font-bold text-slate-800">¡Diagnóstico de IA Completo!</p>
                       <p className="text-[13px] text-slate-500 mt-2">
@@ -333,8 +359,8 @@ function RouteComponent() {
                     <button
                       type="button"
                       onClick={() => navigate({ to: '/doctor/consulta/$id', params: { id: String(resultadoConsulta.id) } })}
-                      className="px-6 py-2.5 bg-[#1565d8] text-white rounded-lg text-[13px] font-bold hover:bg-[#124fa8] transition-colors shadow-sm w-full"
-                    >Abrir Expediente Completo ➔</button>
+                      className="px-6 py-2.5 bg-[#1565d8] text-white rounded-lg text-[13px] font-bold hover:bg-[#124fa8] transition-colors shadow-sm w-full flex items-center justify-center gap-2"
+                    >Abrir Expediente Completo <i className="fa-solid fa-arrow-right"></i></button>
                   </div>
                 </div>
               ) : (
@@ -366,12 +392,12 @@ function RouteComponent() {
                     )}
                     {selectedPaciente && (
                       <div className="flex items-center gap-2 px-3 py-2 bg-[#1565d8]/5 border border-[#1565d8]/20 rounded-lg text-[13px] text-[#1565d8]">
-                        <span>✓ {selectedPaciente.nombre} — #{selectedPaciente.documento}</span>
+                        <span className="font-medium"><i className="fa-solid fa-check mr-1.5"></i> {selectedPaciente.nombre} — #{selectedPaciente.documento}</span>
                         <button
                           type="button"
                           onClick={() => setSelectedPaciente(null)}
-                          className="ml-auto text-slate-400 hover:text-slate-600"
-                        >✕</button>
+                          className="ml-auto text-[#1565d8]/60 hover:text-[#1565d8]"
+                        ><i className="fa-solid fa-xmark"></i></button>
                       </div>
                     )}
                   </div>
@@ -391,14 +417,11 @@ function RouteComponent() {
                     type="button"
                     onClick={crearConsulta}
                     disabled={!selectedPaciente || !sintomas.trim() || creando}
-                    className="flex items-center justify-center w-full py-2.5 bg-[#1565d8] text-white rounded-lg text-[13px] font-semibold hover:bg-[#124fa8] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center w-full py-2.5 bg-[#1565d8] text-white rounded-lg text-[13px] font-semibold hover:bg-[#124fa8] transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
                   >
                     {creando ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
+                        <i className="fa-solid fa-circle-notch fa-spin mr-2"></i>
                         Procesando con IA...
                       </>
                     ) : 'Realizar Consulta'}
@@ -409,6 +432,7 @@ function RouteComponent() {
           </div>
         </div>
       )}
+      </section>
     </MainPanel>
   )
 }

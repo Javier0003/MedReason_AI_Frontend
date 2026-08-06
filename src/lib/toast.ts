@@ -20,7 +20,7 @@ export function showToast(title: string, message: string, type: 'error' | 'warni
   const isWarning = type === 'warning';
 
   const iconColor = isError ? 'text-rose-500 bg-rose-50' : isWarning ? 'text-amber-500 bg-amber-50' : 'text-emerald-500 bg-emerald-50';
-  const icon = isError ? '!' : isWarning ? '⚠' : '✓';
+  const icon = isError ? '<i class="fa-solid fa-circle-exclamation"></i>' : isWarning ? '<i class="fa-solid fa-triangle-exclamation"></i>' : '<i class="fa-solid fa-circle-check"></i>';
   const borderColor = isError ? 'border-rose-500' : isWarning ? 'border-amber-500' : 'border-emerald-500';
 
   toast.className = `transform transition-all duration-300 -translate-y-4 opacity-0 flex items-start gap-3 w-[340px] p-4 rounded-xl shadow-[0_12px_40px_rgba(15,23,42,0.08)] bg-white border border-slate-200 border-l-4 ${borderColor}`;
@@ -33,7 +33,7 @@ export function showToast(title: string, message: string, type: 'error' | 'warni
       <h3 class="font-bold text-[13px] text-slate-800 leading-none">${title}</h3>
       <p class="text-[12.5px] text-slate-500 mt-1.5 whitespace-pre-wrap leading-relaxed">${message}</p>
     </div>
-    <button class="text-slate-400 hover:text-slate-600 transition-colors p-1 -mt-1 -mr-1 text-[16px] leading-none">×</button>
+    <button class="text-slate-400 hover:text-slate-600 transition-colors p-1 -mt-1 -mr-1 text-[16px] leading-none"><i class="fa-solid fa-xmark"></i></button>
   `;
 
   const closeBtn = toast.querySelector('button');

@@ -21,6 +21,13 @@ type pacientesTemporal = {
 
 const ITEMS_POR_PAGINA = 10
 
+const getVisiblePages = (current: number, total: number) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  if (current <= 4) return [1, 2, 3, 4, 5, '...', total]
+  if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total]
+  return [1, '...', current - 1, current, current + 1, '...', total]
+}
+
 function RouteComponent() {
   const [search, setSearch] = useState('')
   const [pagina, setPagina] = useState(1)
@@ -111,50 +118,53 @@ function RouteComponent() {
     setMostrarFormulario(false)
   }
 
-  return (
-    <MainPanel>
-      <section className="space-y-6 p-6">
+  const headerContent = (
+    <div className="flex flex-1 items-center justify-between w-full">
+      <div>
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Pacientes</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Gestiona y consulta la información de todos los pacientes registrados.</p>
+      </div>
+    </div>
+  )
 
-        {/* Header */}
-        <div>
-          <h1 className="text-[24px] font-bold text-slate-900">Pacientes</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">Gestiona y consulta la información de todos los pacientes registrados.</p>
-        </div>
+  return (
+    <MainPanel headerContent={headerContent}>
+      <section className="h-full p-8 overflow-y-auto">
 
         {/* Tabla de Pacientes */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.06)] backdrop-blur-sm flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
-              <h2 className="text-[14px] font-bold text-slate-800">Lista de Pacientes</h2>
-              <div className="flex gap-2">
-                <button type="button" className="text-[12px] font-semibold text-slate-500 border border-slate-200 px-3 py-1.5 rounded-lg hover:bg-slate-50 transition-colors">
-                  Exportar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setMostrarFormulario(true)}
-                  className="text-[12px] font-semibold text-white bg-[#1565d8] px-3 py-1.5 rounded-lg hover:bg-[#0f56bd] transition-colors"
-                >
-                  + Nuevo Paciente
-                </button>
-              </div>
-            </div>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 shadow-[0_2px_12px_rgba(15,23,42,0.04)] backdrop-blur-sm flex flex-col overflow-hidden h-full min-h-[600px]">
 
-            {/* Barra de búsqueda */}
-            <div className="px-5 py-3 border-b border-slate-100 shrink-0">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]">🔍</span>
+            {/* Filtros y Acción */}
+            <div className="px-5 py-4 border-b border-slate-100 flex items-center gap-4">
+              <div className="relative flex-1">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
+                </span>
                   <input
                     aria-label="Buscar pacientes"
                     type="text"
-                    placeholder="Buscar pacientes por nombre, tipo..."
+                    placeholder="Buscar pacientes por nombre, documento..."
                     value={search}
                     onChange={e => { setSearch(e.target.value); setPagina(1) }}
-                    className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
+                    className="w-full h-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-[#1565d8] focus:ring-2 focus:ring-[#1565d8]/10 transition-colors"
                   />
                   {search && (
-                    <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]">✕</button>
+                    <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-[11px]"><i className="fa-solid fa-xmark"></i></button>
                 )}
               </div>
+              <button
+                type="button"
+                className="px-5 py-2 flex items-center justify-center text-[13px] font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm shrink-0"
+              >
+                Exportar
+              </button>
+              <button
+                type="button"
+                onClick={() => setMostrarFormulario(true)}
+                className="px-5 py-2 flex items-center justify-center text-[13px] font-semibold text-white bg-[#1565d8] rounded-lg hover:bg-[#0f56bd] transition-colors shadow-sm shrink-0"
+              >
+                + Nuevo Paciente
+              </button>
             </div>
 
             <div className="overflow-y-auto flex-1 min-h-0">
@@ -223,7 +233,7 @@ function RouteComponent() {
 
             {/* Paginación */}
             <div className="flex items-center justify-between px-5 py-3 border-t border-slate-100 shrink-0">
-              <p className="text-[11px] text-slate-400">Mostrando {pacientesFiltrados.length} de {pacientesFiltrados.length} pacientes</p>
+              <p className="text-[11px] text-slate-400">Mostrando {pacientesFiltrados.length} pacientes</p>
               <div className="flex items-center gap-1">
                 <button
                   type="button"
@@ -231,16 +241,21 @@ function RouteComponent() {
                   disabled={paginaActual === 1}
                   className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                 >‹</button>
-                {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
-                  <button
-                    type="button"
-                    key={n}
-                    onClick={() => setPagina(n)}
-                    className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${n === paginaActual
-                      ? 'bg-[#1565d8] text-white'
-                      : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
+                {getVisiblePages(paginaActual, totalPaginas).map((n, idx) => (
+                  typeof n === 'number' ? (
+                    <button
+                      type="button"
+                      key={`page-${n}`}
+                      onClick={() => setPagina(n)}
+                      className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
+                        n === paginaActual
+                          ? 'bg-[#1565d8] text-white'
+                          : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
                       }`}
-                  >{n}</button>
+                    >{n}</button>
+                  ) : (
+                    <span key={`ellipsis-${idx}`} className="w-7 h-7 flex items-center justify-center text-slate-400 text-[12px] font-bold">...</span>
+                  )
                 ))}
                 <button
                   type="button"
