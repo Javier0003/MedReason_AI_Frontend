@@ -283,7 +283,7 @@ function RouteComponent() {
                     </td>
                     <td className="px-5 py-2.5 whitespace-nowrap w-[170px]">
                       <p className="text-[12px] font-semibold text-slate-700">{new Date(c.createdAt).toLocaleDateString('es-ES')}</p>
-                      <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false })}</p>
+                      <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
                     </td>
                   </tr>
                 ))}
