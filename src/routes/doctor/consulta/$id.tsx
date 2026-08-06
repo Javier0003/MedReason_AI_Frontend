@@ -94,7 +94,19 @@ function RouteComponent() {
     if (typeof consulta.output === 'object') return consulta.output
     if (typeof consulta.output === 'string') {
       try {
-        return JSON.parse(consulta.output)
+        // Limpiar posible formato markdown que traen algunos registros viejos
+        let cleanStr = consulta.output.trim()
+        if (cleanStr.startsWith('```json')) cleanStr = cleanStr.replace(/^```json\s*/, '')
+        if (cleanStr.startsWith('```')) cleanStr = cleanStr.replace(/^```\s*/, '')
+        if (cleanStr.endsWith('```')) cleanStr = cleanStr.replace(/\s*```$/, '')
+        
+        const parsed = JSON.parse(cleanStr)
+        
+        // Si al parsear nos sigue devolviendo un string (JSON doblemente serializado), parsearlo de nuevo
+        if (typeof parsed === 'string') {
+          return JSON.parse(parsed)
+        }
+        return parsed
       } catch (e) {
         return null
       }
