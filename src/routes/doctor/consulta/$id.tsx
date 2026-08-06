@@ -99,16 +99,36 @@ function RouteComponent() {
         if (cleanStr.startsWith('```json')) cleanStr = cleanStr.replace(/^```json\s*/, '')
         if (cleanStr.startsWith('```')) cleanStr = cleanStr.replace(/^```\s*/, '')
         if (cleanStr.endsWith('```')) cleanStr = cleanStr.replace(/\s*```$/, '')
+        // Intentar parsear de forma robusta eliminando caracteres basura del final si falla
+        let parsed = null;
+        let s = cleanStr;
         
-        const parsed = JSON.parse(cleanStr)
+        // Loop de seguridad de máximo 50 iteraciones para no trabar el navegador
+        let attempts = 0;
+        while (s.length > 0 && attempts < 50) {
+          try {
+            parsed = JSON.parse(s);
+            break;
+          } catch (e) {
+            s = s.slice(0, -1).trim();
+            attempts++;
+          }
+        }
+        
+        if (!parsed) return null;
         
         // Si al parsear nos sigue devolviendo un string (JSON doblemente serializado), parsearlo de nuevo
         if (typeof parsed === 'string') {
-          return JSON.parse(parsed)
+          try {
+            return JSON.parse(parsed);
+          } catch (e) {
+            return parsed;
+          }
         }
-        return parsed
+        
+        return parsed;
       } catch (e) {
-        return null
+        return null;
       }
     }
     return null
