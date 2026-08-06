@@ -181,24 +181,24 @@ function RouteComponent() {
                   className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-48"
                 />
               </div>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]"><i className="fa-regular fa-calendar"></i></span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Desde</span>
                 <input
                   aria-label="Fecha inicio"
                   type="date"
                   value={fechaInicio}
                   onChange={e => { setFechaInicio(e.target.value); setPagina(1) }}
-                  className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
                 />
               </div>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[13px]"><i className="fa-regular fa-calendar"></i></span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Hasta</span>
                 <input
                   aria-label="Fecha fin"
                   type="date"
                   value={fechaFin}
                   onChange={e => handleFechaFinChange(e.target.value)}
-                  className="pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
                 />
               </div>
             </div>
