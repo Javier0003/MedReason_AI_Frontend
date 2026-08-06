@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import isAuthenticated from '../../../lib/is-authenticated'
 import { useQuery } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import IconArrowRight from '../../../assets/svg/IconArrowRight'
 
@@ -191,6 +191,19 @@ function RouteComponent() {
     )
   }
 
+  const parsedOutput = useMemo(() => {
+    if (!consulta?.output) return null
+    if (typeof consulta.output === 'object') return consulta.output
+    if (typeof consulta.output === 'string') {
+      try {
+        return JSON.parse(consulta.output)
+      } catch (e) {
+        return null
+      }
+    }
+    return null
+  }, [consulta?.output])
+
   const iniciarEdicionSintomas = () => {
     setSintomasEdit(consulta.input)
     setEditandoSintomas(true)
@@ -198,7 +211,7 @@ function RouteComponent() {
 
   const iniciarEdicionObservaciones = () => {
     // Si el output es un objeto, lo stringificamos para que el doctor pueda editar el JSON o texto
-    const val = typeof consulta.output === 'object' ? JSON.stringify(consulta.output, null, 2) : consulta.output
+    const val = parsedOutput ? JSON.stringify(parsedOutput, null, 2) : consulta.output
     setObservacionesEdit(val)
     setEditandoObservaciones(true)
   }
@@ -286,7 +299,7 @@ function RouteComponent() {
     )
   }
 
-  const uiNivelRiesgo = typeof consulta.output === 'object' ? (consulta.output.nivelUrgencia || consulta.nivelRiesgo) : consulta.nivelRiesgo;
+  const uiNivelRiesgo = parsedOutput ? (parsedOutput.nivelUrgencia || consulta.nivelRiesgo) : consulta.nivelRiesgo;
 
   return (
     <MainPanel>
@@ -414,8 +427,8 @@ function RouteComponent() {
                 placeholder="El JSON o texto de la IA se mostrará aquí..."
               />
             ) : (
-              typeof consulta.output === 'object'
-                ? renderOutputObj(consulta.output)
+              parsedOutput
+                ? renderOutputObj(parsedOutput)
                 : <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <p className="text-[14px] text-slate-700 whitespace-pre-wrap leading-relaxed font-mono text-sm">{consulta.output}</p>
                   </div>
