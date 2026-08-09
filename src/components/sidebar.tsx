@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { authenticationStore } from '../store/authentication-store'
+import IconMedicalLogo from '../assets/svg/IconMedicalLogo'
 import type { Role } from '../types'
 
 // ─── Tipos ─────────────────────────────────────────────────────────────────────
@@ -42,7 +43,9 @@ export function Sidebar() {
       {/* Logo */}
       <div className="px-5 py-5 border-b border-white/10">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 bg-[#1565d8] rounded-lg flex items-center justify-center text-white text-sm">+</div>
+          <div className="w-7 h-7 bg-[#1565d8] rounded-lg flex items-center justify-center text-white">
+            <IconMedicalLogo className="h-4 w-4" />
+          </div>
           <div>
             <p className="text-white text-[13px] font-bold leading-none">MedReason AI</p>
             <p className="text-white/40 text-[10px] mt-0.5">Clinical Systems</p>
