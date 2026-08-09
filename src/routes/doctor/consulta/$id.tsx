@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import isAuthenticated from '../../../lib/is-authenticated'
 import { useQuery } from '@tanstack/react-query'
 import fetchWithToken from '../../../lib/fetch-with-token'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useMemo } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import IconArrowRight from '../../../assets/svg/IconArrowRight'
 
@@ -50,6 +50,56 @@ const RIESGO_COLORS: Record<string, { bg: string, text: string, border: string, 
   Bajo: { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', bar: 'bg-emerald-500' },
 }
 
+/**
+ * Función auxiliar para parsear y limpiar el texto JSON devuelto por la IA.
+ * Extraída para mantener el cuerpo del componente limpio y legible.
+ */
+function parseAIOutput(output: any): ConsultaOutputObj | null {
+  if (!output) return null;
+  if (typeof output === 'object') return output;
+  if (typeof output === 'string') {
+    try {
+      // Limpiar posible formato markdown que traen algunos registros viejos
+      let cleanStr = output.trim();
+      if (cleanStr.startsWith('```json')) cleanStr = cleanStr.replace(/^```json\s*/, '');
+      if (cleanStr.startsWith('```')) cleanStr = cleanStr.replace(/^```\s*/, '');
+      if (cleanStr.endsWith('```')) cleanStr = cleanStr.replace(/\s*```$/, '');
+      
+      // Intentar parsear de forma robusta eliminando caracteres basura del final si falla
+      let parsed = null;
+      let s = cleanStr;
+      
+      // Loop de seguridad de máximo 50 iteraciones para no trabar el navegador
+      let attempts = 0;
+      while (s.length > 0 && attempts < 50) {
+        try {
+          parsed = JSON.parse(s);
+          break;
+        } catch (e) {
+          s = s.slice(0, -1).trim();
+          attempts++;
+        }
+      }
+      
+      if (!parsed) return null;
+      
+      // Si al parsear nos sigue devolviendo un string (JSON doblemente serializado), parsearlo de nuevo
+      if (typeof parsed === 'string') {
+        try {
+          return JSON.parse(parsed);
+        } catch (e) {
+          return parsed as any;
+        }
+      }
+      
+      return parsed;
+    } catch (e) {
+      return null;
+    }
+  }
+  return null;
+}
+
 function RouteComponent() {
   const { id } = Route.useParams()
   const queryClient = useQueryClient()
@@ -88,6 +138,8 @@ function RouteComponent() {
       setMessages(msgs)
     }
   }, [consulta?.chatbotAnswers])
+
+  const parsedOutput = useMemo(() => parseAIOutput(consulta?.output), [consulta?.output])
 
   const guardarCambios = async (data: { input?: string; output?: string; completed?: string }) => {
     setGuardando(true)
@@ -198,7 +250,7 @@ function RouteComponent() {
 
   const iniciarEdicionObservaciones = () => {
     // Si el output es un objeto, lo stringificamos para que el doctor pueda editar el JSON o texto
-    const val = typeof consulta.output === 'object' ? JSON.stringify(consulta.output, null, 2) : consulta.output
+    const val = parsedOutput ? JSON.stringify(parsedOutput, null, 2) : consulta.output
     setObservacionesEdit(val)
     setEditandoObservaciones(true)
   }
@@ -286,7 +338,7 @@ function RouteComponent() {
     )
   }
 
-  const uiNivelRiesgo = typeof consulta.output === 'object' ? (consulta.output.nivelUrgencia || consulta.nivelRiesgo) : consulta.nivelRiesgo;
+  const uiNivelRiesgo = parsedOutput ? (parsedOutput.nivelUrgencia || consulta.nivelRiesgo) : consulta.nivelRiesgo;
 
   return (
     <MainPanel>
@@ -305,7 +357,7 @@ function RouteComponent() {
                 <span className="text-slate-300">|</span>
                 <p>Médico Tratante: <span className="text-slate-700">Dr. {consulta.doctor.nombre}</span></p>
                 <span className="text-slate-300">|</span>
-                <p>Fecha: <span className="text-slate-700">{new Date(consulta.createdAt).toLocaleDateString()}</span></p>
+                <p>Fecha: <span className="text-slate-700">{new Date(consulta.createdAt).toLocaleDateString('es-ES')}</span></p>
               </section>
             </div>
             <div className="flex flex-col items-end gap-2">
@@ -414,8 +466,8 @@ function RouteComponent() {
                 placeholder="El JSON o texto de la IA se mostrará aquí..."
               />
             ) : (
-              typeof consulta.output === 'object'
-                ? renderOutputObj(consulta.output)
+              parsedOutput
+                ? renderOutputObj(parsedOutput)
                 : <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                     <p className="text-[14px] text-slate-700 whitespace-pre-wrap leading-relaxed font-mono text-sm">{consulta.output}</p>
                   </div>
@@ -441,7 +493,7 @@ function RouteComponent() {
               className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-[14px] font-bold hover:bg-slate-800 transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {consulta.completed ? (
-                <><span>✓</span> Expediente Cerrado</>
+                <><span className="mr-1.5"><i className="fa-solid fa-check"></i></span> Expediente Cerrado</>
               ) : guardando ? (
                 'Procesando...'
               ) : (

@@ -15,7 +15,7 @@ type ConsultaEntry = {
   id: number
   pacienteId: number
   input: string
-  output: string | unknown
+  output: string
   nivelRiesgo: string
   modelo: string
   tokens: number
@@ -97,7 +97,7 @@ function RouteComponent() {
         Riesgo: c.nivelRiesgo,
         Modelo: c.modelo,
         Tokens: c.tokens,
-        Estado: c.completed ? 'Completada' : 'Ongoing',
+        Estado: c.completed ? 'Completada' : 'En Progreso',
         Fecha: new Date(c.createdAt).toLocaleDateString('es-ES'),
       }))
       const ws = XLSX.utils.json_to_sheet(rows)
@@ -111,73 +111,83 @@ function RouteComponent() {
     }
   }
 
-  return (
-    <MainPanel>
-      <div className="flex flex-col h-full min-h-0">
-        <div className="flex items-center justify-between mb-1 shrink-0">
-          <div>
-            <h1 className="text-[22px] font-bold text-slate-900">Historial de Consultas</h1>
-            <p className="text-[13px] text-slate-400 mt-0.5">Todas las consultas realizadas en el sistema.</p>
-          </div>
-        </div>
+  const headerContent = (
+    <div className="flex flex-1 items-center justify-between w-full">
+      <div>
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Historial de Consultas</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Todas las consultas realizadas en el sistema.</p>
+      </div>
+    </div>
+  )
 
-        <div className="grid grid-cols-3 gap-4 mb-4 shrink-0">
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Consultas</p>
+  return (
+    <MainPanel headerContent={headerContent}>
+      <section className="h-full p-8 flex flex-col min-h-0 gap-6">
+        
+        <div className="grid grid-cols-3 gap-5 shrink-0">
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Total de Consultas</p>
             <p className="text-[32px] font-bold text-slate-900 leading-none">{data?.total?.toLocaleString() ?? '—'}</p>
           </div>
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Página Actual</p>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Página Actual</p>
             <p className="text-[32px] font-bold text-slate-900 leading-none">{data?.page ?? '—'} / {data?.totalPages ?? '—'}</p>
           </div>
-          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.06)]">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Registros por Página</p>
+          <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-5 shadow-[0_2px_12px_rgba(15,23,42,0.04)]">
+            <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-slate-400 mb-1.5">Registros por Página</p>
             <p className="text-[32px] font-bold text-slate-900 leading-none">{pageSize}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mb-4 shrink-0 flex-wrap">
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Desde</span>
-            <input
-              type="date"
-              value={fechaInicio}
-              onChange={e => { setPagina(1); setFechaInicio(e.target.value) }}
-              className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
-            />
+        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.04)] flex flex-col min-h-0 flex-1">
+          
+          <div className="flex items-center justify-between gap-4 px-5 py-4 border-b border-slate-100 shrink-0 flex-wrap">
+            <div className="flex items-center gap-4 flex-wrap flex-1">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">
+                  <svg className="w-[15px] h-[15px]" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20"><path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/></svg>
+                </span>
+                <input
+                  type="number"
+                  placeholder="ID del paciente"
+                  value={pacienteSearch}
+                  onChange={e => { setPagina(1); setPacienteSearch(e.target.value) }}
+                  className="h-9 pl-8 pr-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-[160px]"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Desde</span>
+                <input
+                  type="date"
+                  value={fechaInicio}
+                  onChange={e => { setPagina(1); setFechaInicio(e.target.value) }}
+                  className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wide">Hasta</span>
+                <input
+                  type="date"
+                  value={fechaFin}
+                  onChange={e => { setPagina(1); setFechaFin(e.target.value) }}
+                  className="h-9 px-3 bg-slate-50 border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={exportToExcel}
+              disabled={exportando || !data?.data?.length}
+              className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2 shrink-0 shadow-sm"
+            >
+              {exportando ? 'Exportando...' : 'Exportar Excel'}
+            </button>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Hasta</span>
-            <input
-              type="date"
-              value={fechaFin}
-              onChange={e => { setPagina(1); setFechaFin(e.target.value) }}
-              className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20"
-            />
-          </div>
-          <input
-            type="number"
-            placeholder="ID del paciente"
-            value={pacienteSearch}
-            onChange={e => { setPagina(1); setPacienteSearch(e.target.value) }}
-            className="h-9 px-3 bg-white border border-slate-200 rounded-lg text-[13px] text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#1565d8]/20 w-[160px]"
-          />
-          <button
-            type="button"
-            onClick={exportToExcel}
-            disabled={exportando}
-            className="h-9 px-4 bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 text-white text-[13px] font-semibold rounded-lg transition-colors flex items-center gap-2"
-          >
-            {exportando ? 'Exportando...' : 'Exportar Excel'}
-          </button>
-        </div>
-
-        <div className="rounded-2xl border border-slate-200/80 bg-white shadow-[0_2px_12px_rgba(15,23,42,0.06)] flex flex-col min-h-0 flex-1">
           <div className="flex-1 overflow-auto min-h-0">
             <table className="w-full">
               <thead className="bg-slate-50/80">
                 <tr>
-                  {['Fecha', 'Paciente', 'Síntomas', 'Riesgo', 'Médico', 'Estado'].map(h => (
+                  {['ID Paciente', 'Fecha', 'Paciente', 'Síntomas', 'Riesgo', 'Médico', 'Estado'].map(h => (
                     <th key={h} className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-[0.08em] text-slate-400">{h}</th>
                   ))}
                 </tr>
@@ -185,11 +195,11 @@ function RouteComponent() {
               <tbody className="divide-y divide-slate-100">
                 {isLoading ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-10 text-center text-[13px] text-slate-400">Cargando historial...</td>
+                    <td colSpan={7} className="px-5 py-10 text-center text-[13px] text-slate-400">Cargando historial...</td>
                   </tr>
                 ) : !data?.data?.length ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-10 text-center text-[13px] text-slate-400">No se encontraron consultas.</td>
+                    <td colSpan={7} className="px-5 py-10 text-center text-[13px] text-slate-400">No se encontraron consultas.</td>
                   </tr>
                 ) : (
                   data.data.map(c => (
@@ -199,8 +209,11 @@ function RouteComponent() {
                       className="hover:bg-slate-50/60 transition-colors cursor-pointer"
                     >
                       <td className="px-4 py-3.5">
+                        <span className="text-[12px] font-bold text-slate-400">#{c.paciente.id}</span>
+                      </td>
+                      <td className="px-4 py-3.5">
                         <p className="text-[12px] font-semibold text-slate-700">{new Date(c.createdAt).toLocaleDateString('es-ES')}</p>
-                        <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}</p>
+                        <p className="text-[11px] text-slate-400">{new Date(c.createdAt).toLocaleTimeString('es-ES', { hour: 'numeric', minute: '2-digit', hour12: true })}</p>
                       </td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2">
@@ -210,8 +223,10 @@ function RouteComponent() {
                           <span className="text-[13px] font-semibold text-slate-700">{c.paciente.nombre}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <span className="inline-flex px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[200px] block">{c.input}</span>
+                      <td className="px-4 py-3.5 w-[250px]">
+                        <span title={c.input} className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 text-[11px] font-semibold border border-blue-100 truncate max-w-[250px]">
+                          {c.input}
+                        </span>
                       </td>
                       <td className="px-4 py-3.5">
                         <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${RIESGO_COLORS[c.nivelRiesgo] ?? 'bg-slate-100 text-slate-500'}`}>
@@ -226,7 +241,7 @@ function RouteComponent() {
                       <td className="px-4 py-3.5">
                         <span className={`inline-flex px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide ${c.completed ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                           }`}>
-                          {c.completed ? 'Completada' : 'Ongoing'}
+                          {c.completed ? 'Completada' : 'En Progreso'}
                         </span>
                       </td>
                     </tr>
@@ -271,7 +286,7 @@ function RouteComponent() {
             </div>
           )}
         </div>
-      </div>
+      </section>
     </MainPanel>
   )
 }

@@ -62,6 +62,13 @@ type PaginatedResponse<T> = {
   totalPages: number
 }
 
+const getVisiblePages = (current: number, total: number) => {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  if (current <= 4) return [1, 2, 3, 4, 5, '...', total]
+  if (current >= total - 3) return [1, '...', total - 4, total - 3, total - 2, total - 1, total]
+  return [1, '...', current - 1, current, current + 1, '...', total]
+}
+
 function RouteComponent() {
   const [pagina, setPagina] = useState(1)
   const [usuarioInput, setUsuarioInput] = useState('')
@@ -100,15 +107,18 @@ function RouteComponent() {
 
   const totalPaginas = data?.totalPages ?? 1
 
+  const headerContent = (
+    <div className="flex flex-1 items-center justify-between w-full">
+      <div>
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Logs de Auditoría</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Trazabilidad de acciones realizadas en el sistema.</p>
+      </div>
+    </div>
+  )
+
   return (
-    <MainPanel>
+    <MainPanel headerContent={headerContent}>
       <div className="p-6 space-y-6">
-        <div>
-          <h1 className="text-[24px] font-bold text-slate-900">Logs de Auditoría</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">
-            Trazabilidad de acciones realizadas en el sistema.
-          </p>
-        </div>
 
         {/* Filtros */}
         <div className="flex flex-wrap gap-3">
@@ -167,7 +177,9 @@ function RouteComponent() {
                 ) : data.data.map(log => (
                   <tr key={log.id} className="hover:bg-slate-50/60 transition-colors">
                     <td className="px-5 py-2.5 w-[200px] truncate">
-                      <span className="text-[13px] font-semibold text-slate-700">{log.user?.nombre ?? '—'}</span>
+                      <span className="text-[13px] font-semibold text-slate-700">
+                        {log.user?.nombre ?? (log.accion === 'AUTH_FAILED' ? 'Usuario No Identificado' : 'Sistema')}
+                      </span>
                       <span className="text-[11px] text-slate-400 ml-2">{log.user?.email ?? ''}</span>
                     </td>
                     <td className="px-5 py-2.5 w-[200px]">
@@ -182,7 +194,7 @@ function RouteComponent() {
                       {log.detalle}
                     </td>
                     <td className="px-5 py-2.5 text-[12px] text-slate-400 whitespace-nowrap w-[170px]">
-                      {new Date(log.createdAt).toLocaleString()}
+                      {new Date(log.createdAt).toLocaleString('es-ES')}
                     </td>
                   </tr>
                 ))}
@@ -202,17 +214,21 @@ function RouteComponent() {
                 disabled={pagina === 1}
                 className="w-7 h-7 flex items-center justify-center rounded border border-slate-200 text-slate-400 hover:bg-slate-50 text-xs transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >‹</button>
-              {Array.from({ length: totalPaginas }, (_, i) => i + 1).map(n => (
-                <button
-                  type="button"
-                  key={n}
-                  onClick={() => setPagina(n)}
-                  className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
-                    n === pagina
-                      ? 'bg-[#1565d8] text-white'
-                      : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
-                  }`}
-                >{n}</button>
+              {getVisiblePages(pagina, totalPaginas).map((n, idx) => (
+                typeof n === 'number' ? (
+                  <button
+                    type="button"
+                    key={`page-${n}`}
+                    onClick={() => setPagina(n)}
+                    className={`w-7 h-7 flex items-center justify-center rounded text-[12px] font-semibold transition-colors ${
+                      n === pagina
+                        ? 'bg-[#1565d8] text-white'
+                        : 'border border-slate-200 text-slate-500 hover:bg-slate-50'
+                    }`}
+                  >{n}</button>
+                ) : (
+                  <span key={`ellipsis-${idx}`} className="w-7 h-7 flex items-center justify-center text-slate-400 text-[12px] font-bold">...</span>
+                )
               ))}
               <button
                 type="button"

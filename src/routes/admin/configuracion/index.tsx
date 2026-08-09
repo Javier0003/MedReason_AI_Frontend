@@ -114,13 +114,19 @@ function RouteComponent() {
     refetchVersions()
   }
 
+  const headerContent = (
+    <div className="flex flex-1 items-center justify-between w-full">
+      <div>
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Configuración de IA</h1>
+        <p className="text-xs text-slate-500 mt-0.5">Administra el modelo, parámetros y prompts del sistema.</p>
+      </div>
+    </div>
+  )
+
   return (
-    <MainPanel>
+    <MainPanel headerContent={headerContent}>
       <section className="h-full overflow-y-auto px-6 py-6 space-y-6">
-        <div>
-          <h1 className="text-[22px] font-bold text-slate-900">Configuración de IA</h1>
-          <p className="text-[13px] text-slate-400 mt-0.5">Administra el modelo, parámetros y prompts del sistema.</p>
-        </div>
+
 
         {configData && (
           <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-[0_2px_12px_rgba(15,23,42,0.06)] space-y-5">
