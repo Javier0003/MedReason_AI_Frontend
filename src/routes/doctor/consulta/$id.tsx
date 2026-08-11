@@ -161,6 +161,7 @@ function RouteComponent() {
   }
 
   const handleAskAI = async () => {
+    if (consulta.completed) return
     const text = messageForAi.current?.value?.trim()
     if (!text || askingAI) return
     setAskingAI(true)
@@ -174,7 +175,7 @@ function RouteComponent() {
     if (res.success && res.data) {
       setMessages(prev => [...prev, { sender: 'ai', text: res.data!.answer, tokens: res.data!.tokens }])
     } else {
-      setMessages(prev => [...prev, { sender: 'ai', text: 'Error al obtener respuesta.' }])
+      setMessages(prev => [...prev, { sender: 'ai', text: res.error || 'El servicio de IA está experimentando una alta demanda en este momento. Por favor, intente de nuevo en unos minutos.' }])
     }
     setAskingAI(false)
   }
@@ -537,22 +538,33 @@ function RouteComponent() {
           </section>
 
           <section className="p-4 border-t border-slate-100 shrink-0 bg-white rounded-b-2xl">
-            <div className="flex h-12 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-slate-500 focus-within:border-[#1565d8] focus-within:ring-2 focus-within:ring-[#1565d8]/20 transition-all shadow-inner shadow-slate-50">
-              <input
-                aria-label="Preguntar al asistente..."
-                placeholder="Preguntar al asistente..."
-                className="w-full bg-transparent text-[13px] text-slate-700 outline-none placeholder:text-slate-400"
-                ref={messageForAi}
-                onKeyDown={e => { if (e.key === 'Enter') handleAskAI() }}
-              />
-              <button
-                type="button"
-                onClick={handleAskAI}
-                className="w-8 h-8 flex items-center justify-center bg-[#1565d8] hover:bg-[#124fa8] text-white rounded-lg transition-colors"
-              >
-                <IconArrowRight />
-              </button>
-            </div>
+            {consulta.completed ? (
+              <div className="flex h-11 items-center justify-center rounded-xl bg-slate-100 px-3 text-slate-400 border border-slate-200/60 select-none">
+                <span className="text-[12px] font-semibold flex items-center gap-2">
+                  <i className="fa-solid fa-lock text-[11px] text-slate-400" />
+                  Expediente cerrado — Chat desactivado
+                </span>
+              </div>
+            ) : (
+              <div className="flex h-12 items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 text-slate-500 focus-within:border-[#1565d8] focus-within:ring-2 focus-within:ring-[#1565d8]/20 transition-all shadow-inner shadow-slate-50">
+                <input
+                  aria-label="Preguntar al asistente..."
+                  placeholder="Preguntar al asistente..."
+                  className="w-full bg-transparent text-[13px] text-slate-700 outline-none placeholder:text-slate-400"
+                  ref={messageForAi}
+                  disabled={askingAI}
+                  onKeyDown={e => { if (e.key === 'Enter') handleAskAI() }}
+                />
+                <button
+                  type="button"
+                  onClick={handleAskAI}
+                  disabled={askingAI}
+                  className="w-8 h-8 flex items-center justify-center bg-[#1565d8] hover:bg-[#124fa8] text-white rounded-lg transition-colors disabled:opacity-50"
+                >
+                  <IconArrowRight />
+                </button>
+              </div>
+            )}
           </section>
         </section>
       </div>

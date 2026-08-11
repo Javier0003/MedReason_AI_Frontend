@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import isAuthenticated from '../../../lib/is-authenticated'
 import MainPanel from '../../../components/main-panel'
 import fetchWithToken from '../../../lib/fetch-with-token'
+import { showToast } from '../../../lib/toast'
 
 export const Route = createFileRoute('/admin/configuracion/')({
   component: RouteComponent,
@@ -89,6 +90,7 @@ function RouteComponent() {
     })
     if (res.success) {
       queryClient.invalidateQueries({ queryKey: ['admin-config'] })
+      showToast('Configuración Actualizada', 'La configuración del modelo de IA se ha guardado correctamente.', 'success')
     }
     setGuardando(false)
   }
@@ -105,13 +107,17 @@ function RouteComponent() {
       setNuevaVersion('')
       setNuevoContenido('')
       refetchVersions()
+      showToast('Versión Creada', 'La nueva versión del prompt ha sido registrada con éxito.', 'success')
     }
     setCreandoPV(false)
   }
 
   const activarPV = async (id: number) => {
-    await fetchWithToken(`/api/admin/configSystem/prompt-versions/${id}/activate`, { method: 'PUT' })
-    refetchVersions()
+    const res = await fetchWithToken(`/api/admin/configSystem/prompt-versions/${id}/activate`, { method: 'PUT' })
+    if (res.success) {
+      refetchVersions()
+      showToast('Versión Activada', 'La versión de prompt ha sido activada correctamente.', 'success')
+    }
   }
 
   const headerContent = (
@@ -194,10 +200,16 @@ function RouteComponent() {
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {v.activo ? (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-700">Activo</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-bold shadow-xs">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      Activo
+                    </span>
                   ) : (
                     <button type="button" onClick={() => activarPV(v.id)}
-                      className="text-[11px] font-semibold text-[#1565d8] hover:underline">Activar</button>
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-white hover:bg-[#1565d8] text-[#1565d8] hover:text-white border border-[#1565d8]/40 hover:border-transparent rounded-lg text-[11px] font-bold transition-all duration-200 shadow-xs active:scale-95 cursor-pointer">
+                      <i className="fa-solid fa-play text-[9px]" />
+                      Activar
+                    </button>
                   )}
                 </div>
               </div>

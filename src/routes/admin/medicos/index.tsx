@@ -373,6 +373,7 @@ function FormularioUsuario({
   const [nombre, setNombre] = useState(usuario?.nombre ?? '')
   const [email, setEmail] = useState(usuario?.email ?? '')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [rol, setRol] = useState<Rol>(usuario?.rol ?? 'DOCTOR')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -437,8 +438,14 @@ function FormularioUsuario({
               {!usuario && (
                 <div className="flex-1">
                   <label className="block text-[11px] font-bold uppercase tracking-[0.06em] text-slate-400 mb-1" htmlFor="form-password">Contraseña</label>
-                  <input id="form-password" type="password" value={password} onChange={e => setPassword(e.target.value)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
+                  <div className="relative">
+                    <input id="form-password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)}
+                      className="w-full rounded-lg border border-slate-200 pl-3 pr-10 py-2 text-[13px] focus:outline-none focus:border-[#1565d8]" />
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors text-[13px]">
+                      <i className={`fa-solid ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} />
+                    </button>
+                  </div>
                 </div>
               )}
               <div className="flex-1">
