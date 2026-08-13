@@ -69,7 +69,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
       const errorData = await res.json().catch(() => ({}));
       return {
         success: false,
-        message: errorData.message || "Por favor, revise sus credenciales e intente nuevamente."
+        message: errorData.message || "Correo electrónico o contraseña incorrectos. Por favor, intente nuevamente."
       };
     }
 

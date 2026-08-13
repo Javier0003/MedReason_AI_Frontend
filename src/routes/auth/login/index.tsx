@@ -79,11 +79,24 @@ function RouteComponent() {
         setIsSubmitting(false)
       }
     } else {
-      const msg = authResult.message || 'Por favor, revise sus credenciales e intente nuevamente.';
-      const isDeactivated = msg.toLowerCase().includes('desactivad') || msg.toLowerCase().includes('inactiv') || msg.toLowerCase().includes('bloquead');
-      const toastTitle = isDeactivated ? 'Cuenta Inactiva / Bloqueada' : 'Error de Autenticación';
-      showToast(toastTitle, msg, 'error')
-      setIsSubmitting(false)
+      const msg = authResult.message || '';
+      const lowerMsg = msg.toLowerCase();
+      const isDeactivated = lowerMsg.includes('desactivad') || lowerMsg.includes('inactiv') || lowerMsg.includes('bloquead') || lowerMsg.includes('deshabilitad');
+
+      if (isDeactivated) {
+        showToast(
+          'Cuenta Inactiva / Bloqueada',
+          msg || 'Su cuenta ha sido desactivada. Por favor, póngase en contacto con el administrador.',
+          'error'
+        );
+      } else {
+        showToast(
+          'Error de Autenticación',
+          'Correo electrónico o contraseña incorrectos. Por favor, intente nuevamente.',
+          'error'
+        );
+      }
+      setIsSubmitting(false);
     }
   }
 
