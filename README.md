@@ -99,3 +99,4 @@ src/
 ├── constants/                # Constantes
 └── assets/                   # Imágenes e iconos SVG
 ```
+
