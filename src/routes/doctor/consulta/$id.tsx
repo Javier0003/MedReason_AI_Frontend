@@ -161,7 +161,7 @@ function RouteComponent() {
   }
 
   const handleAskAI = async () => {
-    if (consulta.completed) return
+    if (consulta?.completed) return
     const text = messageForAi.current?.value?.trim()
     if (!text || askingAI) return
     setAskingAI(true)
@@ -249,12 +249,7 @@ function RouteComponent() {
     setEditandoSintomas(true)
   }
 
-  const iniciarEdicionObservaciones = () => {
-    // Si el output es un objeto, lo stringificamos para que el doctor pueda editar el JSON o texto
-    const val = parsedOutput ? JSON.stringify(parsedOutput, null, 2) : consulta.output
-    setObservacionesEdit(val)
-    setEditandoObservaciones(true)
-  }
+
 
   const renderOutputObj = (outputObj: ConsultaOutputObj) => {
     return (
@@ -449,11 +444,7 @@ function RouteComponent() {
                     >{guardando ? 'Guardando...' : 'Guardar'}</button>
                   </>
                 ) : (
-                  <button
-                    type="button"
-                    onClick={iniciarEdicionObservaciones}
-                    className="text-[12px] text-[#1565d8] hover:bg-[#1565d8]/10 font-semibold px-3 py-1.5 rounded-lg transition-colors"
-                  >Ajustar Diagnóstico</button>
+                  null
                 )}
               </div>
             </div>
@@ -470,7 +461,7 @@ function RouteComponent() {
               parsedOutput
                 ? renderOutputObj(parsedOutput)
                 : <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <p className="text-[14px] text-slate-700 whitespace-pre-wrap leading-relaxed font-mono text-sm">{consulta.output}</p>
+                    <p className="text-[14px] text-slate-700 whitespace-pre-wrap leading-relaxed font-mono text-sm"></p>
                   </div>
             )}
           </div>
