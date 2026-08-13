@@ -154,12 +154,6 @@ function RouteComponent() {
               </div>
               <button
                 type="button"
-                className="px-5 py-2 flex items-center justify-center text-[13px] font-semibold text-slate-700 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors shadow-sm shrink-0"
-              >
-                Exportar
-              </button>
-              <button
-                type="button"
                 onClick={() => setMostrarFormulario(true)}
                 className="px-5 py-2 flex items-center justify-center text-[13px] font-semibold text-white bg-[#1565d8] rounded-lg hover:bg-[#0f56bd] transition-colors shadow-sm shrink-0"
               >
