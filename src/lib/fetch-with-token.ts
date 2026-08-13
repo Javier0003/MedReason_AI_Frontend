@@ -46,13 +46,21 @@ export default async function fetchWithToken<T>(url: string, options: FetchOptio
           const modal = document.createElement('div');
           modal.id = 'session-expired-modal';
           modal.className = 'fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-300';
+          const msg = json.message || '';
+          const lowerMsg = msg.toLowerCase();
+          const isDeactivated = lowerMsg.includes('desactivad') || lowerMsg.includes('inactiv') || lowerMsg.includes('bloquead') || lowerMsg.includes('deshabilitad');
+          const modalTitle = isDeactivated ? "Cuenta Inactiva / Bloqueada" : "Sesión Finalizada";
+          const errorMessage = isDeactivated
+            ? (msg || "Su cuenta ha sido desactivada. Por favor, póngase en contacto con el administrador.")
+            : (msg || "Tu sesión ha finalizado por inactividad. Serás redirigido al inicio de sesión.");
+
           modal.innerHTML = `
             <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
               <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
-                <i class="fa-solid fa-xmark"></i>
+                <i class="fa-solid fa-user-slash"></i>
               </div>
-              <h2 class="text-xl font-bold text-slate-800 mb-2">Sesión Expirada</h2>
-              <p class="text-[13px] text-slate-500 mb-6 leading-relaxed">Tu sesión ha finalizado por inactividad o tu token expiró. Serás redirigido al inicio de sesión.</p>
+              <h2 class="text-xl font-bold text-slate-800 mb-2">${modalTitle}</h2>
+              <p class="text-[13px] text-slate-500 mb-6 leading-relaxed">${errorMessage}</p>
               <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
                 <div class="bg-rose-500 h-full rounded-full transition-all duration-[3000ms] ease-linear w-full" id="session-progress"></div>
               </div>

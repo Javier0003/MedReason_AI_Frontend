@@ -59,9 +59,9 @@ function RouteComponent() {
     if (Object.values(nextErrors).some(Boolean)) return
 
     setIsSubmitting(true)
-    const is_authenticated = await authenticationStore.getState().authenticate(emailValue!, passwordValue!)
+    const authResult = await authenticationStore.getState().authenticate(emailValue!, passwordValue!)
 
-    if (is_authenticated) {
+    if (authResult.success) {
       if (rememberMe) {
         saveEmail(emailValue!)
       } else {
@@ -79,8 +79,24 @@ function RouteComponent() {
         setIsSubmitting(false)
       }
     } else {
-      showToast('Error de Autenticación', 'Por favor, revise sus credenciales e intente nuevamente.', 'error')
-      setIsSubmitting(false)
+      const msg = authResult.message || '';
+      const lowerMsg = msg.toLowerCase();
+      const isDeactivated = lowerMsg.includes('desactivad') || lowerMsg.includes('inactiv') || lowerMsg.includes('bloquead') || lowerMsg.includes('deshabilitad');
+
+      if (isDeactivated) {
+        showToast(
+          'Cuenta Inactiva / Bloqueada',
+          msg || 'Su cuenta ha sido desactivada. Por favor, póngase en contacto con el administrador.',
+          'error'
+        );
+      } else {
+        showToast(
+          'Error de Autenticación',
+          'Correo electrónico o contraseña incorrectos. Por favor, intente nuevamente.',
+          'error'
+        );
+      }
+      setIsSubmitting(false);
     }
   }
 
