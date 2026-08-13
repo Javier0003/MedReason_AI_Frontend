@@ -59,9 +59,9 @@ function RouteComponent() {
     if (Object.values(nextErrors).some(Boolean)) return
 
     setIsSubmitting(true)
-    const is_authenticated = await authenticationStore.getState().authenticate(emailValue!, passwordValue!)
+    const authResult = await authenticationStore.getState().authenticate(emailValue!, passwordValue!)
 
-    if (is_authenticated) {
+    if (authResult.success) {
       if (rememberMe) {
         saveEmail(emailValue!)
       } else {
@@ -79,7 +79,10 @@ function RouteComponent() {
         setIsSubmitting(false)
       }
     } else {
-      showToast('Error de Autenticación', 'Por favor, revise sus credenciales e intente nuevamente.', 'error')
+      const msg = authResult.message || 'Por favor, revise sus credenciales e intente nuevamente.';
+      const isDeactivated = msg.toLowerCase().includes('desactivad') || msg.toLowerCase().includes('inactiv') || msg.toLowerCase().includes('bloquead');
+      const toastTitle = isDeactivated ? 'Cuenta Inactiva / Bloqueada' : 'Error de Autenticación';
+      showToast(toastTitle, msg, 'error')
       setIsSubmitting(false)
     }
   }

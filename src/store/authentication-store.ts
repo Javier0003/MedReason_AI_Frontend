@@ -33,8 +33,13 @@ type AuthenticationState = {
   user: User | null;
 }
 
+type AuthenticateResult = {
+  success: boolean;
+  message?: string;
+};
+
 type AuthenticationActions = {
-  authenticate: (email: string, password: string) => Promise<boolean>;
+  authenticate: (email: string, password: string) => Promise<AuthenticateResult>;
   logout: () => Promise<void>;
 }
 
@@ -48,7 +53,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
   isAuthenticated: false,
   authenticationToken: null,
   user: null,
-  authenticate: async (email: string, password: string) => {
+  authenticate: async (email: string, password: string): Promise<AuthenticateResult> => {
     const res = await fetch(`${API_URL}/api/auth/login`, {
       headers: {
         'content-type': 'application/json'
@@ -61,7 +66,11 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
     })
 
     if(!res.ok) {
-      return false
+      const errorData = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        message: errorData.message || "Por favor, revise sus credenciales e intente nuevamente."
+      };
     }
 
     const data = await res.json() as LoginReturnType
@@ -69,7 +78,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
     const payload = decodeJwt(data.token)
 
     if(!payload) {
-      return false
+      return { success: false, message: "Token inválido recibido." };
     }
 
     const user: User = {
@@ -89,7 +98,7 @@ export const authenticationStore = create<AuthenticationState & AuthenticationAc
       authenticationToken: data.token,
       user,
     });
-    return true;
+    return { success: true };
   },
 
   logout: async () => {
