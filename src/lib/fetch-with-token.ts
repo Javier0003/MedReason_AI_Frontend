@@ -94,10 +94,10 @@ export default async function fetchWithToken<T>(url: string, options: FetchOptio
           const errorDetails = json.errors.map((e: any) => e.message || e).join('\n');
           showToast('Datos Incorrectos', errorDetails, 'warning');
           json.message = "Errores de validación:\n" + errorDetails; // Mantener la propiedad message para otros componentes
-        } else if (res.status === 400 && json.message) {
-          showToast('Atención', json.message, 'warning');
         } else if (res.status === 429) {
           showToast('Límite Excedido', json.message || "Has realizado demasiadas peticiones en poco tiempo. Por favor, espera un momento.", 'warning');
+        } else if (json.message) {
+          showToast('Atención', json.message, 'warning');
         }
       } else {
         if (res.status === 400 && Array.isArray(json.errors)) {
