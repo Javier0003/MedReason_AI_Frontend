@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
-import react, { reactCompilerPreset } from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
-import babel from '@rolldown/plugin-babel'
+// import babel from '@rolldown/plugin-babel'
 import { resolve } from 'node:path'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -16,9 +16,9 @@ export default defineConfig({
     }),
     tailwindcss(),
     react(),
-    babel({ presets: [reactCompilerPreset()] })
+    // babel({ presets: [reactCompilerPreset()] })
   ],
-  server:{ 
+  server:{
     port: 5675,
     strictPort: true
   }
